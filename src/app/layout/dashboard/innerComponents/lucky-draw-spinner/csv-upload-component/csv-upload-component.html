@@ -1,0 +1,43 @@
+<p>Please upload a Csv file containing 1 columns of data in the following order:
+</p>
+<ol>
+	<!-- <li>Staff ID (number)</li> -->
+  <li>Staff Name (text)</li>
+  <!-- <li>Staff Chances (number)</li> -->
+</ol>
+
+<!-- <input type="file" #csvReader name="Upload CSV" id="avatar" (change)="uploadListener($event)" accept=".csv" /> -->
+
+<!-- <section class="example-section">
+  <form
+    [formGroup]="form"
+    enctype="multipart/form-data"
+  > -->
+<input type="file" #csvReader name="Upload CSV" id="avatar" (change)="saveFileToDb($event)"  />
+<!-- </form>
+</section> -->
+
+
+<i [ngClass]="{ 'fa fa-cog fa-spin fa-3x': loadingData }"></i>
+<!-- <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingData"
+        >Your file is being Uploaded</small
+      > -->
+<!-- <table class="minimalistBlack" *ngIf="records.length > 0">
+  <thead>
+    <tr>
+      <th>ID </th>
+      <th>Name </th>
+      <th>Chances </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let record of records;let i = index;">
+      <td> <span>{{record.staffIdentifier}}</span> </td>
+      <td> <span>{{record.staffName}}</span> </td>
+      <td> <span>{{record.staffChances}}</span> </td>
+    </tr>
+  </tbody>
+</table> -->

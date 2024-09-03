@@ -1,0 +1,187 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <div class="row" style="clear: both">
+      <mat-card-title style="float: left; margin-left: 15px">
+        Upload Routes
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      </mat-card-title>
+      <mat-card-title style="float: right; position: absolute; right: 15px">
+        <button mat-raised-button (click)="downloadRouteSample()" color="warn">
+          Download Sample
+        </button>
+      </mat-card-title>
+    </div>
+    <section class="example-section">
+      <form
+        (ngSubmit)="uploadData(form.value)"
+        [formGroup]="form"
+        enctype="multipart/form-data"
+      >
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.regionLabel }}"
+            name="cityId"
+            [formControl]="selectedRegionUp"
+            [(ngModel)]="regionId"
+            (ngModelChange)="showCount('show')"
+          >
+          
+            <ng-container *ngFor="let region of regions">
+              <mat-option [value]="region.id">{{ region.title }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+        <input
+          #fileInput
+          (change)="onFileChange($event)"
+          id="avatar"
+          type="file"
+        />
+        <section class="example-section">
+          <button type="submit" mat-raised-button color="warn" [disabled]="loadingData">Upload</button>
+        </section>
+      </form>
+    </section>
+  </mat-card-content>
+</mat-card>
+<div
+  class="example-section mb-20"
+  style="text-align: end"
+  *ngIf="shopWiseCount.length > 0"
+>
+  <button
+    class="btn btn-danger mr-10-IMP"
+    title="Click to delete selected routes"
+    [disabled]="selectedSurveyors.length == 0 || loadingData"
+    (click)="deleteRoutes('delete')"
+  >
+    Delete ({{ selectedSurveyors?.length }})
+  </button>
+</div>
+<mat-card *ngIf="shopWiseCount.length > 0">
+  <mat-card-content>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            <mat-checkbox
+              color="primary"
+              (change)="checkUncheckAll($event)"
+              #isAllChecked
+            >
+            </mat-checkbox>
+          </th>
+          <th scope="col">#</th>
+          <th scope="col">Surveyor Code</th>
+          <th scope="col">Surveyor Name</th>
+          <th scope="col">Shops on Route</th>
+          <!-- <th scope="col">Action</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let count of shopWiseCount; let i = index">
+          <td>
+            <mat-checkbox
+              color="primary"
+              name="{{ count?.full_name }}"
+              id="{{ count?.surveyor_id }}"
+              (change)="checkUncheckSingle(checked, count, i)"
+              #checked
+            >
+            </mat-checkbox>
+          </td>
+          <th scope="col">{{ i + 1 }}</th>
+          <td>{{ count?.m_code }}</td>
+          <td>{{ count?.full_name }}</td>
+          <td style="cursor: pointer" (click)="getRouteShops(count)">
+            {{ count?.shops_on_route }}
+          </td>
+          <!-- <td>
+            <button
+              class="btn btn-danger"
+              title="Click to remove Shops from Routes"
+              (click)="deleteRoutes(count?.surveyor_id, 'delete')"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+          </td> -->
+        </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card>
+<!-- <mat-card *ngIf="trackedShops.length > 0">
+  <div class="col-md-12">
+    <section class="example-section">
+      <agm-map
+      [latitude]="latitude"
+      [longitude]="longitude"
+      [fitBounds]="trackedShops.length > 1"
+      [zoom]=""
+      style="height: 600px"
+      (mapReady)="onMapReady($event)"
+    >
+
+<ng-container *ngFor="let shop of trackedShops">
+  <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + '1' + '.png' }}"
+              >
+              <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Shop Id:</strong> {{ shop.id }}
+                    <br>
+                    <strong>Shop Name:</strong> {{ shop.shop_name }}
+                    <br>
+                    <strong>Shop Code:</strong> {{ shop.shop_code }}
+                    <br>
+                   
+                  </ng-template>
+                </agm-snazzy-info-window>
+  </agm-marker>
+            </ng-container>
+          </agm-map>
+<button mat-mini-fab >
+  <mat-icon (click)="deleteSelectedShape()">close</mat-icon>
+</button>
+
+</section>
+</div>
+</mat-card> -->
+
+<div
+  bsModal
+  #errorModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">Status</h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideErrorModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" [innerHTML]="response">
+        <!-- <pre >
+          {{ response }}
+        </pre> -->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,400 @@
+<div class="row">
+  <div class="col-md-12" style="margin: 20% 40%" *ngIf="loadingData">
+    <img src="assets/images/basicloader.gif" alt="" srcset="" />
+  </div>
+</div>
+
+<mat-card class="mb-20">
+  <mat-card-title>
+    Approval
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <section>
+    <ng-container *ngIf="clusterList?.length > 0">
+      <mat-form-field class="mr-10-IMP example-margin">
+        <mat-select
+          placeholder="{{ labels.clusterLabel }}"
+          name="cluster"
+          [(ngModel)]="selectedCluster"
+          (ngModelChange)="getZoneByCluster()"
+        >
+          <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+            cluster.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="zones?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.zoneLabel }}"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="getTableData(); zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <ng-container *ngIf="regions?.length > 0">
+      <mat-form-field class="mr-10-IMP example-margin">
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="getTableData()"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <!-- <mat-form-field
+    *ngIf="surveyors.length > 0"
+    class="example-margin mr-10-IMP"
+  >
+    <mat-select
+      placeholder="Select {{ labels.surveyorLabel }}"
+      name="surveyor"
+      [(ngModel)]="selectedSurveyor"
+      (ngModelChange)="selectedSurveyorChanged($event)"
+      multiple
+      #surveyorSelect="ngModel"
+      [compareWith]="equals"
+    >
+    <search-box [list]="surveyors" (notify)="onNotifyClicked($event)">
+    </search-box>
+      <mat-option disabled="disabled" class="filter-option">
+        <button
+          mat-raised-button
+          class="mat-primary fill text-sm"
+          (click)="selectAll(surveyorSelect, filteredSurveyors)"
+        >
+          Select All
+        </button>
+        <button
+          mat-raised-button
+          color="warn"
+          class="ml-1 mat-accent fill text-sm"
+          (click)="deselectAll(surveyorSelect)"
+        >
+          Deselect All
+        </button>
+      </mat-option>
+      <ng-container *ngFor="let surveyor of filteredSurveyors">
+        <mat-option
+          [value]="surveyor"
+          *ngIf="surveyor.type == 1 && surveyor.active == 'Y'"
+          >{{ surveyor.m_code }} - {{ surveyor.fullName }}</mat-option
+        >
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+
+    <div *ngIf="distinctClaimDataList?.length > 0" style="float: right;">
+      <ng-container >
+        
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="Approve Status"
+                  name="Approve Status"
+                  [(ngModel)]="selectedUpdate"
+                  (ngModelChange)="selectedUpdateChange()"
+                >
+                  <ng-container *ngFor="let item of approvedList">
+                    <mat-option [value]="item">{{ item.value }}</mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+          
+      </ng-container>
+    </div> -->
+
+    <mat-form-field class="example-full-width mr-10-IMP">
+      <input
+        matInput
+        [min]="minDate"
+        [max]="maxDate"
+        [matDatepicker]="picker0"
+        [(ngModel)]="startDate"
+        (ngModelChange)="getTableData()"
+        placeholder="Choose a start date"
+        readonly
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker0"></mat-datepicker-toggle>
+      <mat-datepicker #picker0></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="example-full-width mr-10-IMP">
+      <input
+        matInput
+        [min]="minDate"
+        [max]="maxDate"
+        [matDatepicker]="picker1"
+        [(ngModel)]="endDate"
+        (ngModelChange)="getTableData()"
+        placeholder="Choose a end date"
+        readonly
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+  </section>
+
+  <!-- <section class="example-section">
+    <button
+      [disabled]="loadingData || !selectedZone?.id"
+      (click)="getTableData()"
+      class="btn btn-primary"
+    >
+      <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingData }"></i>
+      Display
+    </button>
+  </section> -->
+</mat-card>
+
+<div class="container" *ngIf="tableData?.length > 0">
+  <div class="row justify-content-center">
+    <div class="col-md-4 col-xl-3">
+      <div class="card bg-c-blue order-card" (click)="showList(1)">
+        <div class="card-block">
+          <h6 class="m-b-20">Work With</h6>
+          <h2 class="text-right">
+            <i class="fa fa-briefcase f-left"></i
+            ><span>{{ this.stats.ww }}</span>
+          </h2>
+          <p class="m-b-0">
+            Pending<span class="f-right">0</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <div class="card bg-c-green order-card" (click)="showList(2)">
+        <div class="card-block">
+          <h6 class="m-b-20">Work Review</h6>
+          <h2 class="text-right">
+            <i class="fa fa-search-plus f-left"></i
+            ><span>{{ this.stats.wr }}</span>
+          </h2>
+          <p class="m-b-0">
+            Pending<span class="f-right">0</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <div class="card bg-c-yellow order-card" (click)="showList(5)">
+        <div class="card-block">
+          <h6 class="m-b-20">Edit Shop</h6>
+          <h2 class="text-right">
+            <i class="fa fa-pencil-square-o f-left"></i
+            ><span>{{ this.stats.editShops }}</span>
+          </h2>
+          <p class="m-b-0">
+            Pending<span class="f-right">{{
+              this.stats.editShopsPending
+            }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <div class="card bg-c-pink order-card" (click)="showList(3)">
+        <div class="card-block">
+          <h6 class="m-b-20">Permanently Closed</h6>
+          <h2 class="text-right">
+            <i class="fa fa-times f-left"></i
+            ><span>{{ this.stats.perClosed }}</span>
+          </h2>
+          <p class="m-b-0">
+            Pending<span class="f-right">
+              {{ this.stats.perClosedPending }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-xl-3">
+      <div class="card bg-c-lighhgrey order-card" (click)="showList(4)">
+        <div class="card-block">
+          <h6 class="m-b-20">New Shops</h6>
+          <h2 class="text-right">
+            <i class="fa fa-upload f-left"></i
+            ><span>{{ this.stats.newShops }}</span>
+          </h2>
+          <p class="m-b-0">
+            Pending<span class="f-right">
+              {{ this.stats.newShopsPending }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="container-fluid animated slideInLeft"
+  *ngIf="tableData?.length > 0 && programId > 0"
+>
+  <div class="container">
+    <div
+      class="example-section mb-20"
+      style="text-align: end"
+      *ngIf="tableData?.length > 0 && programId != 1 && programId != 2"
+    >
+      <button
+        class="btn btn-success mr-10-IMP"
+        title="Click to approve selected visits"
+        (click)="evaluateShops(1)"
+        [disabled]="selectedSurveys.length == 0 || loading"
+      >
+        Approve
+        <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+      </button>
+      <button
+        class="btn btn-danger mr-10-IMP"
+        title="Click to approve selected visits"
+        (click)="evaluateShops(2)"
+        [disabled]="selectedSurveys.length == 0 || loading"
+      >
+        Dispprove
+        <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+      </button>
+    </div>
+    <mat-card>
+      <mat-card-content>
+        <div class="table-responsive">
+          <table
+            class="table table-bordered table-striped table-hover"
+            *ngIf="tableData?.length > 0"
+          >
+            <thead>
+              <tr>
+                <th *ngIf="programId != 1 && programId != 2">
+                  <mat-checkbox
+                    color="primary"
+                    (change)="checkUncheckAll($event)"
+                    #isAllChecked
+                  ></mat-checkbox>
+                </th>
+                <th (click)="sortIt('surveyorCode')" style="cursor: pointer">
+                  Tsm Code
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("surveyorCode")
+                  }}</i>
+                </th>
+                <th (click)="sortIt('surveyorName')" style="cursor: pointer">
+                  Tsm Name
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("surveyorName")
+                  }}</i>
+                </th>
+                <th (click)="sortIt('title')" style="cursor: pointer">
+                  Shop Name
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("title")
+                  }}</i>
+                </th>
+                <th (click)="sortIt('workStatus')" style="cursor: pointer">
+                  Work Type
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("workStatus")
+                  }}</i>
+                </th>
+                <th (click)="sortIt('address')" style="cursor: pointer">
+                  Address
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("address")
+                  }}</i>
+                </th>
+                <th (click)="sortIt('visitDate')" style="cursor: pointer">
+                  Visit date
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("visitDate")
+                  }}</i>
+                </th>
+                <th
+                  (click)="sortIt('zsmVerifiedStatus')"
+                  style="cursor: pointer"
+                >
+                  Status
+                  <i class="material-icons arrow material-icons-arrow">{{
+                    getArrowType("zsmVerifiedStatus")
+                  }}</i>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container
+                *ngFor="
+                  let item of tableData | orderBy : sortBy : sortOrder;
+                  let i = index
+                "
+              >
+                <tr *ngIf="programId == -1 || programId == item.programId">
+                  <td *ngIf="programId != 1 && programId != 2">
+                    <mat-checkbox
+                      *ngIf="item.zsmVerifiedStatus?.toUpperCase() == 'PENDING'"
+                      color="primary"
+                      name="{{ item?.surveyId }}"
+                      id="{{ item?.surveyId }}"
+                      (change)="checkUncheckSingle(checked, item, i)"
+                      #checked
+                    ></mat-checkbox>
+                  </td>
+                  <td class="link" (click)="gotoNewPage(item)">
+                    {{ item?.surveyorCode }}
+                  </td>
+                  <td class="isEvaluated">{{ item?.surveyorName }}</td>
+                  <td
+                    class="isEvaluated"
+                    style="white-space: normal !important"
+                  >
+                    {{ item?.title }}
+                  </td>
+                  <td
+                    class="isEvaluated"
+                    style="white-space: normal !important"
+                  >
+                    {{ item?.workStatus }}
+                  </td>
+                  <td
+                    class="isEvaluated"
+                    style="white-space: normal !important"
+                  >
+                    {{ item?.address }}
+                  </td>
+                  <td
+                    class="isEvaluated"
+                    style="white-space: normal !important"
+                  >
+                    {{ item?.visitDate }}
+                  </td>
+                  <td class="isEvaluated">{{ item?.zsmVerifiedStatus }}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div class="row" *ngIf="!loadingData && tableData?.length == 0">
+  <div class="col-md-12 text-center">
+    <div class="alert alert-info">
+      <p>No Data Found</p>
+    </div>
+  </div>
+</div>

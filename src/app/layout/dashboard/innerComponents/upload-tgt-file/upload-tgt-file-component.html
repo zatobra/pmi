@@ -1,0 +1,149 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <div class="row" style="clear: both">
+      <mat-card-title style="float: left; margin-left: 15px">
+        Upload Data
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+        <!-- <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      > -->
+      </mat-card-title>
+      <!-- <mat-card-title style="float: right; position: absolute; right: 15px">
+        <button mat-raised-button (click)="getSamsungSalesAchievementReport()" color="warn">
+          Download Sample
+        </button>
+      </mat-card-title> -->
+    </div>
+
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <!-- <mat-label>Date of Birth</mat-label> -->
+        <input
+          matInput
+          placeholder="Choose a Year"
+          [matDatepicker]="picker0"
+          readonly
+          [formControl]="year"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker
+          #picker0
+          startView="multi-year"
+          (yearSelected)="chosenYearHandler($event, picker0)"
+          panelClass="example-month-picker"
+        >
+        </mat-datepicker>
+
+        <!-- for closing datePicker After year nd month selection
+      (yearSelected)="chosenYearHandler($event)"
+      (monthSelected)="chosenMonthHandler($event, dp)" -->
+
+        <!-- startView="multi-year"
+      startView="year"
+      startView="month" -->
+      </mat-form-field>
+
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Choose a Month"
+          name="monthValue"
+          [(ngModel)]="monthValue"
+        >
+          <ng-container *ngFor="let month of monthList">
+            <mat-option [value]="month.value">{{ month.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <form
+        (ngSubmit)="uploadData(form.value)"
+        [formGroup]="form"
+        enctype="multipart/form-data"
+      >
+        <!-- <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.regionLabel }}"
+            name="cityId"
+            [formControl]="selectedRegionUp"
+            [(ngModel)]="regionId"
+            (ngModelChange)="showCount('show')"
+          >
+            <ng-container *ngFor="let region of regions">
+              <mat-option [value]="region.id">{{ region.title }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field> -->
+
+        <input
+          #fileInput
+          (change)="onFileChange($event)"
+          id="avatar"
+          type="file"
+        />
+        <section class="example-section">
+          <button
+            type="submit"
+            mat-raised-button
+            color="warn"
+            [disabled]="loadingData"
+          >
+            Upload
+          </button>
+        </section>
+      </form>
+    </section>
+    <br />
+
+    <!-- <mat-radio-group
+      [(ngModel)]="radioOptions"
+      name="radioButtons"
+      (change)="onRadioButtonChange($event)"
+      class="example-margin mr-10-IMP"
+    >
+      <ng-container *ngFor="let fileType of fileTypesList">
+        <mat-radio-button
+          value="{{ fileType.value }}"
+          class="example-margin mr-10-IMP"
+          >{{ fileType.title }}</mat-radio-button
+        >
+      </ng-container>
+    </mat-radio-group> -->
+  </mat-card-content>
+</mat-card>
+
+<div
+  bsModal
+  #errorModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">Status</h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideErrorModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <label>{{ response }}</label>
+      </div>
+    </div>
+  </div>
+</div>

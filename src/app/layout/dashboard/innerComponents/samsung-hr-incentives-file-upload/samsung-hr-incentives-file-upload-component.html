@@ -1,0 +1,43 @@
+<mat-card class="mb-20">
+    <mat-card-content>
+      <div class="row" style="clear: both">
+        <mat-card-title style="float: left; margin-left: 15px">
+          Upload Hr Incentives Data
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+   
+        </mat-card-title>
+      </div>
+  
+      
+  
+      <section class="example-section">
+        <form
+          (ngSubmit)="uploadData(form.value)"
+          [formGroup]="form"
+          enctype="multipart/form-data"
+        >
+  
+          <input
+            #fileInput
+            (change)="onFileChange($event)"
+            id="avatar"
+            type="file"
+          />
+          <section class="example-section">
+            <button
+              type="submit"
+              mat-raised-button
+              color="warn"
+              [disabled]="loadingData"
+            >
+              Upload
+            </button>
+          </section>
+        </form>
+      </section>
+      <br />
+  
+    </mat-card-content>
+  </mat-card>
+  
+  

@@ -1,0 +1,1248 @@
+<div>
+  <div class="row">
+    <div
+      class="col-md-12"
+      style="margin: 20% 40%"
+      *ngIf="sectionList.length == 0 && loading"
+    >
+      <img src="assets/images/basicloader.gif" alt="" srcset="" />
+    </div>
+  </div>
+  <a
+    *ngIf="userType && userType == evaluatorRole && surveyDetails?.phone"
+    href="https://api.whatsapp.com/send?phone={{ surveyDetails.phone }}&text={{
+      errorMessage
+    }}"
+    class="float"
+    target="_blank"
+  >
+    <i class="fa fa-whatsapp my-float"></i>
+  </a>
+  <div class="row animated slideInLeft" *ngIf="sectionList.length > 0">
+    <div
+      class="col-md-{{ leftRatio }}"
+      [ngClass]="{ 'col-md-12': this.isDragging }"
+      style="
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        height: 90vh;
+        width: 100% !important;
+      "
+    >
+      <div
+        style="text-align: end"
+        *ngIf="sectionList.length > 0"
+        class="downnloadPdf"
+      >
+        <!-- <div>
+        <div style="width: 400px; height: 400px" id="pdfTable1" #pdfTable1>
+          <label for="hi">hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh</label>
+          <img
+          src="https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_960_720.jpg"
+          class="img-thumbnail"
+          style="height: 450px; width: 100%"
+        /> -->
+        <!-- <button>hi</button>
+          <button>hi</button>
+          <button>hi</button>
+          <button>hi</button>
+          <button>hi</button>
+          <button>hi</button> -->
+        <!-- </div>
+      </div> -->
+        <button
+          class="btn btn-primary"
+          title="Export AS PDF"
+          (click)="htmltoPDF2()"
+          [disabled]="loadingDownload"
+        >
+          <i class="fa fa-spinner fa-spin" *ngIf="loadingDownload"></i>
+          <i class="fa fa-download" *ngIf="!loadingDownload"></i>
+        </button>
+      </div>
+      <div class="icon-bar">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="this.isDragging = !this.isDragging"
+        >
+          <span *ngIf="!this.isDragging" title="expand view">
+            <i class="fa fa-arrow-right"></i>
+          </span>
+          <span *ngIf="this.isDragging" title="colapse view">
+            <i class="fa fa-arrow-left"></i>
+          </span>
+        </button>
+      </div>
+      <div class="content" id="pdfTable1" #pdfTable1>
+        <div class="row justify-content-center-between">
+          <ng-container *ngFor="let sec of sectionList">
+            <ng-container *ngIf="sec?.imageViewType === 1">
+              <section-two-view
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+                (downloadPdf)="downloadPDF()"
+                [shopId]="surveyDetails?.shopId"
+                [surveyorId]="surveyDetails?.surveyorId"
+                [visitDate]="surveyDetails?.visitDate"
+                [imageView]="obj?.imageView"
+              ></section-two-view>
+            </ng-container>
+
+            
+              <ng-container *ngIf="sec?.imageViewType === 4">
+                <section-four-view class="width-100" [data]="sec">
+                </section-four-view>
+              </ng-container>
+            
+
+          </ng-container>
+
+          <ng-container *ngFor="let sec of sectionList">
+            <ng-container *ngIf="sec.sectionAlignment != 'Right'">
+              <ng-container *ngIf="sec?.imageViewType === 2">
+                <section-one-view
+                  class="width-100"
+                  [data]="sec"
+                  (showModal)="showChildModal($event)"
+                >
+                </section-one-view>
+              </ng-container>
+
+              <ng-container #sectionSeven *ngIf="sec?.imageViewType === 7">
+                <section-seven-view
+                  [data]="sec"
+                  class="width-100"
+                  [isEditable]="isEditable"
+                  (productList)="calculateMSLAgain($event)"
+                  (showModal)="showChildModal($event)"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                  [projectTypeFromShopDetailsMap]="surveyDetails.projectTypeFromShopDetailsMap"
+                  [show_unit_available]="show_unit_available"
+                ></section-seven-view>
+              </ng-container>
+
+              <ng-container *ngIf="sec?.imageViewType === 3">
+                <section-three-view
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="isEditable"
+                  (productList)="calculateMSLAgain($event)"
+                  (showModal)="showChildModal($event)"
+                >
+                </section-three-view>
+              </ng-container>
+              <ng-container *ngIf="sec?.imageViewType === 5">
+                <section-five
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="isEditable"
+                  (productList)="calculateMSLAgain($event)"
+                  (showModal)="showChildModal($event)"
+                >
+                </section-five>
+              </ng-container>
+              <ng-container *ngIf="sec?.imageViewType === 25">
+                <section-twenty-five
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="isEditable"
+                  (productList)="calculateMSLAgain($event)"
+                  (showModal)="showChildModal($event)"
+                >
+                </section-twenty-five>
+              </ng-container>
+
+              <ng-container *ngIf="sec?.imageViewType === 9">
+                <section-nine-view
+                  class="width-100"
+                  [data]="sec"
+                  (showModal)="showChildModal($event)"
+                  [isEditable]="isEditable"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                >
+                </section-nine-view>
+              </ng-container>
+
+              <!--  -->
+              <ng-container *ngIf="sec?.imageViewType === 6">
+                <section-six
+                  class="width-100"
+                  [data]="sec"
+                  (showModal)="showSoSModal($event)"
+                >
+                </section-six>
+              </ng-container>
+
+              <ng-container *ngIf="sec?.imageViewType === 8">
+                <section-eight-view
+                  class="width-100"
+                  [data]="sec"
+                  [projectType]="projectType"
+                  [isEditable]="isEditable"
+                  (showModal)="showChildModal($event)"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                >
+                </section-eight-view>
+              </ng-container>
+
+              <ng-container *ngIf="sec?.imageViewType === 10">
+                <section-ten-view
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="isEditable"
+                  (showModal)="showChildModal($event)"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                >
+                </section-ten-view>
+              </ng-container>
+              <ng-container *ngIf="sec?.imageViewType === 11">
+                <section-eleven-view
+                  class="width-100"
+                  [data]="sec"
+                  [channelType]="surveyDetails.channelType"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                  [isEditable]="isEditable"
+                  (showModal)="showChildModal($event)"
+                ></section-eleven-view>
+              </ng-container>
+              <ng-container *ngIf="sec?.imageViewType === 12">
+                <section-twelve
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="false"
+                  (showModal)="showChildModal($event)"
+                ></section-twelve>
+              </ng-container>
+              <ng-container *ngIf="sec?.imageViewType === 15">
+                <app-section-fifteen
+                  class="width-100"
+                  [data]="sec"
+                  [isEditable]="isEditable"
+                  [surveyId]="surveyDetails?.surveyId"
+                  (showModal)="showChildModal($event)"
+                >
+                </app-section-fifteen>
+              </ng-container>
+              <ng-container #sectionSixteen *ngIf="sec?.imageViewType === 16">
+                <section-sixteen-view
+                  [data]="sec"
+                  class="width-100"
+                  [isEditable]="isEditable"
+                  (productList)="calculateMSLAgain($event)"
+                  (showModal)="showChildModal($event)"
+                  [evaluatorId]="surveyDetails.evaluatorId"
+                ></section-sixteen-view>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <!-- <ng-container *ngFor="let sec of sectionList">
+            <ng-container *ngIf="sec?.imageViewType === 4">
+              <section-four-view class="width-100" [data]="sec">
+              </section-four-view>
+            </ng-container>
+          </ng-container> -->
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="col-md-{{ rightRatio }}"
+      id="right-pane"
+      style="
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        height: 90vh;
+        width: 100% !important;
+      "
+      *ngIf="!isDragging && leftRatio < 12"
+    >
+      <div class="row justify-content-center">
+        <ng-container *ngIf="isEditable && showCriteria && data.criteria">
+          <div class="card" *ngIf="userType != zsmRole">
+            <div class="row justify-content-center">
+              <div class="col-md-12">
+                <table
+                  class="table table-bordered sm-table table-hover"
+                  style="line-height: 1"
+                >
+                  <thead class="thead-light">
+                    <tr style="text-align: center">
+                      <th>Criteria</th>
+                    </tr>
+                  </thead>
+                  <!-- {{cloneArray[0] | json }} -->
+                  <tbody>
+                    <tr
+                      *ngFor="let item of cloneArray; let i = index"
+                      style="text-align: center"
+                    >
+                      <ng-container
+                        *ngIf="item.parentId == -1 && item.hasChild == 'Y'"
+                      >
+                        <td>
+                          <mat-accordion>
+                            <mat-expansion-panel
+                              (opened)="panelOpenState = true"
+                              (closed)="panelOpenState = false"
+                            >
+                              <mat-expansion-panel-header
+                                [collapsedHeight]="'40px'"
+                              >
+                                <label
+                                  class="container"
+                                  style="margin-bottom: 8px"
+                                >
+                                  <p
+                                    style="padding-top: 5px; margin-bottom: 5px"
+                                  >
+                                    {{ item?.title }}
+                                  </p>
+                                </label>
+
+                                <mat-panel-description> </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <table
+                                class="table table-bordered sm-table table-hover"
+                                style="line-height: 1"
+                              >
+                                <thead class="thead-light">
+                                  <tr style="text-align: center">
+                                    <th>Title</th>
+                                    <th>Score</th>
+                                    <th>Achieved</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr
+                                    *ngFor="
+                                      let item2 of cloneArray;
+                                      let i = index
+                                    "
+                                    style="text-align: center"
+                                  >
+                                    <ng-container
+                                      *ngIf="item2.parentId == item.id"
+                                    >
+                                      <td>
+                                        <label
+                                          class="container"
+                                          style="margin-bottom: 8px"
+                                        >
+                                          <ng-container
+                                            *ngIf="
+                                              item?.type != 'CRITICAL_CASE' &&
+                                              isCritical
+                                            "
+                                          >
+                                            <input
+                                              class="checkbox"
+                                              type="checkbox"
+                                              name="{{ item2?.title }}"
+                                              [checked]="item2?.isChecked"
+                                              id="{{ item2?.id }}"
+                                              (click)="
+                                                counter(checked, item2, i);
+                                                createTickForSlider(item2)
+                                              "
+                                              #checked
+                                            />
+                                            <span class="checkmark"></span>
+                                            <p
+                                              style="
+                                                padding-top: 5px;
+                                                margin-bottom: 5px;
+                                              "
+                                            >
+                                              {{ item2?.title }}
+                                            </p>
+                                          </ng-container>
+                                          <ng-container
+                                            *ngIf="
+                                              item?.type == 'CRITICAL_CASE' &&
+                                              !isNoNCritical
+                                            "
+                                          >
+                                            <input
+                                              name="{{ item2?.title }}"
+                                              id="{{ item2?.id }}"
+                                            />
+                                            <p
+                                              style="
+                                                padding-top: 5px;
+                                                margin-bottom: 5px;
+                                              "
+                                            >
+                                              {{ item2?.title }}
+                                            </p>
+                                          </ng-container>
+                                        </label>
+                                      </td>
+                                      <td>
+                                        <label
+                                          class="container"
+                                          for="score"
+                                          style="
+                                            margin-top: 5px;
+                                            margin-bottom: 2px;
+                                          "
+                                        >
+                                          {{ item2?.score }}
+                                        </label>
+                                      </td>
+
+                                      <td>
+                                        <label
+                                          class="container"
+                                          for="achievedScore"
+                                          style="
+                                            margin-top: 5px;
+                                            margin-bottom: 2px;
+                                          "
+                                        >
+                                          <span>
+                                            {{ item2?.achievedScore }}
+                                          </span>
+                                        </label>
+                                      </td>
+                                    </ng-container>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </mat-expansion-panel>
+                          </mat-accordion>
+                        </td>
+                      </ng-container>
+                    </tr>
+                    <table
+                      class="table table-bordered sm-table table-hover"
+                      style="line-height: 1"
+                    >
+                      <thead class="thead-light">
+                        <tr style="text-align: center">
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="let item of cloneArray; let i = index"
+                          style="text-align: center"
+                        >
+                          <ng-container
+                            *ngIf="item.parentId == -1 && item.hasChild == 'N'"
+                          >
+                            <td>
+                              <label
+                                class="container"
+                                style="margin-bottom: 8px"
+                              >
+                                <p style="padding-top: 5px; margin-bottom: 5px">
+                                  {{ item?.title }}
+                                </p>
+                                <input
+                                  class="checkbox"
+                                  type="checkbox"
+                                  name="{{ item?.title }}"
+                                  [checked]="item?.isChecked"
+                                  id="{{ item?.id }}"
+                                  (click)="
+                                    counter(checked, item, i);
+                                    createTickForSlider(item)
+                                  "
+                                  #checked
+                                />
+                                <span class="checkmark"></span>
+                              </label>
+                            </td>
+                            <td>
+                              <label
+                                class="container"
+                                for="score"
+                                style="margin-top: 5px; margin-bottom: 2px"
+                              >
+                                {{ item?.score }}
+                              </label>
+                            </td>
+
+                            <td>
+                              <label
+                                class="container"
+                                for="achievedScore"
+                                style="margin-top: 5px; margin-bottom: 2px"
+                              >
+                                <span>
+                                  {{ item?.achievedScore }}
+                                </span>
+                              </label>
+                            </td>
+                          </ng-container>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <tr style="font-weight: 700; text-align: center">
+                      <td>
+                        <label class="container" for=""
+                          >Total Score: {{ totalAchieveScore.toFixed() }}/{{
+                            score.toFixed()
+                          }}</label
+                        >
+                      </td>
+                    </tr>
+
+                    <!-- <hr> -->
+                  </tbody>
+                </table>
+                <div class="row" *ngIf="userType != reevaluatorRole">
+                  <div
+                    class="col-md-12"
+                    style="text-align: end; padding: 0 20px 5px 0"
+                  >
+                    <button
+                      [disabled]="loading"
+                      class="btn btn-primary"
+                      (click)="evaluateShop()"
+                    >
+                      <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+                      Evaluate
+                    </button>
+                  </div>
+                </div>
+                <div class="row" *ngIf="userType == reevaluatorRole">
+                  <div
+                    class="col-md-12"
+                    style="text-align: end; padding: 0 20px 5px 0"
+                  >
+                    <button
+                      [disabled]="loading"
+                      class="btn btn-primary"
+                      (click)="showEvaluationRemarksModal()"
+                    >
+                      <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+                      Evaluate
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <button
+                  *ngIf="exceptionList.length > 0"
+                  class="btn btn-primary"
+                  (click)="showExceptionDetailModal()"
+                >
+                  Compliance Exceptions
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isEditable && data?.criteria && showCriteria">
+          <div class="card">
+            <div class="row justify-content-center">
+              <div class="col-md-12">
+                <table
+                  class="table table-bordered sm-table table-hover"
+                  style="line-height: 1"
+                >
+                  <thead class="thead-light">
+                    <tr style="text-align: center">
+                      <th>Title</th>
+                      <th>Score</th>
+                      <th>Achieved</th>
+                    </tr>
+                  </thead>
+                  <!-- {{cloneArray[0] | json }} -->
+                  <tbody>
+                    <tr
+                      *ngFor="let item of cloneArray; let i = index"
+                      style="text-align: center"
+                    >
+                      <ng-container *ngIf="item.hasChild == 'N'">
+                        <ng-container *ngIf="!item.remarkId">
+                          <td>
+                            <label class="container" style="margin-bottom: 8px">
+                              <p style="padding-top: 5px; margin-bottom: 5px">
+                                {{ item?.title }}
+                              </p>
+                            </label>
+                          </td>
+                          <td>
+                            <label
+                              class="container"
+                              for="score"
+                              style="margin-top: 5px; margin-bottom: 2px"
+                            >
+                              {{ item?.score }}
+                            </label>
+                          </td>
+
+                          <td>
+                            <label
+                              class="container"
+                              for="achievedScore"
+                              style="margin-top: 5px; margin-bottom: 2px"
+                            >
+                              <span>
+                                {{ item?.achievedScore }}
+                              </span>
+                            </label>
+                          </td>
+                        </ng-container>
+                        <ng-container *ngIf="item.remarkId">
+                          <td>
+                            <mat-accordion>
+                              <mat-expansion-panel
+                                (opened)="panelOpenState = true"
+                                (closed)="panelOpenState = false"
+                              >
+                                <mat-expansion-panel-header
+                                  [collapsedHeight]="'40px'"
+                                  [expandedHeight]="'40px'"
+                                >
+                                  <label
+                                    class="container"
+                                    style="margin-bottom: 8px"
+                                  >
+                                    <p
+                                      style="
+                                        padding-top: 5px;
+                                        margin-bottom: 5px;
+                                      "
+                                    >
+                                      {{ item?.title }}
+                                    </p>
+                                  </label>
+
+                                  <mat-panel-description>
+                                  </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <ng-container
+                                  *ngFor="let remark of remarksList"
+                                >
+                                  <li
+                                    *ngIf="
+                                      remark.criteriaId == item.id &&
+                                      remark.isChecked == 1
+                                    "
+                                  >
+                                    <span style="font-size: 80%; color: red">
+                                      {{ remark.description }}
+                                    </span>
+                                  </li>
+                                </ng-container>
+                              </mat-expansion-panel>
+                            </mat-accordion>
+                          </td>
+                          <td>
+                            <label
+                              class="container"
+                              for="score"
+                              style="margin-top: 5px; margin-bottom: 2px"
+                            >
+                              {{ item?.score }}
+                            </label>
+                          </td>
+
+                          <td>
+                            <label
+                              class="container"
+                              for="achievedScore"
+                              style="margin-top: 5px; margin-bottom: 2px"
+                            >
+                              <span>
+                                {{ item?.achievedScore }}
+                              </span>
+                            </label>
+                          </td>
+                        </ng-container>
+                      </ng-container>
+                    </tr>
+                    <tr style="font-weight: 700; text-align: center">
+                      <td>
+                        <label class="container" for="">Score</label>
+                      </td>
+                      <td>
+                        <label class="container" for="score">
+                          {{ score.toFixed() }}
+                        </label>
+                      </td>
+                      <td>
+                        <label class="container" for="totalAchieveScore">
+                          {{ totalAchieveScore.toFixed() }}
+                        </label>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <hr />
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <button
+                  *ngIf="exceptionList?.length > 0"
+                  class="btn btn-primary"
+                  (click)="showExceptionDetailModal()"
+                >
+                  Compliance Exceptions
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="row">
+        <ng-container *ngFor="let sec of sectionList">
+          <ng-container *ngIf="sec.sectionAlignment == 'Right'">
+            <ng-container *ngIf="sec?.imageViewType === 1">
+              <section-two-view
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+                (downloadPdf)="downloadPDF()"
+              ></section-two-view>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 2">
+              <section-one-view
+                class="width-100"
+                [data]="sec"
+                (showModal)="showChildModal($event)"
+              >
+              </section-one-view>
+            </ng-container>
+
+            <ng-container #sectionSeven *ngIf="sec?.imageViewType === 7">
+              <section-seven-view
+                [data]="sec"
+                class="width-100"
+                [isEditable]="isEditable"
+                (productList)="calculateMSLAgain($event)"
+                (showModal)="showChildModal($event)"
+                [evaluatorId]="surveyDetails.evaluatorId"
+                [projectTypeFromShopDetailsMap]="surveyDetails.projectTypeFromShopDetailsMap"
+              ></section-seven-view>
+            </ng-container>
+
+            <ng-container *ngIf="sec?.imageViewType === 3">
+              <section-three-view
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (productList)="calculateMSLAgain($event)"
+                (showModal)="showChildModal($event)"
+              >
+              </section-three-view>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 5">
+              <section-five
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (productList)="calculateMSLAgain($event)"
+                (showModal)="showChildModal($event)"
+              >
+              </section-five>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 25">
+              <section-twenty-five
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (productList)="calculateMSLAgain($event)"
+                (showModal)="showChildModal($event)"
+              >
+              </section-twenty-five>
+            </ng-container>
+
+            <ng-container *ngIf="sec?.imageViewType === 9">
+              <section-nine-view
+                class="width-100"
+                [data]="sec"
+                (showModal)="showChildModal($event)"
+                [isEditable]="isEditable"
+                [evaluatorId]="surveyDetails.evaluatorId"
+              >
+              </section-nine-view>
+            </ng-container>
+
+            <!--  -->
+            <ng-container *ngIf="sec?.imageViewType === 6">
+              <section-six
+                class="width-100"
+                [data]="sec"
+                (showModal)="showSoSModal($event)"
+              >
+              </section-six>
+            </ng-container>
+
+            <ng-container *ngIf="sec?.imageViewType === 4">
+              <!-- (productList)="calculateMSLAgain($event)" -->
+              <section-four-view class="width-100" [data]="sec">
+              </section-four-view>
+            </ng-container>
+
+            <ng-container *ngIf="sec?.imageViewType === 8">
+              <section-eight-view
+                class="width-100"
+                [data]="sec"
+                [projectType]="projectType"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+                [evaluatorId]="surveyDetails.evaluatorId"
+              >
+              </section-eight-view>
+            </ng-container>
+
+            <ng-container *ngIf="sec?.imageViewType === 10">
+              <section-ten-view
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+                [evaluatorId]="surveyDetails.evaluatorId"
+              >
+              </section-ten-view>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 11">
+              <section-eleven-view
+                class="width-100"
+                [data]="sec"
+                [channelType]="surveyDetails.channelType"
+                [evaluatorId]="surveyDetails.evaluatorId"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+              ></section-eleven-view>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 12">
+              <section-twelve
+                class="width-100"
+                [data]="sec"
+                [isEditable]="isEditable"
+                (showModal)="showChildModal($event)"
+              ></section-twelve>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 13">
+              <app-section-thirteen
+                class="width-100"
+                [data]="sec"
+              ></app-section-thirteen>
+            </ng-container>
+            <ng-container *ngIf="sec?.imageViewType === 14">
+              <app-section-fourteen
+                class="width-100"
+                [data]="sec"
+              ></app-section-fourteen>
+            </ng-container>
+            <ng-container #sectionSixteen *ngIf="sec?.imageViewType === 16">
+              <section-sixteen-view
+                [data]="sec"
+                class="width-100"
+                [isEditable]="isEditable"
+                (productList)="calculateMSLAgain($event)"
+                (showModal)="showChildModal($event)"
+                [evaluatorId]="surveyDetails.evaluatorId"
+              ></section-sixteen-view>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div
+        class="row justify-content-center"
+        *ngIf="userType && userType == zsmRole && showCriteria"
+      >
+        <button
+          class="btn btn-success mr-10-IMP"
+          title="Click to approve visit"
+          (click)="evaluateZsmShop(1)"
+          [disabled]="loading"
+        >
+          Approve
+          <i
+            [ngClass]="{
+              'fa fa-spinner fa-spin': loading && selectedZsmStatus == 1
+            }"
+          ></i>
+        </button>
+        <button
+          class="btn btn-danger"
+          title="Click to disapprove visit"
+          (click)="evaluateZsmShop(2)"
+          [disabled]="loading"
+        >
+          Disapprove
+          <i
+            [ngClass]="{
+              'fa fa-spinner fa-spin': loading && selectedZsmStatus == 2
+            }"
+          ></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #childModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog-cat">
+    <div
+      class="modal-content"
+      (click)="rotateImage()"
+      style="cursor: pointer"
+      title="click to rotate Image"
+      [ngClass]="{
+        'rotated-image-0': rotationDegree == 0,
+        'rotated-image-90': rotationDegree == 90,
+        'rotated-image-180': rotationDegree == 180,
+        'rotated-image-270': rotationDegree == 270,
+        'rotated-image-360': rotationDegree == 360
+      }"
+    >
+      <!-- {{rotationDegree}} -->
+
+      <!-- <div class="modal-header">
+                        <h4 id="dialog-child-name" class="modal-title pull-left">{{selectedShop.title}}</h4>
+                        <button type="button" class="close pull-right" aria-label="Close" (click)="hideChildModal()">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                    </div> -->
+      <div class="modal-body" style="padding: 10px">
+        <!--  -->
+        <lib-ngx-image-zoom
+          *ngIf="!selectedShop?.isExternalUrl"
+          [zoomMode]="'hover'"
+          [resultStyle]=""
+          [imgStyle]=""
+          [lensStyle]=""
+          [containerStyle]=""
+          [magnification]="2"
+          [lensWidth]="230"
+          [lensHeight]="300"
+          [enableLens]="true"
+          [thumbImage]="ip + selectedShop?.url"
+          [fullImage]="ip + selectedShop?.url"
+        >
+        </lib-ngx-image-zoom>
+        <lib-ngx-image-zoom
+          *ngIf="selectedShop?.isExternalUrl"
+          [zoomMode]="'hover'"
+          [resultStyle]=""
+          [imgStyle]=""
+          [containerStyle]=""
+          [lensStyle]=""
+          [magnification]="2"
+          [lensWidth]="230"
+          [lensHeight]="300"
+          [enableLens]="true"
+          [thumbImage]="selectedShop?.url"
+          [fullImage]="selectedShop?.url"
+        >
+        </lib-ngx-image-zoom>
+
+        <!-- <img src="{{ip}}{{selectedShop?.url}}" alt="" srcset=""> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- sos modal -->
+<div
+  bsModal
+  #sosModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Edit SOS Width
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideSoSModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 10px">
+        <mat-form-field class="example-full-width">
+          <input
+            matInput
+            placeholder="Enter Width"
+            name="width"
+            [(ngModel)]="selectedSoS.total_width"
+          />
+        </mat-form-field>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="updateSoS()">update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- remarks modal -->
+<div
+  bsModal
+  #remarksModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+                <h4 id="dialog-child-name" class="modal-title pull-left">Remarks</h4>
+                <button type="button" class="close pull-right" aria-label="Close" (click)="hideRemarksModal()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            </div> -->
+      <div class="modal-body" style="padding: 10px">
+        <label id="example-radio-group-label"
+          >Pick your remarks for ({{ selectedCriteria?.title }})</label
+        >
+        <mat-radio-group
+          aria-labelledby="example-radio-group-label"
+          class="example-radio-group"
+          [(ngModel)]="selectedRemarks"
+        >
+          <ng-container *ngFor="let remark of remarksList">
+            <section class="example-section">
+              <mat-checkbox
+                *ngIf="remark.criteriaId == selectedCriteria.id"
+                (click)="checkboxChange(checkStatus, remark)"
+                [checked]="remark?.isChecked"
+                #checkStatus
+                class="example-margin"
+                id="{{ remark.id }}"
+                name="{{ remark.criteriaId }}"
+              >
+                {{ remark.description }}
+              </mat-checkbox>
+            </section>
+
+            <!-- <mat-radio-button *ngIf="remark.criteriaId==selectedCriteria.id" class="example-radio-button" [value]="remark.id">
+                            {{remark.description}}
+                        </mat-radio-button> -->
+          </ng-container>
+        </mat-radio-group>
+
+        <div class="row" style="width: 500px">
+          <!-- <div class="col-md-8" >
+                        <label for="criteriaDesireScore">Min Score:0,Max Score: {{selectedCriteria?.score}}, Current
+                            Score:{{criteriaDesireScore}}</label>
+                        <mat-slider [(ngModel)]="criteriaDesireScore" thumbLabel [displayWith]="formatLabel" tickInterval="1000" min="0" max="{{selectedCriteria?.score}}"></mat-slider>
+
+                    </div> -->
+          <div class="col-md-12">
+            <ng-container *ngIf="!!selectedCriteria?.isEditable">
+              <label for="criteriaDesireScore"
+                >Min Score:0,Max Score: {{ selectedCriteria?.score }}, Current
+                Score:{{ criteriaDesireScore }}</label
+              >
+
+              <ng5-slider
+                [(value)]="value"
+                [options]="options"
+                [(ngModel)]="criteriaDesireScore"
+                name="criteriaDesireScore"
+              ></ng5-slider>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md" style="text-align: end; padding: 0 20px 5px 0">
+          <button
+            class="btn btn-default mr-2 btn-sm"
+            (click)="cancelCriteriaSelection()"
+          >
+            Cancel
+          </button>
+          <button
+            [disabled]="
+              !selectedCriteria?.isEditable && selectedRemarksList?.length == 0
+            "
+            class="btn btn-primary btn-sm"
+            (click)="
+              getCriteriaWithRemarks(selectedRemarksList, selectedCriteria)
+            "
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #evaluationRemarksModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body" style="padding: 10px">
+        <ng-container *ngIf="evaluationRemarks.length > 0">
+          <label id="example-radio-group-label"
+            >Pick your remarks for this Evaluation</label
+          >
+          <mat-radio-group
+            aria-labelledby="example-radio-group-label"
+            class="example-radio-group"
+            [(ngModel)]="selectedRemarks"
+          >
+            <ng-container
+              *ngFor="let remark of evaluationRemarks; let i = index"
+            >
+              <section class="example-section">
+                <mat-checkbox
+                  [checked]="j === i"
+                  (change)="j = i"
+                  class="example-margin"
+                  (click)="singleCheckboxChange(remark.id)"
+                >
+                  {{ remark.description }}
+                </mat-checkbox>
+              </section>
+            </ng-container>
+          </mat-radio-group>
+
+          <div class="col-md" style="text-align: end; padding: 0 20px 5px 0">
+            <button
+              class="btn btn-default mr-2 btn-sm"
+              (click)="hideRemarksModalWithNoChange()"
+            >
+              Cancel
+            </button>
+            <button
+              [disabled]="selectedEvaluationRemark == -1 || loading"
+              class="btn btn-primary"
+              (click)="evaluateShop()"
+            >
+              <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+              Evaluate
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #exceptionDescriptionModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">Exceptions</h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideExceptionDetailModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 10px">
+        <div class="animated slideInLeft">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Posm</th>
+                <th>Planogram</th>
+                <th>Exception Type</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of exceptionList">
+                <td>{{ item?.category }}</td>
+                <td>{{ item?.posm }}</td>
+                <td>{{ item?.planogram }}</td>
+                <td>{{ item?.exception_type }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-md" style="text-align: end; padding: 0 20px 5px 0">
+          <button
+            class="btn btn-default mr-2 btn-sm"
+            (click)="hideExceptionDetailModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #startEvaluationModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  id="exampleModalCenter"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Start Evaluation</h5>
+      </div>
+      <div class="modal-body">Do You want to start Evaluation Timer?</div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="getEvaluationStartTime()"
+        >
+          Yes. Start the timer!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

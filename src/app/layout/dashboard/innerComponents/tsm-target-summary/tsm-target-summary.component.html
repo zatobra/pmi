@@ -1,0 +1,347 @@
+<!-- <div class="row">
+  <div class="col-md-12" style="margin: 20% 40%" *ngIf="loading">
+    <img src="assets/images/basicloader.gif" alt="" srcset="" />
+  </div>
+</div> -->
+<!-- <div class="container-fluid animated slideInLeft" *ngIf="tableData?.length > 0">
+  <div class="container-fluid">
+    <mat-card>
+      <mat-card-content>
+        <div class="table-responsive">
+          <table
+            class="table table-bordered table-striped table-hover"
+            *ngIf="tableData?.length > 0"
+          >
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Tsm Name</th>
+                <th>Target WW/WR</th>
+                <th>Shops to be visited</th>
+                <th>MTG - WW/WR</th>
+                <th>MTG - Shops to be visited</th>
+                <th>Shops left</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of tableData; let i = index">
+                <tr>
+                  <td>
+                    {{ item?.month }}
+                  </td>
+                  <td>{{ item?.tsm_name }}</td>
+                  <td>
+                    {{ item?.wwwr_target }}
+                  </td>
+                  <td>
+                    {{ item?.shops_target }}
+                  </td>
+                  <td>
+                    {{ item?.wwwr_target_achievement }}
+                  </td>
+                  <td>
+                    {{ item?.shops_target_achievement }}
+                  </td>
+                  <td>{{ item?.shops_remaining_percentage }}</td>
+                  <td>{{ item?.status }}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> -->
+
+<!-- <div class="row" *ngIf="!loading && tableData?.length == 0">
+  <div class="col-md-12 text-center">
+    <div class="alert alert-info">
+      <p>No Data Found</p>
+    </div>
+  </div>
+</div> -->
+
+<!-- for Card View-->
+<!-- <div class="container-fluid" *ngIf="tableData.length > 0">
+  <div class="row"></div>
+  <div class="row js">
+    <ng-container *ngFor="let item of tableData; let i = index">
+      <mat-card class="col-md-3 example-card card2 mt-3">
+        <mat-card-content>
+          <table class="table" style="cursor: pointer">
+            <tr>
+              <th>Month</th>
+              <td>{{ item?.month }}</td>
+            </tr>
+            <tr>
+              <th>Tsm Name</th>
+              <td>{{ item?.tsm_name }}</td>
+            </tr>
+            <tr>
+              <th>Target WW/WR</th>
+              <td>{{ item?.wwwwr_target }}</td>
+            </tr>
+            <tr>
+              <th>Shops to be visited</th>
+              <td>{{ item?.shops_target }}</td>
+            </tr>
+            <tr>
+              <th>MTG - WW/WR</th>
+              <td>{{ item?.wwwr_target_achievement }}</td>
+            </tr>
+            <tr>
+              <th>MTG - Shops to be visited</th>
+              <td>{{ item?.shops_target_achievement }}</td>
+            </tr>
+            <tr>
+              <th>Shops left</th>
+              <td>{{ item?.shops_remaining_percentage }}</td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td>
+                {{ item?.status }}
+              </td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </div>
+</div> -->
+
+<div class="container-fluid animated slideInLeft" >
+  <div class="container-fluid">
+    <mat-card>
+      <mat-card-content>
+        <!-- <div class="table-responsive">
+
+<mat-accordion
+displayMode="flat"
+multi
+class="mat-table"
+
+> -->
+<!-- <section matSort class="mat-elevation-z2 mat-header-row">
+  <span class="mat-header-cell" mat-sort-header="id">TargetSummary</span>
+  <span class="mat-header-cell" mat-sort-header="categoryName"
+    >Category Name</span
+  >
+  <span class="mat-header-cell" mat-sort-header="prioritySkus"
+    >{{ labels?.mustHaveLabel }} Skus</span
+  >
+  <span class="mat-header-cell" mat-sort-header="total">Total Skus</span>
+</section> -->
+
+<mat-expansion-panel >
+
+  <mat-expansion-panel-header class="mat-row" >
+    <span class="mat-cell">Target Summary</span>
+    <!-- <span class="mat-cell">{{ element.categoryTitle }}</span>
+    <span class="mat-cell">{{ element.totalMslProducts }}</span>
+    <span class="mat-cell">{{ element.totalProducts }}</span> -->
+  </mat-expansion-panel-header>
+  <!-- <div class="row" *ngIf="loading">
+    <div class="col-md-12" style="margin: 20% 40%" >
+      <img src="assets/images/basicloader.gif" alt="" srcset="" />
+    </div>
+  </div> -->
+  <!-- <mat-expansion-panel-header class="mat-row" *ngIf="loading">
+    <div class="col-md-12" style="margin: 20% 40%" >
+      <img src="assets/images/basicloader.gif" alt="" srcset="" />
+    </div>
+  </mat-expansion-panel-header> -->
+
+  <div style="width: 100%; overflow-x: auto;">
+    <table class="table table-bordered" style="overflow: scroll;">
+    <thead>
+      <tr style="text-align: center">
+        <!-- <th style="cursor: pointer">#</th>
+        <th style="cursor: pointer">Product Name</th>
+        <th style="cursor: pointer">Product Set</th>
+        <th style="cursor: pointer">{{ labels?.mustHaveLabel }}</th>
+        <th style="cursor: pointer">Desired Facing</th>
+        <th style="cursor: pointer">{{ labels?.activeLabel }}</th> -->
+        <th>Month</th>
+        <th>Tsm Name</th>
+        <th>Target WW/WR</th>
+        <th>Shops to be visited</th>
+        <th>MTG - WW/WR</th>
+        <th>MTG - Shops to be visited</th>
+        <th>Shops left</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+       *ngFor="let item of tableData; let i = index"
+        style="text-align: center"
+      >
+      <td>
+        {{ item?.month }}
+      </td>
+      <td>{{ item?.tsm_name }}</td>
+      <td>
+        {{ item?.wwwr_target }}
+      </td>
+      <td>
+        {{ item?.shops_target }}
+      </td>
+      <td>
+        {{ item?.wwwr_target_achievement }}
+      </td>
+      <td>
+        {{ item?.shops_target_achievement }}
+      </td>
+      <td>{{ item?.shops_remaining_percentage }}</td>
+      <td>{{ item?.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</mat-expansion-panel>
+
+<!-- </mat-accordion>
+</div> -->
+</mat-card-content>
+</mat-card>
+</div>
+</div>
+
+
+
+<div class="container-fluid animated slideInLeft">
+  <div class="container-fluid">
+    <mat-card>
+      <mat-card-content>
+        <!-- <div class="col-md-12">
+        <div class="table-responsive" style="overflow: scroll;"> -->
+
+<!-- <mat-accordion
+displayMode="flat"
+multi
+class="mat-table"
+style="overflow: scroll;"
+> -->
+
+
+<mat-expansion-panel >
+  <mat-expansion-panel-header class="mat-row" >
+    <span class="mat-cell">Productivity Summary</span>
+ 
+  </mat-expansion-panel-header>
+
+  <!-- <mat-expansion-panel-header class="mat-row" *ngIf="loadingNew" >
+    <div class="col-md-12" style="margin: 20% 40%" >
+      <img src="assets/images/basicloader.gif" alt="" srcset="" />
+    </div>
+  </mat-expansion-panel-header> -->
+  <div style="width: 100%; overflow-x: auto;">
+  <table class="table table-bordered" style="overflow: scroll;">
+    <thead>
+      <tr style="text-align: center">
+       
+        <th>Allocated Shops</th>
+        <th>WW/WR Target</th>
+        <th>WW/WR Captured</th>
+
+        <th>WW Captured</th>
+        <th>WR Captured</th>
+
+        <th>Captured</th>
+        <th>Unique Captured</th>
+
+        <th>Unique WW Captured</th>
+        <th>Unique WR Captured</th>
+
+        <th>Active days</th>
+        <th>Avg Time Spent / Shop</th>
+        <th>Time Spent /Day</th>
+        <th>Total Time Spent</th>
+        <th>Abnormal</th>
+        <th>New Shop</th>
+        <th>Edit Shop</th>
+        <th>DSR Penetration</th>
+        <th>Unique Universe Penetration</th>
+        <th>Shops on WW %</th>
+        <th>Shops on WR %</th>
+        <th>MSL Availability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+       *ngFor="let item of tableDataNew; let i = index"
+        style="text-align: center"
+      >
+      <td>
+        {{ item?.allocated_shops }}
+      </td>
+      <td>{{ item?.ww_wr_target }}</td>
+      <td>
+        {{ item?.ww_wr_captured }}
+      </td>
+
+      <td>{{ item?.ww_captured }}</td>
+      <td>{{ item?.wr_captured }}</td>
+
+      <td>
+        {{ item?.Captured }}
+      </td>
+      <td>
+        {{ item?.UniqueCaptured }}
+      </td>
+
+      <td>{{ item?.ww_UniqueCaptured }}</td>
+      <td>{{ item?.wr_UniqueCaptured }}</td>
+     
+      <td>{{ item?.active_days }}</td>
+      <td>{{ item?.AvgTimeSpentShop }}</td>
+
+      <td>
+        {{ item?.TimeSpentDay }}
+      </td>
+      <td>{{ item?.TotalTimeSpent }}</td>
+      <td>
+        {{ item?.Abnormal }}
+      </td>
+      <td>
+        {{ item?.NewShop }}
+      </td>
+      <td>
+        {{ item?.EditShop }}
+      </td>
+      <td>
+        {{ item?.DSRPenetration }}
+      </td>
+      <td>{{ item?.UniqueUniversePenetration }}</td>
+      <td>{{ item?.ShopsonWW }}</td>
+      <td>{{ item?.ShopsonWR }}</td>
+      <td>
+        {{ item?.MSLAvailability }}
+      </td>
+
+      </tr>
+    </tbody>
+  </table>
+</div>
+</mat-expansion-panel>
+
+<!-- </mat-accordion> -->
+
+
+
+
+<!-- </div>
+</div> -->
+</mat-card-content>
+</mat-card>
+</div>
+</div>
+
+<div class="row" *ngIf="loading || loadingNew">
+  <div class="col-md-12" style="margin: 20% 40%" >
+    <img src="assets/images/basicloader.gif" alt="" srcset="" />
+  </div>
+</div>

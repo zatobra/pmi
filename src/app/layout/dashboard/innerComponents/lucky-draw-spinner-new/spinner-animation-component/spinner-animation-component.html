@@ -1,0 +1,205 @@
+<!-- <mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      Select Targeted Audience File to Run Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="LuckyDraw File"
+            name="fileId"
+            formControlName="fileId"
+          >
+            <ng-container *ngFor="let file of filesList">
+              <mat-option [value]="file.id">{{ file.file_name }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+       
+      </form>
+    </section>
+    <br />
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="loadingData"
+    ></mat-progress-bar>
+    <section class="example-section">
+      <mat-radio-group
+        [(ngModel)]="prizeId"
+        name="radioButtons"
+        (change)="onRadioButtonChange($event)"
+        class="example-margin mr-10-IMP"
+      >
+      <div class="table-responsive">
+        <table class="table">
+          <tbody class="image-container">
+        <ng-container *ngFor="let prize of prizesList">
+          <div >
+          <tr >
+            <td>
+            
+          <mat-radio-button
+            value="{{ prize.id }}"
+            class="example-margin mr-10-IMP"
+            >{{ prize.category }}</mat-radio-button
+          >
+        </td>
+     <td> {{ prize.prize }}</td>
+     <td> <img src="{{ prize?.url }} " alt="" height="200px" width="200px"> </td>
+        </tr>
+      </div>
+
+
+        </ng-container>
+      </tbody>
+        </table>
+      </div>
+          
+      </mat-radio-group>
+    </section>
+    <div class="text-center">
+      <button
+      style="background-color: black; color: white; width: 100px; height: 100px; border-radius: 50%; cursor: pointer;"
+        (click)="startSpinner()"
+        type="button"
+        [disabled]="!form.controls.fileId.valid || !prizeId || !buttonEnable"
+        mat-raised-button
+        block
+        color="primary"
+        
+      >
+      <i [ngClass]="{ 'fa fa-spinner fa-spin': !buttonEnable }" *ngIf="!buttonEnable"></i>
+      <span *ngIf="buttonEnable">Ok</span>
+        
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card> -->
+
+
+
+
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="LuckyDraw File"
+            name="fileId"
+            formControlName="fileId"
+            (ngModelChange)="getSpinTheWheelPrizesListWithWinnersCount()"
+          >
+            <ng-container *ngFor="let file of filesList">
+              <mat-option [value]="file.id">{{ file.file_name }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+       
+      </form>
+    </section>
+  
+    <br />
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="loadingData"
+    ></mat-progress-bar>
+
+    <section class="example-section">
+      <!-- <mat-radio-group
+        [(ngModel)]="prizeId"
+        name="radioButtons"
+        (change)="onRadioButtonChange($event)"
+        class="example-margin mr-10-IMP"
+      > -->
+      <div class="table-responsive">
+        <table class="table" style="font-size: 30px;">
+          <thead>
+            <tr style="text-align: center;">
+              <th>Category</th>
+              <th>Prize</th>
+              <th>Total Winner</th>
+              <!-- <th>Total Coupons</th> -->
+              <th>Proceed</th>
+              
+              <!-- <th>Prize Image</th> -->
+            </tr>
+          </thead>
+          <tbody >
+        <!-- <ng-container >
+          <div > -->
+          <tr *ngFor="let prize of prizesListWithWinnersCount">
+            <td >
+            
+          <!-- <mat-radio-button
+            value="{{ prize.id }}"
+            class="example-margin mr-10-IMP"
+            > -->
+            {{ prize.category }}
+            <!-- </mat-radio-button> -->
+        </td>
+     <td> {{ prize.prize }}</td>
+     <td> {{ prize.total }}</td>
+     <!-- <td> {{ prize.total_coupons }}</td> -->
+     <td> 
+      <button
+      class="buttonTd"
+      
+       [class.disabled]="!form.controls.fileId.valid"
+        (click)="gotoSpinnerDraw(prize)"
+        type="button"
+        [disabled]="!form.controls.fileId.valid"
+        mat-raised-button
+        block
+        color="primary"
+        
+      >
+      <!-- <i [ngClass]="{ 'fa fa-spinner fa-spin': !buttonEnable }" *ngIf="!buttonEnable"></i> -->
+      <span >Proceed</span>
+        
+      </button>
+    </td>
+     <!-- <td> <img src="{{ prize?.url }} " alt="" height="200px" width="200px"> </td> -->
+        </tr>
+      <!-- </div>
+
+
+        </ng-container> -->
+      </tbody>
+        </table>
+      </div>
+          
+      <!-- </mat-radio-group> -->
+    </section>
+
+    <!-- <div class="text-center">
+      <button
+      class="button"
+      
+       [class.disabled]="!form.controls.fileId.valid || !prizeId "
+        (click)="gotoSpinnerDraw()"
+        type="button"
+        [disabled]="!form.controls.fileId.valid || !prizeId "
+        mat-raised-button
+        block
+        color="primary"
+        
+      >
+      <span >PROCEED</span>
+        
+      </button>
+    </div> -->
+
+  </mat-card-content>
+</mat-card>
+
+
+

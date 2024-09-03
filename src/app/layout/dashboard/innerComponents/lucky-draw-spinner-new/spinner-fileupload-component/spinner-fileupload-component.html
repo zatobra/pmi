@@ -1,0 +1,58 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      Upload File For Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+<p>Please upload a .xls file:
+</p>
+<ol>
+	<!-- <li>Staff ID (number)</li> -->
+  <!-- <li>Staff Name (text)</li> -->
+  <!-- <li>Staff Chances (number)</li> -->
+</ol>
+
+<!-- <input type="file" #csvReader name="Upload CSV" id="avatar" (change)="uploadListener($event)" accept=".csv" /> -->
+
+<!-- <section class="example-section">
+  <form
+    [formGroup]="form"
+    enctype="multipart/form-data"
+  > -->
+<input type="file" #csvReader name="Upload CSV" id="avatar" (change)="onFileChange($event)"  />
+<br>
+<section class="example-section mt15">
+  <button type="submit" mat-raised-button color="warn" (click)="saveFileToDb()">Upload</button>
+</section>
+<!-- </form>
+</section> -->
+
+
+
+<!-- <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingData"
+        >Your file is being Uploaded</small
+      > -->
+<!-- <table class="minimalistBlack" *ngIf="records.length > 0">
+  <thead>
+    <tr>
+      <th>ID </th>
+      <th>Name </th>
+      <th>Chances </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let record of records;let i = index;">
+      <td> <span>{{record.staffIdentifier}}</span> </td>
+      <td> <span>{{record.staffName}}</span> </td>
+      <td> <span>{{record.staffChances}}</span> </td>
+    </tr>
+  </tbody>
+</table> -->
+
+</section>
+</mat-card-content>
+</mat-card>

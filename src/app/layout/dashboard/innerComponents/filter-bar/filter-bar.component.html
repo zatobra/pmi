@@ -1,0 +1,5072 @@
+<!-- merchandixer list for evaluation  -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/merchandiser_List'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <!-- <section class="example-section">
+            <button *ngIf="router.url==='/dashboard/merchandiser_List'" [disabled]="selectedChannel.length<1" mat-raised-button color="warn" (click)="getDashboardDataAvailability()">Download</button>
+            <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span>
+
+        </section> -->
+  </mat-card-content>
+</mat-card>
+<!-- /merchandiser list for evaluation -->
+<!--  /brand_sku_oos  -->
+<!--  / brand_sku_oos -->
+
+<!-- data abnormality  -->
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/data_abnormality_report'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="areas.length > 0" class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+        >
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="cities.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.cityLabel }}"
+          name="city"
+          [(ngModel)]="selectedCity"
+        >
+          <mat-option [value]="city" *ngFor="let city of cities">{{
+            city.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+     
+    </section>
+    <section class="example-section">
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <!-- {{selectedChannel |json }} -->
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- <mat-form-field *ngIf="categoryList.length>0" class="example-margin mr-10-IMP">
+                <mat-select placeholder="Category" name='category' [(ngModel)]="selectedCategory" (ngModelChange)="categoryChange()">
+                    <mat-option [value]="category" *ngFor="let category of categoryList" [class.active]=true>{{category.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+      <!-- <mat-form-field *ngIf="productsList.length>0" class="example-margin mr-10-IMP">
+                <mat-select placeholder="product" name='product' [(ngModel)]="selectedProduct" multiple>
+                    <mat-option value="all">Select All</mat-option>
+                    <mat-option [value]="product" *ngFor="let product of productsList">{{product.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="lastVisit.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Last Visit" name='lastVisit' [(ngModel)]="selectedLastVisit">
+                    <mat-option [value]="lv" *ngFor="let lv of lastVisit">{{lv}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <!-- <mat-form-field *ngIf="mustHave.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Must Have" name='mustHave' [(ngModel)]="selectedMustHave">
+                    <mat-option [value]="m.key" *ngFor="let m of mustHave">{{m.value}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+
+      
+    </section>
+
+    <section class="example-section">
+      <button
+        *ngIf="router.url === '/dashboard/data_abnormality_report'"
+        [disabled]="selectedChannel.length < 1"
+        mat-raised-button
+        color="warn"
+        (click)="getAbnormalityReport()"
+      >
+        Download
+      </button>
+      <span *ngIf="selectedChannel.length < 1" class="channel-message"
+        ><small>(channel selection is mandatory)</small></span
+      >
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- /data abnormality -->
+
+<!-- shop list  -->
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/shop_list_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <!-- <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Report Type"
+          name="reportType"
+          [(ngModel)]="selectedReportType"
+         
+        >
+          <mat-option
+            [value]="reportType"
+            *ngFor="let reportType of reportTypeLists"
+          >
+            {{ reportType.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section> -->
+    <mat-form-field class="example-margin mr-5-IMP">
+      <mat-select
+        placeholder="Must Have"
+        name="mustHave"
+        [(ngModel)]="selectedMustHave"
+      >
+        <mat-option [value]="mustHave" *ngFor="let mustHave of mustHaveList">{{
+          mustHave
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- <mat-form-field class="example-margin mr-5-IMP">
+      <mat-select
+        placeholder="Yogurt Allocation"
+        name="yogurtAllocation"
+        [(ngModel)]="selectedYogurtAllocation"
+      >
+        <mat-option
+          [value]="yogurtAllocation"
+          *ngFor="let yogurtAllocation of yogurtAllocationList"
+          >{{ yogurtAllocation }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field> -->
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Action Type"
+          name="actionTypee"
+          [(ngModel)]="selectedActionTypee"
+          [compareWith]="equals"
+        >
+          <mat-option
+            [value]="actionTypee"
+            *ngFor="let actionTypee of actionTypeLists"
+          >
+            {{ actionTypee.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+      *ngIf="selectedActionTypee?.id == 1"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Zone"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+      *ngIf="selectedActionTypee?.id > 0 "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Region"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field
+        *ngIf="
+          cities.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '3' &&
+          selectedActionTypee.id != '4' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select placeholder="City" name="city" [(ngModel)]="selectedCity">
+          <mat-option [value]="city" *ngFor="let city of cities">{{
+            city.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="
+          areas.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '7' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select placeholder="Areas" name="areas" [(ngModel)]="selectedArea">
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="
+          distributionList.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '7' &&
+          selectedActionTypee.id != '3' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Distribution List"
+          name="distributionList"
+          [(ngModel)]="selectedDistribution"
+        >
+          <mat-option [value]="dist" *ngFor="let dist of distributionList">{{
+            dist.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+
+      <mat-form-field
+        *ngIf="categoryList.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Category"
+          name="category"
+          [(ngModel)]="selectedCategory"
+          (ngModelChange)="categoryChange()"
+        >
+          <mat-option
+            [value]="category"
+            *ngFor="let category of categoryList"
+            >{{ category.title }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="productsList.length > 0"
+        class="example-margin mr-10-IMP"
+        style="width: 420px"
+      >
+        <mat-select
+          placeholder="product"
+          name="product"
+          [(ngModel)]="selectedProduct"
+          multiple
+          #productSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(productSelect, productsList)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(productSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+          <mat-option [value]="product" *ngFor="let product of productsList">
+            {{ product.title }} - {{ product.range }} {{ product.rangeType }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <!-- {{selectedChannel |json }} -->
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <!-- <mat-form-field *ngIf="lastVisit.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Last Visit" name='lastVisit' [(ngModel)]="selectedLastVisit">
+                    <mat-option [value]="lv" *ngFor="let lv of lastVisit">{{lv}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="mustHave.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Must Have" name='mustHave' [(ngModel)]="selectedMustHave">
+                    <mat-option [value]="m.key" *ngFor="let m of mustHave">{{m.value}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        *ngIf="router.url === '/dashboard/shop_list_report'"
+        mat-raised-button
+        color="warn"
+        [disabled]="!selectedActionTypee"
+        (click)="getOOSShopListReport()"
+
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- /shop list -->
+<!-- shop summary  -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/summary_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <!-- <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Report Type"
+          name="reportType"
+          [(ngModel)]="selectedReportType"
+         
+        >
+          <mat-option
+            [value]="reportType"
+            *ngFor="let reportType of reportTypeLists"
+          >
+            {{ reportType.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section> -->
+    <mat-form-field class="example-margin mr-5-IMP">
+      <mat-select
+        placeholder="Must Have"
+        name="mustHave"
+        [(ngModel)]="selectedMustHave"
+      >
+        <mat-option [value]="mustHave" *ngFor="let mustHave of mustHaveList">{{
+          mustHave
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- <mat-form-field class="example-margin mr-5-IMP">
+      <mat-select
+        placeholder="Yogurt Allocation"
+        name="yogurtAllocation"
+        [(ngModel)]="selectedYogurtAllocation"
+      >
+        <mat-option
+          [value]="yogurtAllocation"
+          *ngFor="let yogurtAllocation of yogurtAllocationList"
+          >{{ yogurtAllocation }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field> -->
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Action Type"
+          name="actionTypee"
+          [(ngModel)]="selectedActionTypee"
+          [compareWith]="equals"
+        >
+          <mat-option
+            [value]="actionTypee"
+            *ngFor="let actionTypee of actionTypeLists"
+            [hidden]="shouldHideOption(actionTypee)"
+          >
+            {{ actionTypee.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="selectedActionTypee?.id == 1"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Zone"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="selectedActionTypee?.id > 0 "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Region"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field
+        *ngIf="
+          cities.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '3' &&
+          selectedActionTypee.id != '4' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select placeholder="City" name="city" [(ngModel)]="selectedCity">
+          <mat-option [value]="city" *ngFor="let city of cities">{{
+            city.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="
+          areas.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '7' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select placeholder="Areas" name="areas" [(ngModel)]="selectedArea">
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="
+          distributionList.length > 0 &&
+          selectedActionTypee.id != '2' &&
+          selectedActionTypee.id != '7' &&
+          selectedActionTypee.id != '3' &&
+          selectedActionTypee.id != '1' &&
+          selectedActionTypee.id != '0' &&
+          selectedActionTypee.id != '5' &&
+          selectedActionTypee.id != '6'
+        "
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Distribution List"
+          name="distributionList"
+          [(ngModel)]="selectedDistribution"
+        >
+          <mat-option [value]="dist" *ngFor="let dist of distributionList">{{
+            dist.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+
+      <mat-form-field
+        *ngIf="categoryList.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Category"
+          name="category"
+          [(ngModel)]="selectedCategory"
+          (ngModelChange)="categoryChange()"
+        >
+          <mat-option
+            [value]="category"
+            *ngFor="let category of categoryList"
+            >{{ category.title }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="productsList.length > 0"
+        class="example-margin mr-10-IMP"
+        style="width: 420px"
+      >
+        <mat-select
+          placeholder="product"
+          name="product"
+          [(ngModel)]="selectedProduct"
+          multiple
+          #productSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(productSelect, productsList)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(productSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+          <mat-option [value]="product" *ngFor="let product of productsList">
+            {{ product.title }} - {{ product.range }} {{ product.rangeType }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <!-- {{selectedChannel |json }} -->
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <!-- <mat-form-field *ngIf="lastVisit.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Last Visit" name='lastVisit' [(ngModel)]="selectedLastVisit">
+                    <mat-option [value]="lv" *ngFor="let lv of lastVisit">{{lv}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="mustHave.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Must Have" name='mustHave' [(ngModel)]="selectedMustHave">
+                    <mat-option [value]="m.key" *ngFor="let m of mustHave">{{m.value}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        *ngIf="router.url === '/dashboard/summary_report'"
+        mat-raised-button
+        color="warn"
+        [disabled]="!selectedActionTypee"
+        (click)="getOOSSummary()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- /shop summary -->
+
+<!-- msl dashboard  -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/msl_dashboard'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <!-- <i color="warn" [ngClass]="{'fa fa-cog fa-spin':loadingData}"></i>
+            <small style="color:lightseagreen !important" class="mtb-5-IMP" *ngIf="loadingReportMessage">Your file is being prepared for download</small> -->
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+        (ngModelChange)="regionChange()"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="areas.length > 0" class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+        >
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="cities.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.cityLabel }}"
+          name="city"
+          [(ngModel)]="selectedCity"
+        >
+          <mat-option [value]="city" *ngFor="let city of cities">{{
+            city.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="categoryList.length>0" class="example-margin mr-10-IMP">
+                <mat-select placeholder="Category" name='category' [(ngModel)]="selectedCategory" (ngModelChange)="categoryChange()">
+                    <mat-option [value]="category" *ngFor="let category of categoryList">{{category.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="productsList.length>0" class="example-margin mr-10-IMP">
+                <mat-select placeholder="product" name='product' [(ngModel)]="selectedProduct" multiple>
+                    <mat-option [value]="product" *ngFor="let product of productsList">{{product.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+    </section>
+
+    <section class="example-section">
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <!-- {{selectedChannel |json }} -->
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <!-- <mat-form-field *ngIf="lastVisit.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Last Visit" name='lastVisit' [(ngModel)]="selectedLastVisit">
+                    <mat-option [value]="lv" *ngFor="let lv of lastVisit">{{lv}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="mustHave.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Must Have" name='mustHave' [(ngModel)]="selectedMustHave">
+                    <mat-option [value]="m.key" *ngFor="let m of mustHave">{{m.value}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        *ngIf="router.url === '/dashboard/msl_dashboard'"
+        mat-raised-button
+        color="warn"
+        (click)="getMSLReport()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- /msl dashboard -->
+
+<!-- productivity dashboard  -->
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/productivity_dashboard'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container
+        *ngIf="routesList?.length > 0 && projectType == 'Coke_Audit' || projectType.toLowerCase() == 'pmi_audit'"
+      >
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="Fold"
+            [(ngModel)]="route"
+            (ngModelChange)="getTabsData()"
+          >
+            <mat-option *ngFor="let r of routesList" [value]="r">{{
+              r.route_title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="areas.length > 0" class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+        >
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <mat-form-field
+        *ngIf="channels.length > 0 && projectType != 'TMR'"
+        class="example-margin mr-10-IMP"
+      >
+        <!-- {{selectedChannel |json }} -->
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        *ngIf="router.url === '/dashboard/productivity_dashboard'"
+        mat-raised-button
+        color="warn"
+        (click)="getProuctivityDashboardReport()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- /productivity dashboard -->
+
+<!-- oss details  -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/oos_details_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="areas.length > 0" class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+        >
+          <mat-option [value]="areas" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="cities.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.cityLabel }}"
+          name="city"
+          [(ngModel)]="selectedCity"
+        >
+          <mat-option [value]="city" *ngFor="let city of cities">{{
+            city.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <!-- <section class="example-section">
+            <mat-form-field *ngIf="lastVisit.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Last Visit" name='lastVisit' [(ngModel)]="selectedLastVisit">
+                    <mat-option [value]="lv" *ngFor="let lv of lastVisit">{{lv}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="mustHave.length>0" class="example-margin mr-5-IMP">
+                <mat-select placeholder="Must Have" name='mustHave' [(ngModel)]="selectedMustHave">
+                    <mat-option [value]="m.key" *ngFor="let m of mustHave">{{m.value}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </section> -->
+    <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button mat-raised-button color="warn" (click)="getOOSDetailReport()">
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- /oss details -->
+<!-- daily visit report -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/daily_visit_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option *ngIf="region.id !== -1" [value]="region">{{
+              region.title
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          (ngModelChange)="getMerchandiserList($event)"
+          [(ngModel)]="startDate"
+          placeholder="Choose date to get merchandisers"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field
+        *ngIf="merchandiserList.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels?.surveyorLabel }} List"
+          name="merchandiserList"
+          [(ngModel)]="selectedMerchandiser"
+        >
+          <mat-option [value]="ml" *ngFor="let ml of merchandiserList">{{
+            ml.fullName
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <button
+        [disabled]="loadingReportMessage"
+        *ngIf="
+          selectedZone.id && selectedRegion.id && selectedMerchandiser.fullName
+        "
+        mat-raised-button
+        color="warn"
+        (click)="downloadDailyReport()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- / daily visit report -->
+<!-- tposmDeloyment tracker -->
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/tposm_deployment_report'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option *ngIf="region.id !== -1" [value]="region">{{
+              region.title
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="channels.length>0" class="example-margin mr-10-IMP">
+
+                <mat-select placeholder="Channel" name='channel' [(ngModel)]="selectedChannel" multiple #channelSelect="ngModel" [compareWith]="equals">
+                    <mat-option disabled="disabled" class="filter-option"> <button mat-raised-button class="mat-primary fill text-sm" (click)="selectAll(channelSelect, channels)">
+                        Select All
+                      </button>
+                        <button mat-raised-button color="warn" class="ml-1 mat-accent fill text-sm" (click)="deselectAll(channelSelect)">
+                        Deselect All
+                      </button>
+                    </mat-option>
+
+                    <mat-option [value]="channel" *ngFor="let channel of channels">{{channel.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="tposmDeploymentReport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- / tposmDeloyment tracker -->
+
+<!-- raw data -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/raw_data'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Query Type"
+          name="queryList"
+          [(ngModel)]="selectedQuery"
+          (ngModelChange)="updateFilterSeting()"
+        >
+          <ng-container *ngFor="let query of queryList">
+            <mat-option [value]="query">{{ query.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field
+        *ngIf="isRegionFilterEnabled"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)*ngIf="clusterList?.length>0"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button
+        [disabled]="!selectedQuery.id"
+        mat-raised-button
+        color="warn"
+        (click)="getDashboardData()"
+      >
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- / raw data -->
+
+<div *ngIf="isSupervisorDataRequest">
+  <mat-card class="mb-20">
+    <mat-card-content>
+      <mat-card-title>
+        {{ title | uppercase }}
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      </mat-card-title>
+    </mat-card-content>
+  </mat-card>
+  <mat-tab-group
+    mat-stretch-tabs
+    class="example-stretched-tabs mat-elevation-z4"
+  >
+    <mat-tab label="Visit Productivity">
+      <mat-card class="mb-20">
+        <mat-card-content>
+          <section class="example-section">
+            <ng-container *ngIf="clusterList?.length > 0">
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="{{ labels.clusterLabel }}"
+                  name="cluster"
+                  [(ngModel)]="selectedCluster"
+                  (ngModelChange)="getZoneByCluster(); getSupTabsData()"
+                >
+                  <mat-option
+                    [value]="cluster"
+                    *ngFor="let cluster of clusterList"
+                    >{{ cluster.title }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="zones?.length > 0">
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="{{ labels.zoneLabel }}"
+                  name="zone"
+                  [(ngModel)]="selectedZone"
+                  (ngModelChange)="zoneChange(); getSupTabsData()"
+                >
+                  <mat-option [value]="zone" *ngFor="let zone of zones">{{
+                    zone.title
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+            <mat-form-field
+              *ngIf="regions.length > 0"
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ labels.regionLabel }}"
+                name="region"
+                [(ngModel)]="selectedRegion"
+                (ngModelChange)="regionChange(); getSupTabsData()"
+              >
+                <mat-option [value]="region" *ngFor="let region of regions">{{
+                  region.title
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="areas.length > 0"
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ labels.areasLabel }}"
+                name="areas"
+                [(ngModel)]="selectedArea"
+                (ngModelChange)="getSupTabsData()"
+              >
+                <mat-option [value]="area" *ngFor="let area of areas">{{
+                  area.title
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width mr-10-IMP">
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker0"
+                [(ngModel)]="startDate"
+                (ngModelChange)="getSupTabsData()"
+                placeholder="Choose a start date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker0"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker0></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="example-full-width mr-10-IMP">
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker1"
+                [(ngModel)]="endDate"
+                (ngModelChange)="getSupTabsData()"
+                placeholder="Choose a end date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </section>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-container #webView *ngIf="tableData.length > 0">
+        <mat-card class="isWebView">
+          <mat-card-content>
+            <div>
+              <search-box [list]="tableData" (notify)="onNotifyClicked($event)">
+              </search-box>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table animated slideInLeft">
+                    <thead>
+                      <tr>
+                        <th scope="col" (click)="sortIt('merchandiser_code')">
+                          {{ surveyorType }} Code
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("merchandiser_code") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('merchandiser_name')">
+                          {{ surveyorType }} Name
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("merchandiser_name") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('completed')">
+                          Productive
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("completed") }}
+                          </i>
+                        </th>
+                        <th *ngIf="projectType=='NFL_SRO'" scope="col" (click)="sortIt('distribution')">
+                          Distribution
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("distribution") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('successfull')">
+                          Successful
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("successfull") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('unsuccessful')">
+                          Un-Successful
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("unsuccessful") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('successful_percent')">
+                          Successful <strong>%</strong>
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("successful_percent") }}
+                          </i>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container
+                        *ngFor="
+                          let item of filteredList
+                            | orderBy: sortBy:sortOrder
+                            | paginate
+                              : { itemsPerPage: 10, currentPage: currentpg }
+                        "
+                      >
+                        <tr>
+                          <td scope="row">{{ item.merchandiser_code }}</td>
+                          <td class="a-namelink" title="{{ labels?.surveyorLabel }} Name">
+                            <a
+                              class="a-namelink"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: -1 }"
+                              queryParamsHandling="merge"
+                              >{{ item.merchandiser_name }}</a
+                            >
+                          </td>
+                          <td
+                            class="a-link"
+                            *ngIf="item.completed != 0"
+                            title="Completed"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: -1 }"
+                              queryParamsHandling="merge"
+                              >{{ item.completed }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.completed == 0">
+                            {{ item.completed }}
+                          </td>
+
+
+
+                          <td 
+                          class="a-link"
+                          *ngIf="item.distribution != 0 && projectType=='NFL_SRO'"
+                          title="Distribution"
+                        >
+                          <a
+                            class="a-link"
+                            target="_blank"
+                            title="view shop details"
+                            [routerLink]="['/dashboard/shop_detail_sro', item.id]"
+                            [queryParams]="{ id: item.id, remark_id: -1 }"
+                            queryParamsHandling="merge"
+                            >{{ item.distribution }}</a
+                          >
+                        </td>
+                        <td *ngIf="item.distribution == 0 && projectType=='NFL_SRO'">
+                          {{ item.distribution }}
+                        </td>
+
+
+
+                          <td
+                            class="a-link"
+                            *ngIf="item.successfull != 0"
+                            title="Successful"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: 1 }"
+                              queryParamsHandling="merge"
+                            >
+                              {{ item.successfull }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.successfull == 0">
+                            {{ item.successfull }}
+                          </td>
+
+                          <td
+                            class="a-link"
+                            *ngIf="item.unsuccessful != 0"
+                            title="Un-Successful"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: 0 }"
+                              queryParamsHandling="merge"
+                            >
+                              {{ item.unsuccessful }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.unsuccessful == 0">
+                            {{ item.unsuccessful }}
+                          </td>
+                          <td>
+                            {{ getPercentage(item.successful_percent) }}
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                  <div class="text-center">
+                    <pagination-controls
+                      class="my-pagination"
+                      (pageChange)="currentpg = $event"
+                      *ngIf="filteredList.length > 0"
+                    ></pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </ng-container>
+      <ng-container *ngIf="tableData.length > 0" #mobileView>
+        <div class="isMobileView">
+          <div>
+            <search-box [list]="tableData" (notify)="onNotifyClicked($event)">
+            </search-box>
+          </div>
+          <div class="row">
+            <table class="table animated slideInLeft">
+              <thead>
+                <tr>
+                  <th scope="col" (click)="sortIt('merchandiser_code')">
+                    {{ labels?.surveyorLabel }} Code
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("merchandiser_code") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('merchandiser_name')">
+                    {{ label?.surveyorLabel }} Name
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("merchandiser_name") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('completed')">
+                    Productive
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("completed") }}
+                    </i>
+                  </th>
+                  <!-- <th scope="col" (click)="sortIt('distribution')">
+                    Distribution
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("distribution") }}
+                    </i>
+                  </th> -->
+                  <th scope="col" (click)="sortIt('successfull')">
+                    Successful
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("successfull") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('unsuccessful')">
+                    Un-Successful
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("unsuccessful") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('successful_percent')">
+                    Successful <strong>%</strong>
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("successful_percent") }}
+                    </i>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="
+                    let item of filteredList
+                      | orderBy: sortBy:sortOrder
+                      | paginate: { itemsPerPage: 10, currentPage: currentpg }
+                  "
+                >
+                  <tr>
+                    <td scope="row">{{ item.merchandiser_code }}</td>
+                    <td>
+                      {{ item.merchandiser_name }}
+                    </td>
+                    <td
+                      class="a-link"
+                      *ngIf="item.completed != 0"
+                      title="Completed"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: -1 }"
+                        queryParamsHandling="merge"
+                        >{{ item.completed }}</a
+                      >
+                    </td>
+                    <td *ngIf="item.completed == 0">
+                      {{ item.completed }}
+                    </td>
+                    <td
+                      class="a-link"
+                      *ngIf="item.successfull != 0"
+                      title="Successful"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: 1 }"
+                        queryParamsHandling="merge"
+                      >
+                        {{ item.successfull }}</a
+                      >
+                    </td>
+                    <td *ngIf="item.successfull == 0">
+                      {{ item.successfull }}
+                    </td>
+
+                    <td
+                      class="a-link"
+                      *ngIf="item.unsuccessful != 0"
+                      title="Un-Successful"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: 0 }"
+                        queryParamsHandling="merge"
+                      >
+                        {{ item.unsuccessful }}</a
+                      >
+                    </td>
+                    <td *ngIf="item.unsuccessful == 0">
+                      {{ item.unsuccessful }}
+                    </td>
+                    <td>{{ getPercentage(item.successful_percent) }}</td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center">
+            <pagination-controls
+              class="my-pagination"
+              (pageChange)="currentpg = $event"
+              *ngIf="filteredList.length > 0"
+            ></pagination-controls>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="row" *ngIf="loading">
+        <div class="col-md-12 text-center">
+          <div class="img-center">
+            <img src="assets/images/basicloader.gif" alt="" srcset="" />
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="!loading && filteredList.length == 0">
+        <div class="col-md-12 text-center">
+          <div class="alert alert-info">
+            <p>No Data Found</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Attendance">
+      <app-merchandiser-attendance-map-view [surveyorType]="2">
+      </app-merchandiser-attendance-map-view>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!--/ merchandiser/ supervisor productivity -->
+
+<!-- merchandiser productivity -->
+<div *ngIf="router.url === '/dashboard/productivity_report'">
+  <mat-card class="mb-20">
+    <mat-card-content>
+      <mat-card-title>
+        {{ title | uppercase }}
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+        <small
+          style="color: lightseagreen !important"
+          class="mtb-5-IMP"
+          *ngIf="loadingReportMessage"
+          >Your file is being prepared for download</small
+        >
+      </mat-card-title>
+    </mat-card-content>
+  </mat-card>
+  <mat-tab-group
+    mat-stretch-tabs
+    class="example-stretched-tabs mat-elevation-z4"
+  >
+    <mat-tab label="Visit Productivity">
+      <mat-card class="mb-20">
+        <mat-card-content>
+          <app-visit-base-productivity (dataEmitter)="getTabsData($event)">
+          </app-visit-base-productivity>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- <div *ngIf="!loading && projectType == 'Coke_Audit'"> -->
+      <div *ngIf="!loading && filteredList.length > 0">
+        <div class="web-view">
+          <!-- <p>web view</p> -->
+          <!-- <div class="col-md-12"> -->
+          <mat-card>
+            <mat-card-content>
+              <!-- <div style="clear: both; margin: auto; width: 100%;"> -->
+              <div
+                class="row justify-content-center scrollClass"
+                style="clear: both; margin: auto; width: 100%"
+              >
+                <!-- <div > -->
+
+                <div class="col-md-2 rightBorder">
+                  <!--vertical n horizontal align center-->
+                  <div
+                    style="
+                      margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #581845;
+                      
+                      font-weight: bold;
+                    "
+                  >
+                    <div style="text-align: center">
+                      {{ dashboardStatsObj.planned }}
+                    </div>
+                    <div style="text-align: center">Planned</div>
+                  </div>
+                </div>
+             
+              
+                <div class="col-md-2 rightBorder">
+                  <div
+                    style="
+                      margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #098f3b;
+                      
+                      font-weight: bold;
+                    "
+                  >
+                    <div style="text-align: center">
+                      {{ dashboardStatsObj.completed }}
+                    </div>
+                    <div style="text-align: center">{{labels?.productive}}</div>
+                  </div>
+                </div>
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #d5a056;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.successfull }}
+                      </div>
+                    
+                      <div style="text-align: center">{{labels?.successful}}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #d5a056;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unsuccessful }}
+                      </div>
+                    
+                      <div style="text-align: center">{{labels?.unsuccessful}}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #581845;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unvisited }}
+                      </div>
+                    
+                      <div style="text-align: center">Unvisited</div>
+                    </div>
+                  </div>
+                </div> 
+
+                
+
+                <div
+                class="col-md-2 rightBorder"
+                *ngIf="projectType != 'Coke_Audit'"
+              >
+                <div
+                  style="
+                    margin-right: 10px;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    -webkit-transform: translate(-50%, -50%);
+                    transform: translate(-50%, -50%);
+                    color: #565753;
+                    
+                    font-weight: bold;
+                  "
+                >
+                  <div style="text-align: center">
+                    {{ dashboardStatsObj.oorTotal }}
+                  </div>
+                  <div style="text-align: center">Out Of Route</div>
+                </div>
+              </div>
+
+            
+
+                <div class="col-md-2 rightBorder">
+                  <!-- <div> -->
+                  <!--vertical left(jo k default hta hy) align center-->
+
+                  <!--vertical right align center-->
+                  <div
+                    ng-show="graph.visible"
+                    style="width: 85px !important; margin: auto"
+                  >
+                    <canvas
+                      baseChart
+                      height="100"
+                      width="80"
+                      [colors]="colors2"
+                      [data]="doughnutChartData2"
+                      [labels]="doughnutChartLabels2"
+                      [chartType]="doughnutChartType"
+                      [options]="doghnutChartOptions"
+                    >
+                    </canvas>
+                  </div>
+                  <div
+                    style="
+                      padding-left: -15px;
+                      margin: auto;
+                      width: 100% !important;
+                      color: #b4301b;
+                      
+                      font-weight: bold;
+                    "
+                  >
+                    <div style="text-align: center">{{labels?.productive}} Efficiency %</div>
+                    <!-- <div style="text-align: center">
+                    70.00
+                  </div> -->
+                    <div style="text-align: center">
+                      {{ dashboardStatsObj.completedPercent }}
+                    </div>
+                  </div>
+                  
+                  <!-- </div> -->
+                </div>
+
+
+                <div class="col-md-2 rightBorder">
+                  <div>
+                    <!--vertical n horizontal align center-->
+
+                    <div
+                      ng-show="graph.visible"
+                      style="
+                        width: 85px !important;
+                        margin: auto;
+                        font-size: 8px !important;
+                      "
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors"
+                        [data]="doughnutChartData"
+                        [labels]="doughnutChartLabels"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                        <!-- [options]="doghnutChartOptions" -->
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+
+                        color: #1b28b4;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">{{labels?.successful}} %</div>
+                      <!-- <div style="text-align: center">
+                    60.00
+                  </div> -->
+                      <div style="text-align: center">{{ dashboardStatsObj.successfulPercent }}</div>
+                    </div>
+                  </div>
+                </div>
+              
+                
+                <div class="col-md-2 rightBorder">
+                  <div>
+                    <!--vertical left(jo k default hta hy) align center-->
+
+                    <!--vertical right align center-->
+                    <div
+                      ng-show="graph.visible"
+                      style="width: 85px !important; margin: auto"
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors4"
+                        [data]="doughnutChartData3"
+                        [labels]="doughnutChartLabels3"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+                        color: #047c9a;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">{{labels?.unsuccessful}} %</div>
+                      <!-- <div style="text-align: center">
+                    50.00
+                  </div> -->
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unSuccessfulPercent }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 noBorder">
+                  <div>
+                    <!--vertical left(jo k default hta hy) align center-->
+  
+                    <!--vertical right align center-->
+                    <div
+                      ng-show="graph.visible"
+                      style="width: 85px !important; margin: auto"
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors3"
+                        [data]="doughnutChartData3"
+                        [labels]="doughnutChartLabels3"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+                        color: #819a04;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">Unvisited %</div>
+                      <!-- <div style="text-align: center">
+                    50.00
+                  </div> -->
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unvisitedPercent }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+               
+                
+                <!-- </div> -->
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- </div> -->
+        </div>
+        <div class="row mobile-view">
+          <!-- <p>mobile view</p> -->
+
+          <div class="col-12">
+            <mat-card>
+              <mat-card-header> </mat-card-header>
+              <mat-card-content>
+                <div class="row scrollClass">
+                  <div class="col-sm-12 noBorder">
+                    <div
+                      style="
+                        margin: auto;
+                        position: absolute;
+                        left: 50%;
+                        top: 50%;
+                        -webkit-transform: translate(-50%, -50%);
+                        transform: translate(-50%, -50%);
+                        color: #581845;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.planned }}
+                      </div>
+                      <div style="text-align: center">Planned</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" *ngIf="projectType != 'Coke_Audit'">
+                  <div class="col-sm-12 noBorder">
+                    <div
+                      style="
+                        margin-right: 10px;
+                        position: absolute;
+                        left: 50%;
+                        top: 50%;
+                        -webkit-transform: translate(-50%, -50%);
+                        transform: translate(-50%, -50%);
+                        color: #e2f58d;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.oorTotal }}
+                      </div>
+                      <div style="text-align: center">Out Of Route</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-sm-12 noBorder">
+                    <div
+                      style="
+                        margin-right: 10px;
+                        position: absolute;
+                        left: 50%;
+                        top: 50%;
+                        -webkit-transform: translate(-50%, -50%);
+                        transform: translate(-50%, -50%);
+                        color: #098f3b;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.completed }}
+                      </div>
+                      <div style="text-align: center">{{labels?.productive}}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #d5a056;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.successfull }}
+                      </div>
+                    
+                      <div style="text-align: center">{{labels?.successful}}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #d5a056;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unsuccessful }}
+                      </div>
+                    
+                      <div style="text-align: center">{{labels?.unsuccessful}}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 rightBorder hello2">
+                  <div>
+                    <div
+                      style="
+                       margin-right: 10px;
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      -webkit-transform: translate(-50%, -50%);
+                      transform: translate(-50%, -50%);
+                      color: #581845;
+                      
+                      font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unvisited }}
+                      </div>
+                    
+                      <div style="text-align: center">Unvisited</div>
+                    </div>
+                  </div>
+                </div> 
+                <div class="col-md-2 rightBorder">
+                  <!-- <div> -->
+                  <!--vertical left(jo k default hta hy) align center-->
+
+                  <!--vertical right align center-->
+                  <div
+                    ng-show="graph.visible"
+                    style="width: 85px !important; margin: auto"
+                  >
+                    <canvas
+                      baseChart
+                      height="100"
+                      width="80"
+                      [colors]="colors2"
+                      [data]="doughnutChartData2"
+                      [labels]="doughnutChartLabels2"
+                      [chartType]="doughnutChartType"
+                      [options]="doghnutChartOptions"
+                    >
+                    </canvas>
+                  </div>
+                  <div
+                    style="
+                      padding-left: -15px;
+                      margin: auto;
+                      width: 100% !important;
+                      color: #b4301b;
+                      
+                      font-weight: bold;
+                    "
+                  >
+                    <div style="text-align: center">{{labels?.productive}} Efficiency %</div>
+                    <!-- <div style="text-align: center">
+                    70.00
+                  </div> -->
+                    <div style="text-align: center">
+                      {{ dashboardStatsObj.completedPercent }}
+                    </div>
+                  </div>
+                  
+                  <!-- </div> -->
+                </div>
+
+
+              
+                <div class="col-md-2 rightBorder">
+                  <div>
+                    <!--vertical n horizontal align center-->
+
+                    <div
+                      ng-show="graph.visible"
+                      style="
+                        width: 85px !important;
+                        margin: auto;
+                        font-size: 8px !important;
+                      "
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors"
+                        [data]="doughnutChartData"
+                        [labels]="doughnutChartLabels"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                        <!-- [options]="doghnutChartOptions" -->
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+
+                        color: #1b28b4;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">{{labels?.successful}} %</div>
+                      <!-- <div style="text-align: center">
+                    60.00
+                  </div> -->
+                      <div style="text-align: center">{{ dashboardStatsObj.successfulPercent }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2 rightBorder">
+                  <div>
+                    <!--vertical left(jo k default hta hy) align center-->
+
+                    <!--vertical right align center-->
+                    <div
+                      ng-show="graph.visible"
+                      style="width: 85px !important; margin: auto"
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors4"
+                        [data]="doughnutChartData3"
+                        [labels]="doughnutChartLabels3"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+                        color: #047c9a;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">{{labels?.unsuccessful}} %</div>
+                      <!-- <div style="text-align: center">
+                    50.00
+                  </div> -->
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unSuccessfulPercent }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2 rightBorder">
+                  <div>
+                    <!--vertical left(jo k default hta hy) align center-->
+
+                    <!--vertical right align center-->
+                    <div
+                      ng-show="graph.visible"
+                      style="width: 85px !important; margin: auto"
+                    >
+                      <canvas
+                        baseChart
+                        height="100"
+                        width="80"
+                        [colors]="colors3"
+                        [data]="doughnutChartData3"
+                        [labels]="doughnutChartLabels3"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                    </div>
+                    <div
+                      style="
+                        padding-left: -15px;
+                        margin: auto;
+                        width: 100% !important;
+                        color: #819a04;
+                        
+                        font-weight: bold;
+                      "
+                    >
+                      <div style="text-align: center">Unvisited %</div>
+                      <!-- <div style="text-align: center">
+                    50.00
+                  </div> -->
+                      <div style="text-align: center">
+                        {{ dashboardStatsObj.unvisitedPercent }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="!loading && projectType == 'No'"
+        class="mb-20 animated slideInLeft"
+        fxLayout="row"
+        fxLayout.lt-md="column"
+        fxFlex
+        fxLayoutGap="10px"
+      >
+        <div class="row web-view">
+          <!-- <p>web view</p> -->
+          <div class="col-md-12">
+            <mat-card>
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'info'"
+                      [icon]="'assignment'"
+                      [count]="dashboardStatsObj?.planned"
+                      [label]="'Planned'"
+                    >
+                    </app-stat>
+                  </div>
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'pink'"
+                      [icon]="'assignment'"
+                      [count]="dashboardStatsObj?.oorTotal"
+                      [label]="'Out Of Route'"
+                    >
+                    </app-stat>
+                  </div>
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'success'"
+                      [icon]="'thumb_up'"
+                      [count]="dashboardStatsObj?.completed"
+                      [label]="'Productive'"
+                    ></app-stat>
+                  </div>
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'danger'"
+                      [icon]="'thumb_down'"
+                      [count]="dashboardStatsObj?.unsuccessful"
+                      [label]="'Un-Successful'"
+                    ></app-stat>
+                  </div>
+
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'danger'"
+                      [icon]="'contact_support'"
+                      [count]="dashboardStatsObj?.unvisited"
+                      [label]="'Unvisited'"
+                    >
+                    </app-stat>
+                  </div>
+
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'purple'"
+                      [icon]="'check_circle'"
+                      [count]="dashboardStatsObj?.completedPercent"
+                      [label]="'Productivity %'"
+                    ></app-stat>
+                  </div>
+
+                  <div class="col-md-2">
+                    <app-stat
+                      [bgClass]="'primary'"
+                      [icon]="'thumb_up'"
+                      [count]="dashboardStatsObj?.successfulPercent"
+                      [label]="'Successful %'"
+                    ></app-stat>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+        <div class="row mobile-view">
+          <!-- <p>mobile view</p> -->
+
+          <div class="col-12">
+            <mat-card>
+              <mat-card-header style="justify-content: flex-end">
+              </mat-card-header>
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'info'"
+                        [icon]="'assignment'"
+                        [count]="dashboardStatsObj?.planned"
+                        [label]="'Planned'"
+                      >
+                      </app-stat>
+                    </div>
+                  </div>
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'pink'"
+                        [icon]="'assignment'"
+                        [count]="dashboardStatsObj?.oorTotal"
+                        [label]="'Out Of Route'"
+                      >
+                      </app-stat>
+                    </div>
+                  </div>
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'success'"
+                        [icon]="'thumb_up'"
+                        [count]="dashboardStatsObj?.completed"
+                        [label]="'Productive'"
+                      ></app-stat>
+                    </div>
+                  </div>
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'danger'"
+                        [icon]="'thumb_down'"
+                        [count]="dashboardStatsObj?.unsuccessful"
+                        [label]="'Un-Successful'"
+                      ></app-stat>
+                    </div>
+                  </div>
+
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'danger'"
+                        [icon]="'contact_support'"
+                        [count]="dashboardStatsObj?.unvisited"
+                        [label]="'Unvisited'"
+                      >
+                      </app-stat>
+                    </div>
+                  </div>
+
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'purple'"
+                        [icon]="'check_circle'"
+                        [count]="dashboardStatsObj?.completedPercent"
+                        [label]="'Productivity %'"
+                      ></app-stat>
+                    </div>
+                  </div>
+
+                  <div class="col-6 mobile-view-info-tabs">
+                    <div>
+                      <app-stat
+                        [bgClass]="'primary'"
+                        [icon]="'thumb_up'"
+                        [count]="dashboardStatsObj?.successfulPercent"
+                        [label]="'Successful %'"
+                      ></app-stat>
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="tableData.length > 0" #webView>
+        <mat-card class="isWebView">
+          <mat-card-content>
+            <div>
+              <search-box [list]="tableData" (notify)="onNotifyClicked($event)">
+              </search-box>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table animated slideInLeft">
+                    <thead>
+                      <tr>
+                        <th scope="col" (click)="sortIt('merchandiser_code')">
+                          {{ surveyorType }} Code
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("merchandiser_code") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('merchandiser_name')">
+                          {{ surveyorType }} Name
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("merchandiser_name") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('planned')">
+                          Planned
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("planned") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('oor')">
+                          Out Of Route
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("oor") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('completed')">
+                          {{labels?.productive}}
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("completed") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('successfull')">
+                          {{labels?.successful}}
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("successfull") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('unsuccessful')">
+                          {{labels?.unsuccessful}}
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("unsuccessful") }}
+                          </i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortIt('unvisited')"
+                          style="background: #f12e2b; color: white"
+                        >
+                          Unvisited
+                          <br />
+                          <i
+                            class="material-icons arrow"
+                            style="color: white !important"
+                          >
+                            {{ getArrowType("unvisited") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('completed_percent')">
+                          {{labels?.productive}} <strong>%</strong>
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("completed_percent") }}
+                          </i>
+                        </th>
+                        <th scope="col" (click)="sortIt('successful_percent')">
+                          {{labels?.successful}} <strong>%</strong>
+                          <br />
+                          <i class="material-icons arrow">
+                            {{ getArrowType("successful_percent") }}
+                          </i>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container
+                        *ngFor="
+                          let item of filteredList
+                            | orderBy: sortBy:sortOrder
+                            | paginate
+                              : { itemsPerPage: 10, currentPage: currentpg }
+                        "
+                      >
+                        <tr>
+                          <td scope="row">{{ item.merchandiser_code }}
+                          </td>
+                          <td class="a-namelink" title="{{ labels?.surveyorLabel }} Name">
+                            <a
+                              class="a-namelink"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: -1 }"
+                              queryParamsHandling="merge"
+                              >{{ item.merchandiser_name }}</a
+                            >
+                          </td>
+                          <td>{{ item.planned }}</td>
+                          <td>{{ item.oor }}</td>
+
+                          <td
+                            class="a-link"
+                            *ngIf="item.completed != 0"
+                            title="Completed"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: -1, shopCode: shopCode}"
+                              queryParamsHandling="merge"
+                              >{{ item.completed }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.completed == 0">
+                            {{ item.completed }}
+                          </td>
+                          <td
+                            class="a-link"
+                            *ngIf="item.successfull != 0"
+                            title="Successful"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: 1, shopCode: shopCode }"
+                              queryParamsHandling="merge"
+                            >
+                              {{ item.successfull }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.successfull == 0">
+                            {{ item.successfull }}
+                          </td>
+
+                          <td
+                            class="a-link"
+                            *ngIf="item.unsuccessful != 0"
+                            title="Un-Successful"
+                          >
+                            <a
+                              class="a-link"
+                              target="_blank"
+                              title="view shop details"
+                              [routerLink]="['/dashboard/shop_detail', item.id]"
+                              [queryParams]="{ id: item.id, remark_id: 0 }"
+                              queryParamsHandling="merge"
+                            >
+                              {{ item.unsuccessful }}</a
+                            >
+                          </td>
+                          <td *ngIf="item.unsuccessful == 0">
+                            {{ item.unsuccessful }}
+                          </td>
+
+                          <td>
+                            {{ item.unvisited }}
+                          </td>
+                          <td>
+                            {{ getPercentage(item.completed_percent) }}
+                          </td>
+                          <td>{{ getPercentage(item.successful_percent) }}</td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                  <div class="text-center">
+                    <pagination-controls
+                      class="my-pagination"
+                      (pageChange)="currentpg = $event"
+                      *ngIf="filteredList.length > 0"
+                    ></pagination-controls>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </ng-container>
+      <ng-container *ngIf="tableData.length > 0" #mobileView>
+        <div class="isMobileView">
+          <div>
+            <search-box [list]="tableData" (notify)="onNotifyClicked($event)">
+            </search-box>
+          </div>
+          <div class="row">
+            <table class="table animated slideInLeft">
+              <thead>
+                <tr>
+                  <th scope="col" (click)="sortIt('merchandiser_code')">
+                    {{ labels?.surveyorLabel }} Code
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("merchandiser_code") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('merchandiser_name')">
+                    {{ label?.surveyorLabel }} Name
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("merchandiser_name") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('planned')">
+                    Planned
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("planned") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('oor')">
+                    Out Of Route
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("oor") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('completed')">
+                    {{labels?.productive}}
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("completed") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('successfull')">
+                    {{labels?.successful}}
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("successfull") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('unsuccessful')">
+                    {{labels?.unsuccessful}}
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("unsuccessful") }}
+                    </i>
+                  </th>
+                  <th
+                    scope="col"
+                    (click)="sortIt('unvisited')"
+                    style="background: #f12e2b; color: white"
+                  >
+                    Unvisited
+                    <br />
+                    <i
+                      class="material-icons arrow"
+                      style="color: white !important"
+                    >
+                      {{ getArrowType("unvisited") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('completed_percent')">
+                    {{labels?.productive}} <strong>%</strong>
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("completed_percent") }}
+                    </i>
+                  </th>
+                  <th scope="col" (click)="sortIt('successful_percent')">
+                    {{labels?.successful}} <strong>%</strong>
+                    <br />
+                    <i class="material-icons arrow">
+                      {{ getArrowType("successful_percent") }}
+                    </i>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="
+                    let item of filteredList
+                      | orderBy: sortBy:sortOrder
+                      | paginate: { itemsPerPage: 10, currentPage: currentpg }
+                  "
+                >
+                  <tr>
+                    <td scope="row">{{ item.merchandiser_code }}</td>
+                    <td>
+                      {{ item.merchandiser_name }}
+                    </td>
+                    <td>{{ item.planned }}</td>
+                    <td>{{ item.oor }}</td>
+                    <td
+                      class="a-link"
+                      *ngIf="item.completed != 0"
+                      title="Completed"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: -1}"
+                        queryParamsHandling="merge"
+                        >{{ item.completed}}</a
+                      >
+                    </td>
+                    <td *ngIf="item.completed == 0">
+                      {{ item.completed }}
+                    </td>
+                    <td
+                      class="a-link"
+                      *ngIf="item.successfull != 0"
+                      title="Successful"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: 1 }"
+                        queryParamsHandling="merge"
+                      >
+                        {{ item.successfull }}</a
+                      >
+                    </td>
+                    <td *ngIf="item.successfull == 0">
+                      {{ item.successfull }}
+                    </td>
+
+                    <td
+                      class="a-link"
+                      *ngIf="item.unsuccessful != 0"
+                      title="Un-Successful"
+                    >
+                      <a
+                        class="a-link"
+                        target="_blank"
+                        title="view shop details"
+                        [routerLink]="['/dashboard/shop_detail', item.id]"
+                        [queryParams]="{ id: item.id, remark_id: 0 }"
+                        queryParamsHandling="merge"
+                      >
+                        {{ item.unsuccessful }}</a
+                      >
+                    </td>
+                    <td *ngIf="item.unsuccessful == 0">
+                      {{ item.unsuccessful }}
+                    </td>
+
+                    <td>{{ item.unvisited }}</td>
+                    <td>
+                      {{ getPercentage(item.completed_percent) }}
+                    </td>
+                    <td>{{ getPercentage(item.successful_percent) }}</td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center">
+            <pagination-controls
+              class="my-pagination"
+              (pageChange)="currentpg = $event"
+              *ngIf="filteredList.length > 0"
+            ></pagination-controls>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="row" *ngIf="loading">
+        <div class="col-md-12 text-center">
+          <div class="img-center">
+            <img src="assets/images/basicloader.gif" alt="" srcset="" />
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="!loading && filteredList.length == 0">
+        <div class="col-md-12 text-center">
+          <div class="alert alert-info">
+            <p>No Data Found</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Attendance">
+      <app-merchandiser-attendance-map-view [surveyorType]="1">
+      </app-merchandiser-attendance-map-view>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- / merchandiser productivity -->
+
+<!-- Time Analysis Report -->
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/time-analysis-report'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="channels.length>0" class="example-margin mr-10-IMP">
+
+                <mat-select placeholder="Channel" name='channel' [(ngModel)]="selectedChannel" multiple #channelSelect="ngModel" [compareWith]="equals">
+                    <mat-option disabled="disabled" class="filter-option"> <button mat-raised-button class="mat-primary fill text-sm" (click)="selectAll(channelSelect, channels)">
+                        Select All
+                      </button>
+                        <button mat-raised-button color="warn" class="ml-1 mat-accent fill text-sm" (click)="deselectAll(channelSelect)">
+                        Deselect All
+                      </button>
+                    </mat-option>
+
+                    <mat-option [value]="channel" *ngFor="let channel of channels">{{channel.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="timeAnalysisReport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+<!-- / Time Analysis Report -->
+
+<!-- daily evaluation report -->
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/daily_evaluation_report'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="channels.length>0" class="example-margin mr-10-IMP">
+
+                <mat-select placeholder="Channel" name='channel' [(ngModel)]="selectedChannel" multiple #channelSelect="ngModel" [compareWith]="equals">
+                    <mat-option disabled="disabled" class="filter-option"> <button mat-raised-button class="mat-primary fill text-sm" (click)="selectAll(channelSelect, channels)">
+                        Select All
+                      </button>
+                        <button mat-raised-button color="warn" class="ml-1 mat-accent fill text-sm" (click)="deselectAll(channelSelect)">
+                        Deselect All
+                      </button>
+                    </mat-option>
+
+                    <mat-option [value]="channel" *ngFor="let channel of channels">{{channel.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="dailyEvaluationRport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- daily evaluation report -->
+
+<!-- sos and sod report -->
+<!-- <mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/daily_evaluation_report' && projectType == 'P&G'"
+> -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/shareofshelf'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="Action Type"
+          name="actionType"
+          [(ngModel)]="selectedActionsType"
+        >
+          <mat-option
+            [value]="actionType"
+            *ngFor="let actionType of actionTypeLists"
+            [hidden]="shouldHideOption(actionTypee)"
+          >
+            {{ actionType.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <section class="example-section">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="Criteria"
+            name="criteriaType"
+            [(ngModel)]="selectedCriteriaType"
+          >
+            <mat-option
+              [value]="criteriaType"
+              *ngFor="let criteriaType of criteriaTypeList"
+            >
+              {{ criteriaType.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="getSOSandSOD()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- sos and sod report -->
+
+<!-- shop list report -->
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/shop-list-report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="channels.length>0" class="example-margin mr-10-IMP">
+
+                <mat-select placeholder="Channel" name='channel' [(ngModel)]="selectedChannel" multiple #channelSelect="ngModel" [compareWith]="equals">
+                    <mat-option disabled="disabled" class="filter-option"> <button mat-raised-button class="mat-primary fill text-sm" (click)="selectAll(channelSelect, channels)">
+                        Select All
+                      </button>
+                        <button mat-raised-button color="warn" class="ml-1 mat-accent fill text-sm" (click)="deselectAll(channelSelect)">
+                        Deselect All
+                      </button>
+                    </mat-option>
+
+                    <mat-option [value]="channel" *ngFor="let channel of channels">{{channel.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="shopListReport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- shop list report -->
+
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/merchandiser_attendance'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button mat-raised-button color="warn" (click)="getAttendanceReport()">
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- <mat-card class="mb-20" *ngIf="router.url === '/dashboard/upload_routes_new'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form
+        (ngSubmit)="uploadData(form.value)"
+        [formGroup]="form"
+        enctype="multipart/form-data"
+      >
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{regionPlaceholder}}"
+            name="cityId"
+            [formControl]="selectedRegionUp"
+            [(ngModel)]="regionId"
+            (ngModelChange)="showCount('show')"
+          >
+            <ng-container *ngFor="let region of regions">
+              <mat-option *ngIf="region.id != -1" [value]="region.id">{{
+                region.title
+              }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="Add Surveyor"
+            name="newSurveyor"
+            [formControl]="selectedOption"
+          >
+            <mat-option [value]="op" *ngFor="let op of options">{{
+              op
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <input
+          #fileInput
+          (change)="onFileChange($event)"
+          id="avatar"
+          type="file"
+        />
+        <section class="example-section">
+          <button type="submit" mat-raised-button color="warn">Upload</button>
+        </section>
+      </form>
+    </section>
+  </mat-card-content>
+
+  <mat-card-content>
+    <table class="table" *ngIf="shopWiseCount.length > 0">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Surveyor Code</th>
+          <th scope="col">Surveyor Name</th>
+          <th scope="col">Shops on Route</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let count of shopWiseCount; let i = index">
+          <th scope="col">{{ i + 1 }}</th>
+          <td>{{ count?.m_code }}</td>
+          <td>{{ count?.full_name }}</td>
+          <td>{{ count?.shops_on_route }}</td>
+          <td>
+            <button
+              class="btn btn-danger"
+              title="Click to remove Shops from Routes"
+              (click)="deleteRoutes(count?.surveyor_id, 'delete')"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card> -->
+
+<!-- <mat-card class="mb-20" *ngIf="router.url==='/dashboard/pivot_based_data'">
+
+    <mat-card-content>
+        <mat-card-title>
+            {{title| uppercase}} <i color="warn" [ngClass]="{'fa fa-cog fa-spin':loadingData}"></i>
+            <small style="color:lightseagreen !important" class="mtb-5-IMP" *ngIf="loadingReportMessage">Your file is
+                being prepared for download</small>
+        </mat-card-title>
+        <section class="example-section">
+
+
+            <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select placeholder="Select Report" name='queryList' [(ngModel)]="selectedQuery">
+                    <ng-container *ngFor="let query of queryList">
+                        <mat-option [value]="query">{{query.title}}</mat-option>
+                    </ng-container>
+
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width mr-10-IMP">
+                <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker0" [(ngModel)]="startDate"
+                    placeholder="Choose a start date" readonly>
+                <mat-datepicker-toggle matSuffix [for]="picker0"></mat-datepicker-toggle>
+                <mat-datepicker #picker0></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="example-full-width mr-10-IMP">
+                <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker1" [(ngModel)]="endDate"
+                    placeholder="Choose a end date" readonly>
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+        </section>
+
+        <section class="example-section">
+            <button [disabled]="!selectedQuery.id" mat-raised-button color="warn"
+                (click)="getReportData()">Download</button>
+           
+        </section>
+
+
+    </mat-card-content>
+</mat-card> -->
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/vo_error_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option *ngIf="region.id !== -1" [value]="region">{{
+              region.title
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="VOErrorReport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/compliance-report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button mat-raised-button color="warn" (click)="complienceReport()">
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/trending_oos_report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button mat-raised-button color="warn" (click)="getTrendingOOSReport()">
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card
+  class="mb-20"
+  *ngIf="router.url === '/dashboard/capturedAbnormalUnvisited'"
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option *ngIf="region.id !== -1" [value]="region">{{
+              region.title
+            }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <!-- [disabled]="selectedChannel.length<1" -->
+      <button mat-raised-button color="warn" (click)="uniqueBasedReport()">
+        Download
+      </button>
+      <!-- <span *ngIf="selectedChannel.length<1" class="channel-message"><small>(channel selection is mandatory)</small></span> -->
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card
+  class="mb-20"
+  *ngIf="
+    router.url === '/dashboard/expiry-data-mt' ||
+    router.url === '/dashboard/expiry-data-gt'
+  "
+>
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        [disabled]="loadingData"
+        mat-raised-button
+        color="warn"
+        (click)="getExpiryData()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/attendance-report'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="areas.length > 0" class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+        >
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        [disabled]="loadingData"
+        mat-raised-button
+        color="warn"
+        (click)="downloadAttendanceReport()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20" *ngIf="router.url === '/dashboard/oos-shop-list'">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="channels.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="Channel"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+          multiple
+          #channelSelect="ngModel"
+          [compareWith]="equals"
+        >
+          <mat-option disabled="disabled" class="filter-option">
+            <button
+              mat-raised-button
+              class="mat-primary fill text-sm"
+              (click)="selectAll(channelSelect, channels)"
+            >
+              Select All
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              class="ml-1 mat-accent fill text-sm"
+              (click)="deselectAll(channelSelect)"
+            >
+              Deselect All
+            </button>
+          </mat-option>
+
+          <mat-option [value]="channel" *ngFor="let channel of channels">{{
+            channel.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <mat-form-field class="example-margin mr-5-IMP">
+      <mat-select
+        placeholder="Must Have"
+        name="mustHave"
+        [(ngModel)]="selectedMustHave"
+      >
+        <mat-option [value]="mustHave" *ngFor="let mustHave of mustHaveList">{{
+          mustHave
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        [disabled]="loadingData"
+        mat-raised-button
+        color="warn"
+        (click)="downloadOOSShopList()"
+      >
+        Download
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<!-- visit Productivity -->
+
+<!-- <div *ngIf="router.url === '/dashboard/visit-base-productivity'">
+  <mat-card class="mb-20">
+    <mat-card-content>
+      <mat-card-title>
+        {{ title | uppercase }}
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+        <small
+          style="color: lightseagreen !important"
+          class="mtb-5-IMP"
+          *ngIf="loadingReportMessage"
+          >Your file is being prepared for download</small
+        >
+      </mat-card-title>
+    </mat-card-content>
+  </mat-card>
+  
+      <mat-card class="mb-20">
+        <mat-card-content>
+          <section class="example-section">
+            <ng-container
+              *ngIf="routesList?.length > 0 && projectType == 'Coke_Audit'"
+            >
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="Fold"
+                  [(ngModel)]="route"
+                  (ngModelChange)="getTabsData()"
+                >
+                  <mat-option *ngFor="let r of routesList" [value]="r">{{
+                    r.route_title
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="clusterList?.length > 0">
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="{{ labels.clusterLabel }}"
+                  name="cluster"
+                  [(ngModel)]="selectedCluster"
+                  (ngModelChange)="getZoneByCluster()"
+                >
+                  <mat-option
+                    [value]="cluster"
+                    *ngFor="let cluster of clusterList"
+                    >{{ cluster.title }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="zones?.length > 0">
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="{{ labels.zoneLabel }}"
+                  name="zone"
+                  [(ngModel)]="selectedZone"
+                  (ngModelChange)="zoneChange()"
+                >
+                  <mat-option [value]="zone" *ngFor="let zone of zones">{{
+                    zone.title
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+            <mat-form-field
+              *ngIf="regions.length > 0"
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ labels.regionLabel }}"
+                name="region"
+                [(ngModel)]="selectedRegion"
+                (ngModelChange)="regionChange()"
+              >
+                <mat-option [value]="region" *ngFor="let region of regions">{{
+                  region.title
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="areas.length > 0"
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ labels.areasLabel }}"
+                name="areas"
+                [(ngModel)]="selectedArea"
+                (ngModelChange)="getTabsData()"
+              >
+                <mat-option [value]="area" *ngFor="let area of areas">{{
+                  area.title
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="example-full-width mr-10-IMP">
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker0"
+                [(ngModel)]="startDate"
+                (ngModelChange)="getTabsData($event, 'start')"
+                placeholder="Choose a start date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker0"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker0></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="example-full-width mr-10-IMP">
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker1"
+                [(ngModel)]="endDate"
+                (ngModelChange)="getTabsData($event, 'end')"
+                placeholder="Choose a end date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </section>
+
+          <section class="example-section">
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="VisitBaseReport()"
+            >
+              Download
+            </button>
+          </section>
+        </mat-card-content>
+      </mat-card>
+   
+</div> -->
+
+<!-- / Visit productivity -->

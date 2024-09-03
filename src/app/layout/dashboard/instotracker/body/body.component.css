@@ -1,0 +1,211 @@
+cdk-virtual-scroll-viewport {
+  height: 150vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+cdk-virtual-scroll-viewport > div.cardItem {
+  width: 100%;
+  /* height: 100%; */
+}
+
+.danger {
+  color: #dc3545 !important;
+  cursor: pointer;
+  /* background-color: #dc3545; */
+  /* border-color: #dc3545; */
+}
+
+.example-card {
+  max-width: 400px;
+  /* max-height: 400px */
+  box-shadow: 2px 5px 15px 3px #c4c4c4;
+}
+
+#inf.mat-card-image {
+  height: 190px !important;
+}
+
+mat-card.main:hover {
+  cursor: pointer;
+  background-color: #b1dcfc;
+}
+
+.body {
+  /* background-image: url("../../../assets/images/bg.png") ; */
+  /* background-color: #F8F9FA; */
+}
+
+.ui-dropdown {
+  width: 300px;
+}
+
+img.small {
+  cursor: pointer;
+}
+
+.ui-datepicker-trigger {
+  height: 34px !important;
+}
+
+.deta:hover {
+  background-color: #b1dcfc;
+  cursor: pointer;
+  margin: -10px;
+}
+
+.mat-card-image img {
+  max-height: 200px !important;
+}
+
+.example-header-image {
+  /* background-image: url('/src/assets/images/pngLogo.png'); */
+  background-size: cover;
+}
+
+.ui-accordion-content {
+  padding: 5px !important;
+}
+
+:host ::ng-deep .ui-multiselected-item-token,
+:host ::ng-deep .ui-multiselected-empty-token {
+  padding: 2px 4px;
+  margin: 0 0.286em 0 0;
+  display: inline-block;
+  vertical-align: middle;
+  height: 1.857em;
+}
+
+:host ::ng-deep .ui-multiselected-item-token {
+  background: #007ad9;
+  color: #ffffff;
+}
+
+:host ::ng-deep .ui-multiselected-empty-token {
+  background: #d95f00;
+  color: #ffffff;
+}
+
+/* carusal code */
+
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+.gallery {
+  background: #eee;
+}
+
+.gallery-cell {
+  width: 28%;
+  height: 200px;
+  margin-right: 10px;
+  background: #8c8;
+  counter-increment: gallery-cell;
+}
+
+.gallery-cell.is-selected {
+  background: #ed2;
+}
+
+/* cell number */
+
+.gallery-cell:before {
+  display: block;
+  text-align: center;
+  content: counter(gallery-cell);
+  line-height: 200px;
+  font-size: 80px;
+  color: white;
+}
+
+.thumbnail {
+  position: relative;
+}
+
+.caption-bottom {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: white;
+  font-weight: 600;
+}
+.caption-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: black;
+  background-color: white;
+}
+
+.red {
+  border: 5px solid red;
+}
+.green {
+  border: 5px solid green;
+}
+
+
+.float2 {
+  position: fixed;
+  width: 110px;
+  height: 60px;
+  /* top: 40px; */
+  bottom: 40px;
+  right: 160px;
+   /* background-color: #25d366;
+   color: #fff; */
+  border-radius: 50px;
+  text-align: center;
+  font-size: 15px;
+  box-shadow: 2px 2px 3px #999;
+  z-index: 100;
+  cursor: pointer;
+}
+
+
+.float.disabled {
+  background-color: #ccc; /* Set the background color when disabled */
+  cursor: not-allowed; /* Set the cursor style when disabled */
+}
+
+
+.float2 {
+  position: fixed;
+  width: 110px;
+  height: 60px;
+  /* top: 40px; */
+  bottom: 60px;
+  right: 60px;
+   /* background-color: #25d366;
+   color: #fff; */
+  border-radius: 50px;
+  text-align: center;
+  font-size: 15px;
+  box-shadow: 2px 2px 3px #999;
+  z-index: 100;
+  cursor: pointer;
+}
+
+@media print {
+  @page {
+    size: A0; /* Set the page size to A4 */
+    margin: 0 !important;
+    padding: 0 !important;
+    /* You can also specify other page sizes such as 'letter', 'legal', etc. */
+    /* You can also specify custom sizes like 'width height' or 'width height landscape' */
+    /* Example: size: 8.5in 11in; for letter size */
+  }
+  body {
+    transform: scale(0.2); /* Adjust the scale factor as needed */
+    transform-origin: top left; /* Ensure content starts from the top-left corner */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

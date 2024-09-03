@@ -1,0 +1,42 @@
+.img-item {
+  height: 500px !important;
+  width: 90% !important;
+}
+
+.title {
+  background: lightgreen;
+  color: black;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.heading {
+  background: lightgray !important;
+}
+
+// not working
+// .toast-container {
+//   position: fixed !important;
+//   top: 50% !important;
+//   left: 50% !important;
+//   transform: translate(-50%, -50%) !important;
+// }
+// .overlay-container{
+//   #toast-container {
+//     position: fixed !important;
+//     top: 50% !important;
+//     left: 50% !important;
+//     transform: translate(-50%, -50%) !important;
+//   }
+//   position: fixed !important;
+//     top: 50% !important;
+//     left: 50% !important;
+//     transform: translate(-50%, -50%) !important;
+// }
+// toast-container {
+//   position: fixed !important;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+// }
+

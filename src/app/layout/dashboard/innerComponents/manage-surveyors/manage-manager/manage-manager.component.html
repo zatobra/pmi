@@ -1,0 +1,126 @@
+<div class="example-section" style="text-align: center; margin: 5px;"
+>
+<button style="width: auto; float: right;" class="btn btn-primary btn-fixed" mat-raised-button color="primary" title="Click to Add" (click)="addManager()">
+  Add Manager
+  <mat-icon>add</mat-icon>
+</button>
+  <search-box
+    [list]="surveyorList"
+    (notify)="onNotifyClicked($event)"
+  >
+  </search-box>
+</div>
+
+<mat-card *ngIf="surveyorList.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th (click)="sortIt('m_code')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Code
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("m_code") }}
+                      </i>
+                    </th>
+                    <!-- <th (click)="sortIt('fullName')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Name
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("fullName") }}
+                      </i>
+                    </th> -->
+                    <th style="cursor: pointer">Password</th>
+                    <th (click)="sortIt('employeeName')" style="cursor: pointer">
+                      Employe
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("employeeName") }}
+                      </i>
+                    </th>
+                    <th style="cursor: pointer">Phone</th>
+                    <th style="cursor: pointer">Email</th>
+                    <th style="cursor: pointer">Cnic</th>
+                    <th (click)="sortIt('active')" style="cursor: pointer">
+                      Active
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("active") }}
+                      </i>
+                    </th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="surveyorList.length > 0">
+                  <!-- <tr
+                    *ngFor="
+                      let item of filteredList | orderBy: sortBy:sortOrder paginate: { itemsPerPage: 12, currentPage: currentpg }
+                    "
+                  > -->
+
+                   <!-- <tr
+                    *ngFor="
+                      let item of filteredList | orderBy: sortBy:sortOrder paginate: { itemsPerPage: 12, currentPage: currentpg, id: 'first'  }
+                    "
+                  > -->
+
+                  <tr
+                  *ngFor="
+                    let item of filteredList | orderBy: sortBy:sortOrder 
+                  "
+                >
+
+                  <!-- <ng-container *ngIf="item.type == 3"> -->
+                    <td>{{ item?.m_code }}</td>
+                    <!-- <td>{{ item?.fullName }}</td> -->
+                    <td>{{ item?.password }}</td>
+                    <td>{{ item?.employeeName }}</td>
+                    <td>{{ item?.phone }}</td>
+                    <td>{{ item?.email }}</td>
+                    <td>
+                      {{ item?.cnic }}
+                    </td>
+                    <td>
+                      {{ item?.active }}
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-primary btn-fixed"
+                        title="Edit Surveyor"
+                        (click)="showManagerInfoModal(item)"
+                      >
+                        <i class="fa fa-edit"> </i>
+                      </button>
+                    </td>
+                  <!-- </ng-container> -->
+         
+                  </tr>
+                </tbody>
+              </table>
+
+                   <!-- <div class="text-center">
+                <pagination-controls
+                  class="my-pagination"
+                  (pageChange)="currentpg = $event" 
+                  id="first"
+                  *ngIf="surveyorList.length > 0"
+                ></pagination-controls>
+              </div> -->
+
+              <!-- <div class="text-center">
+                <pagination-controls
+                  class="my-pagination"
+                  (pageChange)="currentpg = $event"
+                  *ngIf="surveyorList.length > 0"
+                ></pagination-controls>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+

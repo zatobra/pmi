@@ -1,0 +1,141 @@
+h1 { font-family: Lato; }
+
+.mr-10-IMP {
+    margin-right: 1% !important;
+  }
+
+  @import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+// * {
+//   margin: 0;
+//   padding: 0;
+//   font-family: Orbitron;
+// }
+
+.parentDiv{
+  width: 100%; 
+  background-color: black;
+  height: 40vh;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.parentDiv2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: white;
+  font-size: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  flex-direction: column;
+  // height: 100vh; /* Adjust the height based on your requirement */
+}
+
+.centerDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sal {
+  height: 100%;
+  // background: black;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-family: Orbitron;
+  font-size: 30px;
+}
+
+.counter {
+  margin-top: 30px;
+  height: 100%;
+  letter-spacing: 10px;
+  color: white;
+  display: flex;
+  
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
+  cursor: pointer;
+  // border: 3px solid blue;
+  transform: scaleY(2.5);
+}
+
+i {
+  // min-width: 60px;
+  text-align: center;
+  font-style: normal;
+}
+
+
+.image-container {
+  width: 100%;  /* Set the width of the fixed rectangle */
+  // height: 600px; /* Set the height of the fixed rectangle */
+  display: flex;
+  justify-content: center;
+  // justify-content: flex-start;
+  align-items: center;
+  // border: 3px solid red;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.button {
+  background-color: black; 
+  color: white; 
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; cursor: pointer;
+}
+
+// button.enabled {
+//   /* Styles for enabled button */
+//   background-color: green;
+//   color: white;
+// }
+
+button.disabled {
+  /* Styles for disabled button */
+  background-color: gray;
+  color: black;
+}
+
+@media (max-width: 1568px) {
+  .counter {
+    font-size: 80px;
+    letter-spacing: 8px;
+  }
+}
+
+@media (max-width: 1168px) {
+  .counter {
+    font-size: 50px;
+    letter-spacing: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .counter {
+    font-size: 35px;
+    letter-spacing: 3px;
+  }
+}
+
+/* Adjust font size for even smaller screens */
+@media (max-width: 590px) {
+  .counter {
+    font-size: 30px;
+    letter-spacing: 2px;
+  }
+}

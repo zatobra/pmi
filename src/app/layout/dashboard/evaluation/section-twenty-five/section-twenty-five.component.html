@@ -1,0 +1,113 @@
+<div
+  class="row"
+  style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+></div>
+
+<ng-container class="mt-2 justify-content-center" *ngIf="tagList?.length > 0">
+  <div class="row justify-content-center">
+    <!-- <h3>
+      <u>{{ data.sectionTitle }}</u>
+    </h3> -->
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u>
+        <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+  </div>
+  <div class="col-md-12 mt-1">
+    <table
+      class="table table-bordered table-hover"
+      style="min-width: 820px !important"
+    >
+      <thead style="background: lightgray">
+        <tr>
+          <th *ngFor="let item of tagList">
+            {{ item.heading }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <td *ngFor="let item of tagList">
+          <tr *ngFor="let value of item?.values; let i = index">
+            {{
+              value
+            }}
+            <hr />
+          </tr>
+          <br />
+        </td>
+      </tbody>
+    </table>
+  </div>
+  <br/>
+<br/>
+<br/>
+</ng-container>
+
+
+
+
+
+
+
+<ng-container class="mt-2 justify-content-center" *ngIf="genericTable?.length > 0">
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u>
+        <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+  </div>
+  <div class="col-md-12 mt-1">
+    <table
+      class="table table-bordered table-hover"
+      style="min-width: 820px !important"
+    >
+      <thead style="background: lightgray">
+        <tr>
+          <th >
+            Category Title
+          </th>
+          <th >
+            Tposm Title
+          </th>
+          <th >
+            Remark
+          </th>
+          <th >
+            Qauntity
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+       
+          <tr *ngFor="let item of genericTable; let i = index">
+           <td>{{item?.categoryTitle}}</td>
+           <td>{{item?.tposmTitle}}</td>
+           <td>{{item?.description}}</td>
+           <ng-container *ngIf="isEditable == false">
+            <td>{{item?.quantity}}</td>
+           </ng-container>
+           <ng-container *ngIf="isEditable == true">
+            <td
+            >
+              <input
+                type="number"
+                [(ngModel)]="item.quantity"
+                maxlength="3"
+                style="width: 4em"
+                (change)="changeTposmDataQuantity(item)"
+              />
+            </td>
+           </ng-container>
+          
+           
+            
+          </tr>
+       
+      </tbody>
+    </table>
+  </div>
+</ng-container>

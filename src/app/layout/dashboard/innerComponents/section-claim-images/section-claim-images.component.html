@@ -1,0 +1,418 @@
+<div class="container">
+  <div
+    class="row"
+    style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+  ></div>
+
+  <div class="row justify-content-center slideInLeft">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{title}} </u
+        ><i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+    <ng-container *ngIf="dataObj?.imageList?.length > 0">
+      <div
+        [ngClass]="{
+          'col-md-5': id != null,
+          'col-md-4': id == null
+        }"
+      >
+        <label class="title" for="title">{{ selectedImage?.title }}</label>
+        <div style="position: relative">
+          <img
+            *ngIf="!selectedImage?.isExternalUrl"
+            src="{{ ip }}{{ selectedImage?.url }}"
+            class="img-thumbnail"
+            style="height: 450px; width: 100%"
+            (click)="showChildModal(selectedImage)"
+          />
+          <img
+            *ngIf="selectedImage?.isExternalUrl"
+            src="{{ selectedImage?.url }}"
+            class="img-thumbnail"
+            style="height: 450px; width: 100%"
+            (click)="showChildModal(selectedImage)"
+          />
+          <div class="imageDetails" *ngIf="dataObj?.imageView != 'Y'">
+            <p *ngIf="selectedImage?.visitDateTime">
+            Time Stamp: {{ selectedImage?.visitDateTime }}
+            </p>
+          </div>
+        </div>
+        <div class="col-12 ml-3 mt-2">
+          <div class="row">
+            <ng-container *ngFor="let img of dataObj?.imageList; let i = index">
+              <div
+                class="col-2 mb-1 card mt-5 mr-2"
+                (click)="setSelectedImage(img)"
+                style="padding: 0% !important; cursor: pointer"
+                [ngClass]="{ bgColor: img?.url == selectedImage.url }"
+              >
+                <img
+                  *ngIf="!img?.isExternalUrl"
+                  src="{{ ip }}{{ img?.url }} "
+                  width="100"
+                  class="img-thumbnail side-image"
+                  style="height: 80px !important; width: 120px !important"
+                />
+                <img
+                  *ngIf="img?.isExternalUrl"
+                  src="{{ img?.url }} "
+                  width="100"
+                  class="img-thumbnail side-image"
+                  style="height: 80px !important; width: 120px !important"
+                />
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container style="cursor: pointer" *ngIf="id">
+      <div
+        class="tableFixHead"
+        [ngClass]="{
+          'col-md-7': dataObj?.imageList?.length > 0,
+          'col-md-10': dataObj?.imageList?.length == 0
+        }"
+      >
+        <table class="table table-bordered table-hover w-100">
+          <!-- <thead style="background: lightgray">
+            <tr>
+              <th>Question</th>
+              <th>Answer</th>
+            </tr>
+          </thead> -->
+
+          <!-- opd claim -->
+          <tbody *ngIf="dataObj?.claimTypeId=='1'">
+            <tr >
+              <th style="width: 300px !important; word-wrap: break-word">Claim Id</th>
+              <td>{{ dataObj.id}}</td>
+            </tr>
+            <tr >
+              <th style="width: 300px !important; word-wrap: break-word">Claim Date</th>
+              <td>{{ dataObj.visitDate}}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{labels.regionLabel}}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">Base City</th>
+              <td>{{ dataObj.surveyorRegionTitle }}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{ labels?.surveyorLabel }}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">SFM Code</th>
+                    <td>{{ dataObj.code }}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{ labels?.surveyorLabel }}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">SFM Name</th>
+                    <td>{{ dataObj.surveyorName }}</td>
+            </tr>
+             
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Remarks</th>
+                <td>{{ dataObj.claimRemarks }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Approved Remarks</th>
+                    <td>{{ dataObj.claimApprovedRemarks }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Amount</th>
+
+                <td *ngIf="!isClaimEditable">{{ dataObj.claimAmount }}</td>
+                <td *ngIf="isClaimEditable">
+                  <input type="text" [(ngModel)]="temporaryClaimAmount" (ngModelChange)="compareAmount();"  [ngStyle]="{
+                    background: checkVariable ? 'red' : 'green',
+                    color: checkVariable ? 'yellow' : 'white'
+                  }"
+                  >  
+                </td>
+
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Total Remaining Balance</th>
+                <td>{{ dataObj.remainingAmount }}</td>
+              </tr>
+
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Entitled Amount</th>
+                <td>{{ dataObj.entitledAmount }}</td>
+              </tr>
+
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Status</th>
+                <td>
+                  <!-- <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="primary"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj)" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id"
+                  > -->
+                    {{dataObj.claimStatus}}
+                  <!-- </button> -->
+                </td>
+              </tr>  
+
+
+
+
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Approve Claim</th>
+                <td>
+                  <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="primary"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj, 'approve')" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id || checkVariable"
+                  >
+                    Approve
+                  </button>
+                </td>
+              </tr> 
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">DisApprove Claim</th>
+                <td>
+                  <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="warn"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj, 'disapprove')" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id"
+                  >
+                    DisApprove
+                  </button>
+                </td>
+              </tr> 
+
+
+
+                      
+          </tbody>
+
+
+          <!-- travelling claim -->
+          <tbody *ngIf="dataObj?.claimTypeId=='0'">
+            <tr >
+              <th style="width: 300px !important; word-wrap: break-word">Claim Id</th>
+              <td>{{ dataObj.id}}</td>
+            </tr>
+            <tr >
+              <th style="width: 300px !important; word-wrap: break-word">Claim Date</th>
+              <td>{{ dataObj.visitDate}}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{labels.regionLabel}}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">Base City</th>
+              <td>{{ dataObj.surveyorRegionTitle }}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{ labels?.surveyorLabel }}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">SFM Code</th>
+                    <td>{{ dataObj.code }}</td>
+            </tr>
+            <tr>
+              <!-- <th style="width: 300px !important; word-wrap: break-word">{{ labels?.surveyorLabel }}</th> -->
+              <th style="width: 300px !important; word-wrap: break-word">SFM Name</th>
+                    <td>{{ dataObj.surveyorName }}</td>
+            </tr>
+
+            <tr>
+              <th style="width: 300px !important; word-wrap: break-word">Approved Remarks</th>
+                  <td>{{ dataObj.claimApprovedRemarks }}</td>
+            </tr>
+           
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Trip Type</th>
+                <td>{{ dataObj.tripType }}</td>
+              </tr>
+
+             
+              <tr >
+                <th style="width: 300px !important; word-wrap: break-word">From</th>
+                <td>{{ dataObj.fromLocation}}</td>
+              </tr>
+              <tr >
+                <th style="width: 300px !important; word-wrap: break-word">To</th>
+                <td>{{ dataObj.toLocation}}</td>
+              </tr>
+
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Total Milage</th>
+                <td>{{ dataObj.totalMilage }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Extra Milage</th>
+                <td>{{ dataObj.extraMilage }}</td>
+              </tr>
+              
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Lodge</th>
+                <td>{{ dataObj.lodge }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Meal</th>
+                <td>{{ dataObj.meal }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Misc</th>
+                <td>{{ dataObj.misc }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Travel Expenses</th>
+                <td>{{ dataObj.travelExpenses }}</td>
+              </tr>
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Total Expenses</th>
+                <td>{{ dataObj.claimAmount }}</td>
+              
+              </tr>
+
+
+
+              <!-- <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Claim Remarks</th>
+                <td>{{ dataObj.claimRemarks }}</td>
+              </tr> -->
+             
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Status</th>
+                <td>
+                  <!-- <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="primary"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj)" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id"
+                  > -->
+                    {{dataObj.claimStatus}}
+                  <!-- </button> -->
+                </td>
+              </tr>  
+
+
+
+
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">Approve Claim</th>
+                <td>
+                  <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="primary"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj, 'approve')" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id"
+                  >
+                    Approve
+                  </button>
+                </td>
+              </tr> 
+              <tr>
+                <th style="width: 300px !important; word-wrap: break-word">DisApprove Claim</th>
+                <td>
+                  <button
+                    class="example-margin mr-10-IMP"
+                    mat-raised-button
+                    color="warn"
+                    title="Update Email"
+                    (click)="showRemarksModal(dataObj, 'disapprove')" 
+                    [disabled]="dataObj.claimStatus != 'PENDING' || !user_id"
+                  >
+                    DisApprove
+                  </button>
+                </td>
+              </tr> 
+
+      
+              
+                        
+          </tbody>
+
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+
+
+<div
+  bsModal
+  #remarksModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+  [config]="{ backdrop: 'static', keyboard: false }"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Approved Remarks
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModal }"></i>
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideRemarksModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" enctype="multipart/form-dataObj">
+        <div class="modal-body">
+        
+          <div class="form-group">
+            <input type="hidden" formControlName="id" />
+          </div>
+         
+            <div class="form-group col-md-12">
+              <label for="remarks">Enter Remarks</label>
+              <input
+                type="text"
+                class="form-control"
+                id="remarks"
+                formControlName="remarks"
+              />
+            </div>
+          </div>
+         
+        <!-- </div> -->
+        <div class="modal-footer">
+          
+
+          <button
+           
+            class="mr-1"
+            (click)="changeStatus(form.value)"
+            [disabled]="loadingModal || !form.value.remarks"
+            mat-raised-button
+            color="primary"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    

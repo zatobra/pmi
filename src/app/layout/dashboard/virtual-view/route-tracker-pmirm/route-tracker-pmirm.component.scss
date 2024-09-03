@@ -1,0 +1,197 @@
+.example-form {
+  // min-width: 150px;
+  // max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 15em;
+}
+
+/*h4 {
+    color: #ed6359;
+    margin-top: 15px !important;
+  }*/
+
+.mat-card-content {
+  width: 100%;
+}
+
+.mr-5-IMP {
+  margin-right: 0.5% !important;
+}
+
+.mtb-5-IMP {
+  margin: 0.5% 1% !important;
+}
+
+.span-color {
+  color: #ed6359;
+}
+
+h3,
+h5 {
+  color: #3f51b5 !important;
+}
+
+.valid-transfercode-span {
+  color: #3a7c09;
+}
+.invalid-transfercode-span {
+  color: #ed6359;
+}
+
+/*.table td{
+    padding: unset;
+    border-top: 0px;
+  }*/
+.col-md-2 {
+  -webkit-box-flex: 0;
+  max-width: 13.666667% !important;
+}
+
+.arrow {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f12e2b;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.refresh-btn {
+  cursor: pointer;
+  color: red;
+  font-weight: 900;
+  font-size: 30px;
+}
+
+tr > th {
+  cursor: pointer;
+}
+table {
+  width: 100%;
+}
+
+.fix-width {
+  // background: red;
+  min-width: 120px;
+}
+
+.fix-address {
+  word-wrap: break-word;
+  max-width: 300px;
+}
+
+agm-map {
+  height: 700px; /* height is required */
+}
+
+td {
+  // table-layout:fixed; width:auto; word-break: break-all !important;
+  white-space: nowrap;
+}
+
+th {
+  // table-layout:fixed; width:auto; word-break: break-all !important;
+  white-space: nowrap;
+}
+
+
+
+.content {
+  position: relative;
+}
+
+.expand-button {
+  position: absolute;
+  top: 0px;
+  right: 15px;
+  background-color: gray;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  z-index: 1;
+}
+
+.expand-button i {
+  font-size: 1.5em;
+}
+
+/* Styles for the expanded mode */
+// .content.col-md-12 .expand-button {
+//   display: none; /* Hide the button when the column is expanded */
+// }
+
+
+/* Custom styles for the info window */
+.custom-info-window {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  
+}
+
+.custom-info-window strong {
+  font-weight: bold;
+}
+
+.custom-info-window button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.custom-info-window button:hover {
+  background-color: #0c7cd5;
+}
+
+
+::ng-deep .si-has-border .si-content-wrapper > .custom-info-333 {
+  border: 1px solid #bbb;
+  /* background-color: blue; */
+  background-color: red;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+::ng-deep  .custom-info-333 > .si-has-border .si-content-wrapper{
+  border: 1px solid #bbb;
+  /* background-color: blue; */
+  background-color: red;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.custom-info-333 {
+  border: 1px solid #bbb;
+  /* background-color: blue; */
+  background-color: lightcoral;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin: 0;
+}
+
+.custom-info-222 {
+  border: 1px solid #bbb;
+  /* background-color: blue; */
+  background-color: lightgoldenrodyellow;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.custom-info-111 {
+  border: 1px solid #bbb;
+  /* background-color: blue; */
+  background-color: green;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+

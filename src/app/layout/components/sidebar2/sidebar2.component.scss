@@ -1,0 +1,321 @@
+
+
+
+
+
+// mega menu
+
+
+
+.p-tieredMenu-root-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-tieredMenu-root-list > .p-menuitem {
+  position: relative;
+}
+
+.p-tieredMenu .p-menuitem-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  overflow: hidden;
+  position: relative;
+}
+
+.p-tieredMenu .p-menuitem-text {
+  line-height: 1;
+}
+
+.p-tieredMenu-panel {
+  display: none;
+  position: absolute;
+  width: auto;
+  z-index: 1;
+}
+
+.p-tieredMenu-root-list > .p-menuitem-active > .p-tieredMenu-panel {
+  display: block;
+}
+
+.p-tieredMenu-submenu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p-tieredMenu-submenu-header {
+  display: flex;
+  align-items: center;
+}
+
+/* Horizontal */
+.p-tieredMenu-horizontal .p-tieredMenu-root-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Vertical */
+.p-tieredMenu-vertical .p-tieredMenu-root-list {
+  flex-direction: column;
+}
+
+.p-tieredMenu-vertical .p-tieredMenu-root-list > .p-menuitem-active > .p-tieredMenu-panel {
+  left: 100%;
+  top: 0;
+}
+
+.p-tieredMenu-vertical .p-tieredMenu-root-list > .p-menuitem > .p-menuitem-link > .p-submenu-icon {
+  margin-left: auto;
+}
+
+
+.p-tieredMenu-grid {
+  display: flex;
+}
+
+.p-tieredMenu-col-2,
+.p-tieredMenu-col-3,
+.p-tieredMenu-col-4,
+.p-tieredMenu-col-6,
+.p-tieredMenu-col-12 {
+  flex: 0 0 auto;
+  padding: 0.5rem;
+}
+
+.p-tieredMenu-col-2 {
+  width: 16.6667%;
+}
+
+.p-tieredMenu-col-3 {
+  width: 25%;
+}
+
+.p-tieredMenu-col-4 {
+  width: 33.3333%;
+}
+
+.p-tieredMenu-col-6 {
+  width: 50%;
+}
+
+.p-tieredMenu-col-12 {
+  width: 100%;
+}
+
+
+// old
+
+::ng-deep.mat-menu-panel {
+  max-width: none !important;
+}
+#sidebar {
+  position: fixed;
+  top: 56px;
+  bottom: 0;
+  background: #fff;
+  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.24);
+  z-index: 999;
+  -ms-overflow-y: auto;
+  overflow-y: auto;
+  .mat-nav-list {
+    width: 100%;
+    a {
+      .mat-icon {
+        margin-right: 15px;
+      }
+      display: block;
+    }
+  }
+}
+
+.nested-menu {
+  .nested {
+    list-style-type: none;
+  }
+  .submenu {
+    display: none;
+    height: 0;
+  }
+  & .expand {
+    &.submenu {
+      display: block;
+      list-style-type: none;
+      height: auto;
+      margin: 0;
+      li {
+        a {
+          padding: 10px;
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 992px) {
+  #sidebar {
+    left: -220px;
+  }
+}
+
+.link-active {
+  background-color: #f3f3f3;
+}
+
+.bottom-fixed {
+  position: absolute;
+  bottom: 5px;
+  left: 45px;
+  width: 130px !important;
+}
+
+.mat-list-item {
+  .mat-menu-trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+
+// #mega{
+//   z-index: 999999;
+// }
+
+:host ::ng-deep .p-menu-list{
+  width: 420px !important;;
+  background-color: aqua !important;;
+}
+
+:host ::ng-deep p-menu-list{
+  width: 420px !important;;
+  background-color: aqua !important;;
+}
+
+:host ::ng-deep .p-tieredMenu{
+  width: 420px !important;;
+  background-color: aqua !important;;
+}
+
+:host ::ng-deep p-tieredMenu{
+  width: 420px !important;;
+  background-color: aqua !important;;
+}
+
+
+// :host ::ng-deep .menucus ul li:nth-child(1) {
+//   background: green;
+// }
+// :host ::ng-deep .menucus ul li:nth-child(2) {
+//   background: yellow;
+// }
+// :host ::ng-deep .menucus ul li:nth-child(3) {
+//   background: red;
+// }
+
+:host ::ng-deep .menucus ul{
+  // background: pink;
+  width: 320px;
+  outline:none !important;
+  // border: 0 !important;
+  // border: 2px solid red;
+  appearance: none !important;
+  text-decoration: none;
+  text-shadow: none;
+  text-decoration-line: none;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+  box-shadow: unset !important;
+  // margin-right: 20px;
+  
+}
+
+:host ::ng-deep .menucus li{
+  // background: pink;
+  width: 220px;
+  outline:none !important;
+  // border: 0 !important;
+  // border: 2px solid blue;
+  appearance: none !important;
+  text-decoration: none;
+  text-shadow: none;
+  text-decoration-line: none;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+  box-shadow: unset !important;
+  // margin-right: 20px;
+  
+}
+
+:host ::ng-deep  .p-slidemenu{
+
+  margin-left: 30px;
+  appearance: none !important;
+  text-decoration: none;
+  text-shadow: none;
+  text-decoration-line: none;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+  box-shadow: unset !important;
+  
+}
+
+:host ::ng-deep .menucus .p-tieredMenu {
+  background: pink;
+}
+
+.right{
+  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.24);
+  // background: black;
+  // border-right: 16px solid red;
+}
+
+
+:host ::ng-deep .menucus .p-slidemenu-wrapper {
+  // border: 2px solid pink;
+  width: 280px;
+}
+
+// :host ::ng-deep  .p-slidemenu-wrapper {
+//   background: pink;
+//   width: 280px;
+// }
+
+:host ::ng-deep .menucus .p-slidemenu-content {
+  // border: 2px solid green;
+  width: 180px;
+}
+
+:host ::ng-deep .menucus .p-slidemenu-wrapper {
+  // border: 2px solid pink;
+  width: 180px;
+}
+
+:host ::ng-deep .menucus .p-menuitem-text {
+  // border: 2px solid yellow;
+  width: 280px;
+}
+
+:host ::ng-deep .menucus .p-menu-list {
+  border: 3px solid aqua;
+  width: 180px;
+}
+
+// :host ::ng-deep  .p-slidemenu-content {
+//   background: pink;
+//   width: 280px;
+// }
+
+
+:host ::ng-deep .ui-menu {
+  padding: 3.925em 0 0 0
+}
+
+:host ::ng-deep .p-component{
+  border: 0 !important;
+}

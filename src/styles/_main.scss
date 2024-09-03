@@ -1,0 +1,53 @@
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    // font-family: "Fontil Sans";
+  }
+
+// .samsung{
+//   html,
+// body {
+//   height: 100%;
+//   margin: 0;
+//   font-family: "Calibri";
+// }
+// }
+
+// .noSamsung{
+//   html,
+//   body {
+//     height: 100%;
+//     margin: 0;
+//     font-family: "Fontil Sans";
+//   }
+// }
+
+// body {
+//   height: 100%;
+//   margin: 0;
+//   font-family: 'Fontil Sans';
+// }
+
+.main-container {
+  position: absolute;
+  top: 64px;
+  left: 220px;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.container-mini-side-bar {
+  position: absolute;
+  top: 64px;
+  left: 50px;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+}

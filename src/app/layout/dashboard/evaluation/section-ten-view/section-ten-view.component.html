@@ -1,0 +1,156 @@
+<div class="container-fluid">
+  <div
+    class="row"
+    style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+  ></div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u
+        ><i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+    <ng-container *ngIf="data?.imageList.length > 0">
+      <div
+        [ngClass]="{
+          'col-md-5': formData != null,
+          'col-md-4': formData == null
+        }"
+      >
+        <label class="title" for="title">{{ selectedImage?.title }}</label>
+        <div style="position: relative">
+          <img
+            *ngIf="!selectedImage?.isExternalUrl"
+            src="{{ ip }}{{ selectedImage?.url }}"
+            class="img-thumbnail"
+            style="height: 450px; width: 100%"
+            (click)="showChildModal(selectedImage)"
+          />
+          <img
+            *ngIf="selectedImage?.isExternalUrl"
+            src="{{ selectedImage?.url }}"
+            class="img-thumbnail"
+            style="height: 450px; width: 100%"
+            (click)="showChildModal(selectedImage)"
+          />
+          <div class="imageDetails">
+            <p *ngIf="selectedImage?.visitDateTime">
+              Time Stamp: {{ selectedImage?.visitDateTime }}
+            </p>
+          </div>
+        </div>
+        <div class="col-12 ml-3 mt-2">
+          <div class="row">
+            <ng-container *ngFor="let img of data?.imageList; let i = index">
+              <div
+                class="col-2 mb-1 card mt-5 mr-2"
+                (click)="setSelectedImage(img)"
+                style="padding: 0% !important; cursor: pointer"
+                [ngClass]="{ bgColor: img?.url == selectedImage.url }"
+              >
+                <img
+                  *ngIf="!img?.isExternalUrl"
+                  src="{{ ip }}{{ img?.url }} "
+                  width="100"
+                  class="img-thumbnail side-image"
+                  style="height: 80px !important; width: 120px !important"
+                />
+                <img
+                  *ngIf="img?.isExternalUrl"
+                  src="{{ img?.url }} "
+                  width="100"
+                  class="img-thumbnail side-image"
+                  style="height: 80px !important; width: 120px !important"
+                />
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="(formData | json) != null && formData?.length > 0">
+      <div
+        class="tableFixHead"
+        [ngClass]="{
+          'col-md-7': data?.imageList?.length > 0,
+          'col-md-10': data?.imageList?.length == 0
+        }"
+      >
+        <table class="table table-bordered table-hover w-100">
+          <thead style="background: lightgray">
+            <tr>
+              <!-- <th>Brand Title</th> -->
+              <th>Question</th>
+              <th>Answer</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let data of formData">
+              <td style="width: 600px !important; word-wrap: break-word">
+                {{ data.value.question }}
+              </td>
+
+              <ng-container *ngIf="isEditable == false">
+                <td style="width: 300px !important">
+                  {{ data.value.answer }}
+                </td>
+              </ng-container>
+              <ng-container *ngIf="isEditable == true">
+                <ng-container
+                  *ngIf="data.value.fieldType == 'text_field'; else options"
+                >
+                  <td style="width: 300px">
+                    <input
+                      type="number"
+                      [(ngModel)]="data.value.answer"
+                      maxlength="10"
+                      style="width: 3em"
+                      (change)="updateTextData(data.value)"
+                    />
+                  </td>
+                </ng-container>
+                <ng-template #options>
+                  <td>
+                    <select
+                      #newValue
+                      (change)="
+                        updateMultiOptionData(newValue.value, data.value)
+                      "
+                    >
+                      <ng-container
+                        *ngFor="let options of data.value.optionList"
+                      >
+                        <option
+                          *ngIf="data.value.answer == options.title"
+                          [value]="options.id"
+                          selected="selected"
+                        >
+                          {{ options?.title }}
+                        </option>
+                        <option
+                          *ngIf="data.value.answer != options.title"
+                          [value]="options.id"
+                        >
+                          {{ options?.title }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </td>
+                </ng-template>
+              </ng-container>
+            </tr>
+            <tr>
+              <th>
+                Achieved={{ achievedSos }} ({{ achievedSosPercentage }} %)
+              </th>
+              <td>{{ totalSos }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

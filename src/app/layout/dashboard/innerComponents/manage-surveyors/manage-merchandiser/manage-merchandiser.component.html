@@ -1,0 +1,219 @@
+
+<div class="example-section" style="text-align: center; margin: 5px;">
+<div style="display: flex;justify-content: space-between;">
+  <div style="display: flex">
+    <div style="margin-right: 10px;">
+      <search-box
+      [list]="surveyorList"
+      (notify)="onNotifyClicked($event)"
+    >
+    </search-box>
+    </div>
+    <div style="align-self: center">
+      <button
+      style="margin-right: 10px;"
+        mat-raised-button
+        color="primary"
+        [disabled]="!selectedSurveyors.length"
+        (click)="enableForceRelogIn()"
+      >
+      Enable Force Relogin 
+      <i style="padding: 3px;" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      </button>
+    </div>
+  </div>
+  <div style="display: flex">
+    <div style="margin-right: 10px;">
+      <button class="btn btn-primary btn-fixed" mat-raised-button color="primary" title="Click to Add" (click)="addMerchandiser()">
+        Employee
+       <mat-icon>add</mat-icon>
+     </button>
+    </div>
+    <div>
+      <button class="btn btn-primary btn-fixed" mat-raised-button color="primary" title="Click to Add" (click)="addMerchandiser()">
+        {{ labels?.surveyorLabel }}
+       <mat-icon>add</mat-icon>
+     </button>
+    </div>
+  </div>
+</div>
+</div>
+  
+<mat-card *ngIf="surveyorList.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>
+                      <mat-checkbox
+                        color="primary"
+                        (change)="checkUncheckAll($event)"
+                        #isAllCheckedcheckUncheckSingle
+                      >
+                      </mat-checkbox>
+                    </th>
+                    <th (click)="sortIt('m_code')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Code
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("m_code") }}
+                      </i>
+                    </th>
+                    <!-- <th (click)="sortIt('fullName')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Name
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("fullName") }}
+                      </i>
+                    </th> -->
+                    <th style="cursor: pointer">Password</th>
+                    <th (click)="sortIt('employeeName')" style="cursor: pointer">
+                      Employe
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("employeeName") }}
+                      </i>
+                    </th>
+                    <th
+                      (click)="sortIt('supervisorName')"
+                      style="cursor: pointer"
+                    >
+                      Supervisor Name
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("supervisorName") }}
+                      </i>
+                    </th>
+                    
+                    <th style="cursor: pointer">Phone</th>
+                    <!-- <th style="cursor: pointer">Email</th>
+                    <th style="cursor: pointer">Cnic</th> -->
+                    <th (click)="sortIt('active')" style="cursor: pointer">
+                      Force Relogin
+                    </th>
+                    <th (click)="sortIt('active')" style="cursor: pointer">
+                      Active
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("active") }}
+                      </i>
+                    </th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="surveyorList.length > 0">
+                  <!-- jwPagination -->
+                  <!-- <ng-container
+                    *ngFor="
+                      let item of pageOfItems 
+                    "
+                  > -->
+                  <!-- <tr
+                    *ngFor="
+                      let item of filteredList | orderBy: sortBy:sortOrder|paginate: {
+                        itemsPerPage: 5,
+                        currentPage: page
+                        
+                      }
+                      "
+                  > -->
+
+                  <!-- <tr
+                  *ngFor="
+                    let item of filteredList | orderBy: sortBy:sortOrder | paginate: { itemsPerPage: 12, currentPage: currentpg2, id: 'second'  }
+                  "
+                > -->
+
+                  <tr
+                  *ngFor="
+                    let item of filteredList | orderBy: sortBy:sortOrder
+                    "
+                >
+
+                  <!-- <ng-container *ngIf="item.type == 1"> -->
+                    <td>
+                      <mat-checkbox
+                        color="primary"
+                        name="{{ item?.employeeName }}"
+                        id="{{ item?.Id }}"
+                        (change)="checkUncheckSingle(checked, item)"
+                        #checked
+                      >
+                      </mat-checkbox>
+                    </td>
+                    <td>{{ item?.m_code }}</td>
+                    <!-- <td>{{ item?.fullName }}</td> -->
+                    <td>{{ item?.password }}</td>
+                    <td>{{ item?.employeeName }}</td>
+                    <td>{{ item?.supervisorName }}</td>
+                    
+                    <td>{{ item?.phone }}</td>
+                    <!-- <td>{{ item?.email }}</td>
+                    <td>
+                      {{ item?.cnic }}
+                    </td> -->
+                    <td>
+                     
+                      <label class="switch">
+                        <input
+                          type="checkbox"
+                          [checked]="item?.forceLogin == 'Y'"
+                          id="{{ item?.id }}"
+                          (click)="forceReLoginRadio(onOffchecked, item)"
+                          #onOffchecked
+                        />
+                        <span class="slider round"></span>
+                      </label>
+                     
+                    </td>
+                    <td>
+                      {{ item?.active }}
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-primary btn-fixed"
+                        title="Edit Surveyor"
+                        (click)="showMerchandiserInfoModal(item)"
+                      >
+                        <i class="fa fa-edit"> </i>
+                      </button>
+                    </td>
+                  <!-- </ng-container> -->
+                  <!-- jwPagination -->
+                <!-- </ng-container> -->
+
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- <div class="text-center">
+                <pagination-controls
+                  
+                  (pageChange)="currentpg2 = $event" 
+                  id="second"
+                  
+                ></pagination-controls>
+              </div> -->
+
+              <!-- <div class="text-center">
+                <pagination-controls
+                (pageChange)="handlePageChange($event)"
+                 
+                ></pagination-controls>
+              </div> -->
+
+              <!-- jwPagination Controls -->
+              <!-- <div class="text-center">
+                <div class="card-footer pb-0 pt-3" style="cursor: pointer !important;">
+                  <jw-pagination [items]="filteredList" (changePage)="onChangePage($event)"></jw-pagination>
+              </div>
+              </div> -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

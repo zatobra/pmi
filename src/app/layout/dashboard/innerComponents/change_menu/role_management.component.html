@@ -1,0 +1,765 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <div class="row" style="clear: both">
+      <mat-card-title style="float: left; margin-left: 15px">
+        Manage Portal Access
+        <i
+          [ngClass]="{ 'fa fa-cog fa-spin': loadingData || loadingUserList }"
+        ></i>
+      </mat-card-title>
+
+      <mat-card-title style="float: right; position: absolute; right: 15px">
+        <div class="row">
+          <div class="col-md-6">
+            <button
+              class="example-margin mr-10-IMP"
+              mat-raised-button
+              color="primary"
+              title="Add Role"
+              (click)="showInsertModal()"
+            >
+              Add Role
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <div class="col-md-6">
+            <button
+              class="example-margin mr-10-IMP"
+              mat-raised-button
+              color="primary"
+              title="Add Role"
+              (click)="showUserInsertModal()"
+            >
+              Add User
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-title>
+    </div>
+
+    <div class="row" style="clear: both">
+      <section class="example-section" style="float: left; margin-left: 15px">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="Roles"
+            name="roles"
+            [(ngModel)]="selectedRole"
+            (ngModelChange)="getMenus(); getUsersByRole()"
+          >
+            <ng-container *ngFor="let role of rolesList">
+              <mat-option *ngIf="role.id != 1" [value]="role">{{
+                role.type_description
+              }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </section>
+      <section class="example-section" style="margin-left: 50px; margin-top: 10px;">
+        <button
+        class="example-margin mr-10-IMP"
+        mat-raised-button
+        color="primary"
+        title="Edit Role"
+        (click)="showUpdateRoleModal()"
+      >
+        Edit Role
+        <mat-icon>edit</mat-icon>
+      </button>
+      </section>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-tab-group
+  mat-stretch-tabs
+  class="example-stretched-tabs mat-elevation-z4"
+  *ngIf="menus.length > 0 || users.length > 0"
+>
+  <mat-tab label="Menus List">
+    <div
+      class="example-section mb-20"
+      style="text-align: end; margin-top: 10px; margin-right: 20px"
+      *ngIf="menus.length > 0"
+    >
+      <button
+        [disabled]="
+          menus.length == 0 || loadingData || selectedMenus.length == 0
+        "
+        class="btn btn-primary btn-fixed"
+        title="Click to Apply changes"
+        (click)="saveMenus()"
+      >
+        Save Changes
+      </button>
+    </div>
+    <mat-card *ngIf="menus.length > 0">
+      <mat-card-content>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>
+                <!-- <mat-checkbox
+              color="primary"
+              (change)="checkUncheckAll($event)"
+              #isAllChecked
+            >
+            </mat-checkbox> -->
+              </th>
+              <th scope="col">#</th>
+              <th scope="col">Menu_Header</th>
+              <th scope="col">Menu_Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let count of menus; let i = index">
+              <td>
+                <mat-checkbox
+                  color="primary"
+                  [checked]="count.active == 'Y'"
+                  name="{{ count?.menu_header }}"
+                  (change)="changeMenu(checked, count)"
+                  #checked
+                >
+                </mat-checkbox>
+              </td>
+              <th scope="col">{{ i + 1 }}</th>
+              <td>{{ count?.menu_header }}</td>
+              <td>{{ count?.menu_title }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+
+  <mat-tab label="Users List">
+    <mat-card *ngIf="users.length > 0">
+      <mat-card-content>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th>
+                          {{ labels?.regionLabel }}
+                        </th>
+                        <th>
+                          {{ labels?.zoneLabel }}
+                        </th>
+                        <th *ngIf="clusterList?.length > 0">
+                          {{ labels?.clusterLabel }}
+                        </th>
+                        <th>
+                          {{ labels?.areasLabel }}
+                        </th>
+                        <!-- <th>
+                        Type Id
+                      </th> -->
+                        <th>Active</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+
+                    <tbody *ngIf="users.length > 0">
+                      <tr *ngFor="let item of users">
+                        <td>{{ item?.username }}</td>
+                        <td>{{ item?.password }}</td>
+                        <!-- <td>{{ item?.type_id }}</td> -->
+                        <td>{{ item?.Region }}</td>
+                        <td>{{ item?.Zone }}</td>
+
+                        <td *ngIf="clusterList?.length > 0">
+                          {{ item?.Cluster }}
+                        </td>
+                        <td>{{ item?.Areas }}</td>
+                        <td>
+                          {{ item?.active }}
+                        </td>
+                        <td>
+                          <!-- <button
+                          class="btn btn-primary btn-fixed"
+                          title="Edit Surveyor"
+                          (click)="showSurveyorInfoModal(item)"
+                        > -->
+                          <button
+                            class="btn btn-primary btn-fixed"
+                            title="Edit Surveyor"
+                            (click)="showUserInfoModal(item)"
+                          >
+                            <i class="fa fa-edit"> </i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>
+
+<div
+  bsModal
+  #insertModal="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Add New Role
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideInsertModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form [formGroup]="insertForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="type_description">Role Description</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="type_description"
+            />
+          </div>
+          <div class="form-group">
+            <label for="active">Active</label>
+            <select
+              formControlName="active"
+              class="form-control"
+              placeholder="Select Status"
+              [(ngModel)]="selectedStatus"
+            >
+              <ng-container *ngFor="let status of activeStatus">
+                <option [value]="status.value">{{ status.value }}</option>
+              </ng-container>
+            </select>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              (click)="insertRole(insertForm.value)"
+              class="mr-1"
+              mat-raised-button
+              color="primary"
+            >
+              <i
+                [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"
+              ></i>
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #userInsertModal="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Add New User
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideUserInsertModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form [formGroup]="userInsertForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-md-8">
+              <label for="username">UserName</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="username"
+              />
+            </div>
+            <div class="form-group col-md-4">
+              <label for="password">Password</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="password"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="active">Active</label>
+              <select
+                formControlName="active"
+                class="form-control"
+                placeholder="Select Status"
+                [(ngModel)]="selectedStatus"
+              >
+                <ng-container *ngFor="let status of activeStatus">
+                  <option [value]="status.value">{{ status.value }}</option>
+                </ng-container>
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="type">Role</label>
+              <select
+                formControlName="type"
+                class="form-control"
+                placeholder="Select Role"
+                [(ngModel)]="selectedType"
+              >
+                <ng-container *ngFor="let role of rolesList">
+                  <option *ngIf="role.id != 1" [value]="role.id">
+                    {{ role.type_description }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="clusterList?.length > 0">
+            <label for="cluster">{{ labels.clusterLabel }}</label>
+            <select
+              formControlName="cluster"
+              class="form-control"
+              placeholder="Select Cluster"
+              [(ngModel)]="selectedCluster"
+              (ngModelChange)="getZoneByClusterId()"
+            >
+              <ng-container *ngFor="let c of clusterList">
+                <option [value]="c.id">{{ c.title }}</option>
+              </ng-container>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="zone">{{ labels.zoneLabel }}</label>
+            <select
+              formControlName="zone"
+              class="form-control"
+              placeholder="Select Zone"
+              [(ngModel)]="selectedZone"
+              (ngModelChange)="getRegionByZoneId()"
+            >
+              <ng-container *ngFor="let z of zoneList">
+                <option [value]="z.id">{{ z.title }}</option>
+              </ng-container>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="region">{{ labels.regionLabel }}</label>
+            <select
+              formControlName="region"
+              class="form-control"
+              placeholder="Select Region"
+            >
+              <ng-container *ngFor="let r of regionList">
+                <option [value]="r.id">{{ r.title }}</option>
+              </ng-container>
+            </select>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              [disabled]="loadingModalButton || !userInsertForm.valid"
+              (click)="insertUser(userInsertForm.value)"
+              class="mr-1"
+              mat-raised-button
+              color="primary"
+            >
+              <i
+                [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"
+              ></i>
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #userInfoModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Update User
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModalButton }"></i>
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideUserInfoModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-md-8">
+              <label for="username"> Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                formControlName="username"
+              />
+              <div
+                *ngIf="
+                  form.controls.username.errors &&
+                  (form.controls.username.touched ||
+                    form.controls.username.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'username')"
+                  class="invalid-feedback"
+                >
+                  Valid Name is required.
+                </mat-error>
+              </div>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="active">Active</label>
+              <select
+                formControlName="active"
+                class="form-control"
+                placeholder="Change Status"
+                name="active"
+              >
+                <ng-container *ngFor="let status of activeStatus">
+                  <option [value]="status.value">{{ status.value }}</option>
+                </ng-container>
+              </select>
+              <div
+                *ngIf="
+                  form.controls.active.errors &&
+                  (form.controls.active.touched || form.controls.active.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'active')"
+                  class="invalid-feedback"
+                >
+                  Valid Status is Required.
+                </mat-error>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="text"
+              class="form-control"
+              id="password"
+              formControlName="password"
+            />
+            <div
+              *ngIf="
+                form.controls.password.errors &&
+                (form.controls.password.touched || form.controls.password.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="form.hasError('required', 'password')"
+                class="invalid-feedback"
+              >
+                Valid Password is Required.
+              </mat-error>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="rolesList.length > 0">
+            <label>Roles</label>
+
+            <select
+              formControlName="roleId"
+              class="form-control"
+              placeholder="Select ProductsSet"
+              name="roleId"
+            >
+              <ng-container *ngFor="let rolesListItem of rolesList">
+                <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                <option
+                  *ngIf="rolesListItem.id != 1"
+                  [value]="rolesListItem.id"
+                >
+                  {{ rolesListItem.type_description }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+
+          <div
+            class="row"
+            style="padding-top: 15px"
+            *ngIf="clusterList?.length > 0"
+          >
+            <div class="form-group col-md-12 col-lg-12 mat1">
+              <!-- <section class="example-section"> -->
+              <mat-form-field
+                appearance="none"
+                [style.width.%]="100"
+                class="mat3"
+                *ngIf="clusterList?.length > 0"
+              >
+                <label
+                  for="cluster"
+                  style="margin-left: 1px; margin-bottom: 10px"
+                  class="matLabel"
+                >
+                  {{ labels.clusterLabel }}</label
+                >
+                <!-- {{selectedChannel |json }} -->
+                <mat-select
+                  class="mat2"
+                  style="
+                    border: 2px solid #e7e9ec;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border-width: thin;
+                  "
+                  formControlName="cluster"
+                  multiple
+                >
+                  <ng-container *ngFor="let c of clusterList">
+                    <mat-option  [value]="c">{{
+                      c.title
+                    }}</mat-option>
+                  </ng-container>
+                </mat-select>
+                <!-- <mat-icon matSuffix>domain</mat-icon> -->
+              </mat-form-field>
+              <!-- </section> -->
+            </div>
+          </div>
+
+          <div
+            class="row"
+            [ngStyle]="{
+              'margin-top': clusterList?.length == 0 ? '0px' : '-42px'
+            }"
+          >
+            <div
+              class="form-group col-md-12 col-lg-12 mat1"
+              *ngIf="zoneList.length > 0"
+            >
+              <!-- <section class="example-section"> -->
+              <mat-form-field
+                appearance="none"
+                [style.width.%]="100"
+                class="mat3"
+                *ngIf="zoneList.length > 0"
+              >
+                <label
+                  for="zone"
+                  style="margin-left: 2px; margin-bottom: 10px"
+                  class="matLabel"
+                >
+                  {{ labels.zoneLabel }}</label
+                >
+                <!-- {{selectedChannel |json }} -->
+                <mat-select
+                  class="mat2"
+                  style="
+                    border: 2px solid #e7e9ec;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border-width: thin;
+                  "
+                  formControlName="zone"
+                  multiple
+                >
+                  <ng-container *ngFor="let z of zoneList">
+                    <!-- <ng-container *ngIf="z.id!=-1"> -->
+                    <mat-option  [value]="z">
+                      {{ z.title }}
+                    </mat-option>
+                    <!-- </ng-container> -->
+                  </ng-container>
+                </mat-select>
+                <!-- <mat-icon matSuffix>domain</mat-icon> -->
+              </mat-form-field>
+              <!-- </section> -->
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: -42px">
+            <div
+              class="form-group col-md-12 col-lg-12 mat1"
+              *ngIf="regionList.length > 0"
+            >
+              <!-- <section class="example-section"> -->
+              <mat-form-field
+                appearance="none"
+                [style.width.%]="100"
+                class="mat3"
+                *ngIf="regionList.length > 0"
+              >
+                <label
+                  for="region"
+                  style="margin-left: 2px; margin-bottom: 10px"
+                  class="matLabel"
+                >
+                  {{ labels.regionLabel }}</label
+                >
+                <!-- {{selectedChannel |json }} -->
+                <mat-select
+                  class="mat2"
+                  style="
+                    border: 2px solid #e7e9ec;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border-width: thin;
+                  "
+                  formControlName="region"
+                  multiple
+                >
+                  <ng-container *ngFor="let r of regionList">
+                    <mat-option  [value]="r">{{
+                      r.title
+                    }}</mat-option>
+                  </ng-container>
+                </mat-select>
+                <!-- <mat-icon matSuffix>domain</mat-icon> -->
+              </mat-form-field>
+              <!-- </section> -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            (click)="updateUserData(form.value)"
+            class="mr-1"
+            [disabled]="!form.valid || loadingModalButton"
+            mat-raised-button
+            color="primary"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div
+  bsModal
+  #updateRoleModal="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Update Role
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideUpdateRoleModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form [formGroup]="updateRoleForm" enctype="multipart/form-data">
+        <div class="modal-body">
+        
+          <div class="form-group">
+            <label for="active">Role</label>
+            <mat-select
+              formControlName="selectedRoleId"
+              class="form-control"
+              placeholder="Select Role"
+              [(ngModel)]="selectedStatus"
+            >
+              <ng-container *ngFor="let r of rolesList">
+                <mat-option *ngIf="r?.id != 1" [value]="r.id">{{ r.type_description }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </div>
+          <div class="form-group">
+            <label for="type_description">New Role Description</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="type_description"
+            />
+          </div>
+
+          <div class="modal-footer">
+            <button
+              (click)="editRole(updateRoleForm.value)"
+              class="mr-1"
+              mat-raised-button
+              color="primary"
+            >
+              <i
+                [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"
+              ></i>
+              Update
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

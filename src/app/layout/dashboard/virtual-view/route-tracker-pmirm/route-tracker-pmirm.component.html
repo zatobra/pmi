@@ -1,0 +1,480 @@
+<!--<script>angular.module('MyApp', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache']);</script>-->
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ labels.surveyorLabel }} Tracker
+      <i [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      <i
+        style="cursor: pointer; color: black"
+        *ngIf="!loading"
+        class="material-icons refresh-btn"
+        matTooltip="Refresh Stats"
+        (click)="refresh()"
+      >
+        cached
+      </i>
+    </mat-card-title>
+    <!-- <button
+      style="margin-left: 1%"
+      [disabled]="loading"
+      mat-raised-button
+      color="primary"
+      (click)="refresh()"
+    >
+      Refresh
+    </button> -->
+  </mat-card-content>
+</mat-card>
+<mat-card *ngIf="trackedShops.length > 0">
+  <section>
+    <div class="row my-2">
+      <div class="col-md-12">
+        <!-- <div class="col-md-3"><label for="totalDistance">Total Distance Covered:{{totalDistanceCovered}} Km.</label></div> -->
+        <button mat-raised-button color="primary" class="mr-2" (click)="play()">
+          Play
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          (click)="pause()"
+        >
+          Pause
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          (click)="reset()"
+        >
+          Reset
+        </button>
+        <button mat-raised-button color="primary" class="mr-2" (click)="fast()">
+          Fast
+        </button>
+        <button mat-raised-button color="primary" class="mr-2" (click)="slow()">
+          Slow
+        </button>
+        <button mat-raised-button color="primary" class="mr-2" (click)="next()">Next</button>
+              <button mat-raised-button color="primary" class="mr-2" (click)="prev()">Previous</button>
+              <!-- <button mat-raised-button color="primary" class="mr-2" (click)="showAddEmployeeModal()">view modal</button> -->
+      </div>
+    </div>
+  </section>
+
+  <mat-card *ngIf="trackedShops.length > 0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tableFixHead col-md-12">
+          <table class="table table-bordered table-hover">
+            <thead style="background: lightgray">
+              <tr>
+                <!-- <th (click)="sortIt('captured')"
+                  style="cursor: pointer">captured
+                 <i class="material-icons arrow material-icons-arrow">
+                    {{ getArrowType("captured") }}
+                  </i>
+                </th> -->
+                <th>Code</th>
+                <th>Planned</th>
+                <th>Visited</th>
+                <!-- <th>Route Time</th>
+                <th>Shop Time</th>
+                <th>Travel Time</th> -->
+                <th>Total Distance Covered</th>
+              </tr>
+            </thead>
+
+            <tbody *ngIf="trackedShops.length > 0" class="trS14">
+              <tr *ngFor="let shop of dataShops">
+                <!-- <tr > -->
+                <!-- <td>
+                  {{ shop.captured }}
+                </td> -->
+                <td>
+                  {{ shop.m_code }}
+                </td>
+                <td>
+                  {{ planned }}
+                </td>
+
+                <!-- <td>
+                  {{ shop.visited }}
+                </td> -->
+                <td>
+                  {{ visited }}
+                </td>
+
+                <!-- <td>
+                  {{ shop.time_on_route }}
+                </td>
+
+                <td>
+                  {{ shop.time_on_shop }}
+                </td>
+
+                <td>
+                  {{ shop.travel_time }}
+                </td> -->
+                <!-- <td>{{ totalDistanceCovered }} Km -- {{totalDistance | number:'1.2-2'}} km</td> -->
+                <td>{{totalDistance | number:'1.2-2'}} km</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      
+
+      <div [class.col-md-6]="!expanded" [class.col-md-12]="expanded" class="content">
+        <!-- <div  class="col-md-12"> -->
+       
+          <agm-map
+            [latitude]="lat"
+            [longitude]="lng"
+            [zoom]="16"
+            style="height: 600px"
+            
+            (mapReady)="onMapReady($event)"
+            [styles]="mapStyles"
+          >
+          <!-- <agm-control [position]="{ top: '10px', left: '10px' }">
+            <agm-zoom-control></agm-zoom-control>
+          </agm-control> -->
+
+            <ng-container *ngFor="let shop of trackedShops2; let i=index">
+              <div *ngIf="shop.remarks_id==1">
+                <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'yellow' + '.png' }}"
+                [visible]="true" 
+               
+              >
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [isOpen]="shop.isVisible"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <div class="custom-info-222">
+                    <strong>Shop:</strong> Visited
+                    <br />
+                    <strong>Time:</strong> {{ shop.time }}
+                    <br />
+                    <strong>Shop Code:</strong> {{ shop.shop_code }}
+                    <br />
+                    <strong>Shop Name:</strong> {{ shop.shop_title }}
+                    <br />
+                    <!-- <a (click)="goToEvaluation(shop)">
+                      <button backgroundcolor="#2196F3">
+                        Go To Details
+                      </button></a
+                    > -->
+                  </div>
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+              </div>
+
+              <div *ngIf="shop.remarks_id=='-2' && !shop.survey_id ">
+                <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'green' + '.png' }}"
+                [visible]="true" 
+               
+              >
+              <div class="custom-info-111" style="background-color: black !important;">
+
+              
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [isOpen]="shop.isVisible"
+                  [closeWhenOthersOpen]="true"
+                  style="background-color: black !important;"
+                >
+                <div class="custom-info-222" style="background-color: black !important;">
+                  <ng-template>
+                    <div class="custom-info-333">
+                    <strong>Shop:</strong> Planned
+                    <br />
+                    <strong>Shop Code:</strong> {{ shop.shop_code }}
+                    <br />
+                    <strong>Shop Name:</strong> {{ shop.shop_title }}
+                    <br />
+                    <!-- <a (click)="goToEvaluation(shop)">
+                      <button backgroundcolor="#2196F3">
+                        Go To Details
+                      </button></a
+                    > -->
+                  </div>
+                  </ng-template>
+                </div>
+                </agm-snazzy-info-window>
+              </div>
+              </agm-marker>
+              </div>
+              
+              <!-- <div *ngIf="shop.remarks_id==-1">
+              <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'red' + '.png' }}"
+                [visible]="true"
+                
+              >
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [isOpen]="shop.isVisible"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Start Time:</strong> {{ shop.time }}
+                    <br />
+                    <strong>index:</strong> {{ i }}
+                    <br />
+                    <strong>Lat:</strong> {{ shop.latitude }}
+                    <br />
+                    <strong>LOng:</strong> {{ shop.longitude }}
+                    <br />
+                    <a (click)="goToEvaluation(shop)">
+                      <button backgroundcolor="#2196F3">
+                        Go To Details
+                      </button></a
+                    >
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+              </div> -->
+            </ng-container>
+          </agm-map>
+        
+        
+        
+          <button class="expand-button" (click)="showAddEmployeeModal()"> 
+            <i class="fa fa-expand"></i>
+          </button>
+       
+        
+     
+      </div>
+      <div [class.col-md-6]="!expanded" [class.col-md-12]="expanded" class="content">
+        <div
+          class="tableFixHead col-md-12"
+          style="overflow: auto; height: 400px; max-width: 100%"
+        >
+          <table class="table table-bordered table-hover">
+            <thead style="background: lightgray">
+              <tr>
+                <!-- <th (click)="sortIt('captured')"
+                style="cursor: pointer">captured
+               <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("captured") }}
+                </i>
+              </th> -->
+
+                <th>Shop Code</th>
+                <th>Shop Name</th>
+                <th>Shop Address</th>
+                <th>Time</th>
+                <!-- <th>End Time</th>
+                <th>Time Spent</th>
+                <th>Time Difference</th> -->
+              </tr>
+            </thead>
+
+            <tbody
+              *ngFor="let shop of visitedtrackedShops; let i = index"
+              class="trS14"
+            >
+              <tr *ngIf="shop.Type == 'Visit'">
+                <td>
+                  {{ shop.shop_code }}
+                </td>
+
+                <td>
+                  {{ shop.shop_title }}
+                </td>
+                <td>
+                  {{ shop.address }}
+                </td>
+                <td>
+                  {{ shop.time }}
+                </td>
+                <!-- <td>
+                  {{ shop.end_time }}
+                </td>
+                <td>
+                  {{ shop.timespent }}
+                </td>
+                <td>
+                  {{ shop.time_difference }}
+                </td> -->
+
+               
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</mat-card>
+<div
+  *ngIf="loading"
+  class="text-center"
+  flFlex
+  flexLayout="row "
+  flexLayout.lt-md="column "
+>
+  <div fxFlex class="img-center">
+    <img
+      src="assets/images/loading.gif"
+      alt=" "
+      srcset=""
+      height="300"
+      width="300"
+    />
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div
+  bsModal
+  #addEmployee="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="col-md-12">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Create Employee
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideAddEmployeeModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <section class="example-section">
+        <agm-map
+          [latitude]="lat"
+          [longitude]="lng"
+          [fitBounds]="trackedShops.length > 0"
+          [zoom]="16"
+          style="height: 600px"
+        >
+
+          <ng-container *ngFor="let shop of trackedShops">
+            <div *ngIf="shop.remarks_id==1">
+              <agm-marker
+              [agmFitBounds]="true"
+              latitude="{{ shop.latitude }}"
+              longitude="{{ shop.longitude }}"
+              iconUrl="{{ colorType + 'yellow' + '.png' }}"
+              [visible]="true" 
+             
+            >
+              <agm-snazzy-info-window
+                [maxWidth]="400"
+                [isOpen]="shop.isVisible"
+                [closeWhenOthersOpen]="true"
+              >
+                <ng-template>
+                  <strong>Start Time:</strong> {{ shop.time }}
+                  <br />
+                  <strong>End Time:</strong> {{ shop.end_time }}
+                  <br />
+                  <strong>Shop Code:</strong> {{ shop.shop_code }}
+                  <br />
+                  <strong>Shop Name:</strong> {{ shop.shop_title }}
+                  <br />
+                  <a (click)="goToEvaluation(shop)">
+                    <button backgroundcolor="#2196F3">
+                      Go To Details
+                    </button></a
+                  >
+                </ng-template>
+              </agm-snazzy-info-window>
+            </agm-marker>
+            </div>
+            
+            <!-- <div *ngIf="shop.remarks_id!=1">
+            <agm-marker
+              [agmFitBounds]="true"
+              latitude="{{ shop.latitude }}"
+              longitude="{{ shop.longitude }}"
+              iconUrl="{{ colorType + 'red' + '.png' }}"
+              [visible]="true"
+              
+            >
+              <agm-snazzy-info-window
+                [maxWidth]="400"
+                [isOpen]="shop.isVisible"
+                [closeWhenOthersOpen]="true"
+              >
+                <ng-template>
+                  <strong>Start Time:</strong> {{ shop.time }}
+                  <br />
+                  <strong>End Time:</strong> {{ shop.end_time }}
+                  <br />
+                  <strong>Shop Code:</strong> {{ shop.shop_code }}
+                  <br />
+                  <strong>Shop Name:</strong> {{ shop.shop_title }}
+                  <br />
+                  <a (click)="goToEvaluation(shop)">
+                    <button backgroundcolor="#2196F3">
+                      Go To Details
+                    </button></a
+                  >
+                </ng-template>
+              </agm-snazzy-info-window>
+            </agm-marker>
+            </div> -->
+          </ng-container>
+        </agm-map>
+      </section>
+
+     
+    </div>
+  </div>
+</div>

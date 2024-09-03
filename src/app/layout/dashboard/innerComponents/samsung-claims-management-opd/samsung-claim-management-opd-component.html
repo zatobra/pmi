@@ -1,0 +1,390 @@
+<mat-card class="mb-20">
+  <mat-card-title>
+    OPD Claims
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <section class="example-section">
+    <ng-container *ngIf="clusterList?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.clusterLabel }}"
+          name="cluster"
+          [(ngModel)]="selectedCluster"
+          (ngModelChange)="getZoneByCluster()"
+        >
+          <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+            cluster.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="zones?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.zoneLabel }}"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="loadSurveyors(); zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field
+      *ngIf="regions.length > 0"
+      class="example-margin mr-10-IMP"
+    >
+      <mat-select
+        placeholder="{{ labels.regionLabel }}"
+        name="region"
+        [(ngModel)]="selectedRegion"
+        (ngModelChange)="loadSurveyors()"
+      >
+        <ng-container *ngFor="let region of regions">
+          <mat-option [value]="region">{{ region.title }}</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+    *ngIf="surveyors.length > 0"
+    class="example-margin mr-10-IMP"
+  >
+    <mat-select
+      placeholder="Select {{ labels.surveyorLabel }}"
+      name="surveyor"
+      [(ngModel)]="selectedSurveyor"
+      (ngModelChange)="selectedSurveyorChanged($event)"
+      multiple
+      #surveyorSelect="ngModel"
+      [compareWith]="equals"
+    >
+    <search-box [list]="surveyors" (notify)="onNotifyClicked($event)">
+    </search-box>
+      <mat-option disabled="disabled" class="filter-option">
+        <button
+          mat-raised-button
+          class="mat-primary fill text-sm"
+          (click)="selectAll(surveyorSelect, filteredSurveyors)"
+        >
+          Select All
+        </button>
+        <button
+          mat-raised-button
+          color="warn"
+          class="ml-1 mat-accent fill text-sm"
+          (click)="deselectAll(surveyorSelect)"
+        >
+          Deselect All
+        </button>
+      </mat-option>
+      <ng-container *ngFor="let surveyor of filteredSurveyors">
+        <mat-option
+          [value]="surveyor"
+          *ngIf="surveyor.type == 1 && surveyor.active == 'Y'"
+          >{{ surveyor.m_code }} - {{ surveyor.fullName }}</mat-option
+        >
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+
+    <div *ngIf="distinctClaimDataList?.length > 0" style="float: right;">
+      <ng-container >
+        <!-- <table class="col-md-12">
+          <tr>
+            <td> -->
+              <mat-form-field class="example-margin mr-10-IMP">
+                <mat-select
+                  placeholder="Approve Status"
+                  name="Approve Status"
+                  [(ngModel)]="selectedUpdate"
+                  (ngModelChange)="selectedUpdateChange()"
+                >
+                  <ng-container *ngFor="let item of approvedList">
+                    <mat-option [value]="item">{{ item.value }}</mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+            <!-- </td>
+          </tr>
+         
+        </table> -->
+      </ng-container>
+    </div>
+
+
+  </section>
+
+  <section class="example-section">
+    <button
+      [disabled]="loadingData || !selectedZone?.id || !selectedRegion?.id"
+      (click)="getSamsungClaimData()"
+      mat-raised-button
+      color="warn"
+    >
+      Display
+    </button>
+  <!-- </section>
+
+  <section class="example-section"> -->
+   
+   
+  </section>
+
+
+</mat-card>
+
+
+
+<!-- <mat-card class="mb-20" *ngIf="distinctClaimDataList?.length > 0">
+  <mat-card-content>
+    
+  </mat-card-content>
+</mat-card> -->
+<!-- <search-box  *ngIf="filteredList?.length > 0" [list]="filteredList" (notify)="onNotifyClicked($event)">
+</search-box> -->
+
+
+  <mat-card *ngIf="filteredList?.length > 0">
+    <!-- <mat-card-title>
+      Manage ShopLocationApproval
+      <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title> -->
+    <mat-card-content>
+      
+          <div class="card">
+            <div class="card-body">
+              <!-- <search-box
+  [list]="tmpEmailList"
+  (notify)="onNotifyClicked($event)"
+  >
+  </search-box> -->
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class="text-primary">
+                    <!-- <th>id</th> -->
+                    <th (click)="sortIt('visitDate')" style="cursor: pointer">claim Date
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("visitDate") }}
+                      </i>
+                    </th>
+                    <th (click)="sortIt('surveyorRegionTitle')" style="cursor: pointer">{{labels.regionLabel}}
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("surveyorRegionTitle") }}
+                      </i>
+                    </th>
+                    <th (click)="sortIt('code')" style="cursor: pointer">Code
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("code") }}
+                      </i>
+                    </th>
+                    <th (click)="sortIt('surveyorName')" style="cursor: pointer">{{ labels?.surveyorLabel }}
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("surveyorName") }}
+                      </i>
+                    </th>
+                    
+                    <th>Remarks</th>
+                    <!-- <th>claim_status</th> -->
+                    <th>Approved Remarks</th>
+                    <th>Calim Amount</th>
+                    <th>Total Remaining Balance</th>
+                    <th>Total Consumed Balance</th>
+                    <th (click)="sortIt('joiningDate')" style="cursor: pointer">Joining Date
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("joiningDate") }}
+                      </i>
+                    </th>
+                    
+                    <th (click)="sortIt('claimStatus')" style="cursor: pointer">Status
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("claimStatus") }}
+                      </i>
+                    </th>
+                    <th (click)="sortIt('approvedBy')" style="cursor: pointer">ApprovedBy
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("approvedBy") }}
+                      </i>
+                    </th>
+                    <th>View</th>
+                    <!-- <th>Address</th>
+                    <th>Distribution</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Approved</th> -->
+                
+                  </thead>
+                  <tbody>
+                    <ng-container   *ngFor="let data of filteredList | orderBy: sortBy:sortOrder; let i = index">
+                        <!-- opd claim -->
+                      <tr  style="cursor: pointer" *ngIf="data.claimTypeId=='1'">
+                        <!-- <td>{{ data.id}}</td> -->
+                        <!-- <td>{{ data.region_title }}</td>
+                        <td>{{ data.full_name }}</td>
+                        <td>{{ data.claim_amount }}</td>
+                        <td>{{ data.claim_remarks }}</td>
+                        <td>{{ data.claim_status }}</td>
+                        <td>{{ data.approved_remarks }}</td> -->
+                        <td>{{ data.visitDate}}</td>
+                        <td>{{ data.surveyorRegionTitle }}</td>
+                        <td>{{ data.code }}</td>
+                        <td>{{ data.surveyorName }}</td>
+                       
+                        <td>{{ data.claimRemarks }}</td>
+                        <!-- <td>{{ data.claimStatus }}</td> -->
+                        <td>{{ data.claimApprovedRemarks }}</td>
+                        <td>{{ data.claimAmount }}</td>
+                        <td>{{ data.remainingAmount }}</td>
+                        <td>{{ data.claimedAmount }}</td>
+                        <td>{{ data.joiningDate }}</td>
+                        <!-- <td>
+                          <label class="switch">
+                            <input
+                              type="checkbox"
+                              [checked]="email?.active == 'Y'"
+                              id="{{ data?.id }}"
+                              (click)="changeStatus($event, data)"
+                              #checked
+                            />
+                            <span class="slider round"></span>
+                          </label>
+                        </td> -->
+    
+                        <!-- <td>
+                          <button
+                            class="example-margin mr-10-IMP"
+                            mat-raised-button
+                            color="primary"
+                            title="Update Email"
+                            (click)="showRemarksModal(data)" 
+                            [disabled]="data.claim_status != 'PENDING'"
+                          >
+                            {{data.claim_status}}
+                          </button>
+                        </td> -->
+    
+                        <td>
+                          <!-- <button
+                            class="example-margin mr-10-IMP"
+                            mat-raised-button
+                            color="primary"
+                            title="Update Email"
+                            (click)="showRemarksModal(data)" 
+                            [disabled]="data.claimStatus != 'PENDING'"
+                          > -->
+                            {{data.claimStatus}}
+                          <!-- </button> -->
+                        </td>
+                        <td>{{ data.approvedBy }}</td>
+    
+                        <td>
+                          <!-- <button
+                            class="example-margin mr-10-IMP"
+                            mat-raised-button
+                            color="primary"
+                            title="Update Email"
+                            (click)="goToEvaluation(data)"
+                          >
+                            <mat-icon>perm_media</mat-icon>
+                          </button> -->
+                          <a target="_blank" [routerLink]="['/dashboard/samsung-claim-images', data.id]">
+                            <mat-icon>perm_media</mat-icon> 
+                          </a>
+                        </td>
+                     
+                        
+                        
+                        <!-- <span  class="hov">
+                          <td (click)="changeStatus(email)" style="background-color: transparent; cursor: pointer;">{{ email.active }}</td>
+                        </span> -->
+                       
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        
+    </mat-card-content>
+  </mat-card>
+  
+
+
+
+
+
+
+
+
+<!-- <div
+  bsModal
+  #remarksModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+  [config]="{ backdrop: 'static', keyboard: false }"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Approved Remarks
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModal }"></i>
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideRemarksModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <div class="modal-body">
+        
+          <div class="form-group">
+            <input type="hidden" formControlName="id" />
+          </div>
+         
+            <div class="form-group col-md-12">
+              <label for="remarks">Enter Remarks</label>
+              <input
+                type="text"
+                class="form-control"
+                id="remarks"
+                formControlName="remarks"
+              />
+            </div>
+          </div>
+         
+        <div class="modal-footer">
+          
+
+          <button
+           
+            class="mr-1"
+            (click)="changeStatus(form.value)"
+            [disabled]="loadingModal || !form.value.remarks"
+            mat-raised-button
+            color="primary"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+     -->

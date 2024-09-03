@@ -1,0 +1,865 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      <!-- {{ title | uppercase }} -->
+      Manage {{ labels?.surveyorLabel }}
+      <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        [disabled]="loadingData || !selectedZone.id"
+        mat-raised-button
+        color="primary"
+        (click)="loadSurveyors()"
+      >
+        Submit
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-tab-group
+  mat-stretch-tabs
+  class="example-stretched-tabs mat-elevation-z4 mat-group"
+  *ngIf="surveyorList.length > 0"
+>
+  <mat-tab label="Merchandisers">
+    <manage-merchandiser
+      [surveyorList]="merchandiserList"
+      (updateMerchandiser)="updateSurveyorData($event)"
+      (showModal)="showSurveyorInfoModal($event)"
+      (addMerchandiserModal)="showInsertModal($event)"
+      *ngIf="surveyorList.length > 0"
+    >
+    </manage-merchandiser>
+    <div
+      class="row"
+      style="margin: 20px"
+      *ngIf="!loadingData && surveyorList.length == 0"
+    >
+      <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+          <p>No Data Found</p>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Supervisers">
+    <manage-superviser
+      [surveyorList]="supervisorList"
+      (updateSuperviser)="updateSurveyorData($event)"
+      (showModal)="showSurveyorInfoModal($event)"
+      (addSuperviserModal)="showInsertModal($event)"
+      *ngIf="supervisorList.length > 0"
+    >
+    </manage-superviser>
+    <div
+      class="row"
+      style="margin: 20px"
+      *ngIf="!loadingData && supervisorList.length == 0"
+    >
+      <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+          <p>No Data Found</p>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Managers">
+    <manage-manager
+      [surveyorList]="managerList"
+      (updateManager)="updateSurveyorData($event)"
+      (showModal)="showSurveyorInfoModal($event)"
+      (addManagerModal)="showInsertModal($event)"
+      *ngIf="managerList.length > 0"
+    >
+    </manage-manager>
+    <div
+      class="row"
+      style="margin: 20px"
+      *ngIf="!loadingData && managerList.length == 0"
+    >
+      <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+          <p>No Data Found</p>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<div
+    bsModal
+    #surveyorInfoModal="bs-modal"
+    [config]="{ backdrop: 'static', keyboard: false }"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="dialog-child-name"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-child-name" class="modal-title pull-left">
+            Update {{ insertTitle }}
+            <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModal }"></i>
+          </h4>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="hideSurveyorInfoModal()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form [formGroup]="form" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="form-group">
+              <input type="hidden" formControlName="id" />
+            </div>
+            <div class="form-group">
+              <label for="m_code"> {{ labels?.surveyorLabel }} Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="m_code"
+                formControlName="m_code"
+                readonly
+              />
+            </div>
+            <div class="row">
+              <div class="form-group col-md-8" style="display: none;">
+                <label for="fullName"> {{ labels?.surveyorLabel }} Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullName"
+                  formControlName="fullName"
+                />
+                <!-- <div
+                  *ngIf="
+                    form.controls.fullName.errors &&
+                    (form.controls.fullName.touched ||
+                      form.controls.fullName.dirty)
+                  "
+                >
+                  <mat-error
+                    *ngIf="form.hasError('required', 'fullName')"
+                    class="invalid-feedback"
+                  >
+                    Valid {{ labels?.surveyorLabel }} Name is required.
+                  </mat-error>
+                </div> -->
+              </div>
+  
+              <div class="form-group col-md-12">
+                <label for="active">Active</label>
+                <select
+                  formControlName="active"
+                  class="form-control"
+                  placeholder="Change Status"
+                  name="active"
+                >
+                  <ng-container *ngFor="let status of activeStatus">
+                    <option [value]="status">{{ status }}</option>
+                  </ng-container>
+                </select>
+                <div
+                  *ngIf="
+                    form.controls.active.errors &&
+                    (form.controls.active.touched || form.controls.active.dirty)
+                  "
+                >
+                  <mat-error
+                    *ngIf="form.hasError('required', 'active')"
+                    class="invalid-feedback"
+                  >
+                    Valid Status is Required.
+                  </mat-error>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="text"
+                class="form-control"
+                id="password"
+                formControlName="password"
+              />
+              <div
+                *ngIf="
+                  form.controls.password.errors &&
+                  (form.controls.password.touched || form.controls.password.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'password')"
+                  class="invalid-feedback"
+                >
+                  Valid Password is Required.
+                </mat-error>
+              </div>
+            </div>
+  
+            <div class="form-group" *ngIf="selectedSurveyor.type == 1">
+              <label for="supervisor">Supervisor</label>
+  
+              <select
+                formControlName="supervisorId"
+                class="form-control"
+                placeholder="Select Supervisor"
+                name="supervisorId"
+              >
+                <ng-container *ngFor="let supervisor of supervisorList">
+                  <option [value]="supervisor.id">
+                    {{ supervisor.fullName }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="form-group" *ngIf="selectedSurveyor.type == 1">
+              <label for="employee">Employee</label>
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <search-box [list]="merchandiserEmployeeList" (notify)="onNotifyClicked($event)">
+              </search-box>
+                <ng-container *ngFor="let employee of merchandiserEmployeeList">
+                  <mat-option [value]="employee.employee_id">
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+  
+            <div class="form-group" *ngIf="selectedSurveyor.type == 2">
+              <label for="supervisor">Manager</label>
+  
+              <select
+                formControlName="supervisorId"
+                class="form-control"
+                placeholder="Select Supervisor"
+                name="supervisorId"
+              >
+                <ng-container *ngFor="let supervisor of managerList">
+                  <option [value]="supervisor.id">
+                    {{ supervisor.fullName }}
+                  </option>
+                </ng-container>
+              </select>
+
+            </div>
+
+            <div class="form-group" *ngIf="selectedSurveyor.type == 2">
+              <label for="employee">Employee</label>
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <search-box [list]="supervisorEmployeeList" (notify)="onNotifyClicked($event)">
+              </search-box>
+                <ng-container *ngFor="let employee of supervisorEmployeeList">
+                  <mat-option [value]="employee.employee_id">
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+
+            <div class="form-group" *ngIf="selectedSurveyor.type == 3">
+              <label for="employee">Employee</label>
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <search-box [list]="managerEmployeeList" (notify)="onNotifyClicked($event)">
+              </search-box>
+                <ng-container *ngFor="let employee of managerEmployeeList">
+                  <mat-option [value]="employee.employee_id">
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+  
+            <div class="form-group" *ngIf="productsSetList.length > 0">
+              <label for="evaluator">Product Set</label>
+  
+              <select
+                formControlName="productsSetId"
+                class="form-control"
+                placeholder="Select ProductsSet"
+                name="productsSetId"
+                required
+              >
+                <ng-container *ngFor="let productsSetItem of productsSetList">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="productsSetItem.id">
+                    {{ productsSetItem.title }}
+                  </option>
+                </ng-container>
+              </select>
+              <div
+                *ngIf="
+                  form.controls.productsSetId.errors &&
+                  (form.controls.productsSetId.touched ||
+                    form.controls.productsSetId.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'productsSetId')"
+                  class="invalid-feedback"
+                >
+                  Products Set Selection is Mandatory.
+                </mat-error>
+              </div>
+            </div>
+  
+            <div class="form-group" *ngIf="regionList.length > 0">
+              <label for="Region">{{labels.regionLabel}}</label>
+  
+              <select
+                formControlName="region_id"
+                class="form-control"
+                placeholder="Select Region"
+                name="region_id"
+                required
+              >
+                <ng-container *ngFor="let r of regionList">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="r.id">
+                    {{ r.title }}
+                  </option>
+                </ng-container>
+              </select>
+              <div
+                *ngIf="
+                  form.controls.region_id.errors &&
+                  (form.controls.region_id.touched ||
+                    form.controls.region_id.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'region_id')"
+                  class="invalid-feedback"
+                >
+                {{labels.regionLabel}} Selection is Mandatory.
+                </mat-error>
+              </div>
+            </div>
+  
+            <div class="form-group" *ngIf="eva.length > 0">
+              <label for="evaluator">Evaluator</label>
+  
+              <select
+                id="evaluator"
+                formControlName="evaluatorId"
+                class="form-control"
+                placeholder="Select Evaluator"
+                name="evaluatorId"
+              >
+                <ng-container *ngFor="let evaitem of eva">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="evaitem.id">
+                    {{ evaitem.username }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                formControlName="email"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input
+                type="text"
+                class="form-control"
+                id="phone"
+                formControlName="phone"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cnic">Cnic</label>
+              <input
+                type="text"
+                class="form-control"
+                id="cnic"
+                formControlName="cnic"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              (click)="updateSurveyorData(form.value)"
+              class="mr-1"
+              [disabled]="!form.valid || loadingModalButton"
+              mat-raised-button
+              color="primary"
+            >
+              <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div
+    bsModal
+    #insertModal="bs-modal"
+    [config]="{ backdrop: 'static', keyboard: false }"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="dialog-child-name"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-child-name" class="modal-title pull-left">Add</h4>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="hideInsertModal()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+  
+        <form [formGroup]="form" enctype="multipart/form-data">
+          <div class="modal-body">
+            <!-- <div class="form-group">
+              <input type="hidden" formControlName="id" />
+            </div> -->
+            <div class="form-group">
+              <label for="m_code"> {{ labels?.surveyorLabel }} Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="m_code"
+                formControlName="m_code"
+              />
+              <div
+                *ngIf="
+                  form.controls.m_code.errors &&
+                  (form.controls.m_code.touched || form.controls.m_code.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'm_code')"
+                  class="invalid-feedback"
+                >
+                  Valid Code is required.
+                </mat-error>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-md-8" style="display: none;">
+                <label for="fullName"> {{ labels?.surveyorLabel }} Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullName"
+                  formControlName="fullName"
+                />
+                <!-- <div
+                  *ngIf="
+                    form.controls.fullName.errors &&
+                    (form.controls.fullName.touched ||
+                      form.controls.fullName.dirty)
+                  "
+                >
+                  <mat-error
+                    *ngIf="form.hasError('required', 'fullName')"
+                    class="invalid-feedback"
+                  >
+                    Valid {{ labels?.surveyorLabel }} Name is required.
+                  </mat-error>
+                </div> -->
+              </div>
+  
+              <div class="form-group col-md-12">
+                <label for="active">Active</label>
+                <select
+                  formControlName="active"
+                  class="form-control"
+                  placeholder="Change Status"
+                  name="active"
+                >
+                  <ng-container *ngFor="let status of activeStatus">
+                    <option [value]="status">{{ status }}</option>
+                  </ng-container>
+                </select>
+                <div
+                  *ngIf="
+                    form.controls.active.errors &&
+                    (form.controls.active.touched || form.controls.active.dirty)
+                  "
+                >
+                  <mat-error
+                    *ngIf="form.hasError('required', 'active')"
+                    class="invalid-feedback"
+                  >
+                    Valid Status is Required.
+                  </mat-error>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group" class="col-md-6">
+                <label for="password">Password</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="password"
+                  formControlName="password"
+                />
+                <div
+                  *ngIf="
+                    form.controls.password.errors &&
+                    (form.controls.password.touched ||
+                      form.controls.password.dirty)
+                  "
+                >
+                  <mat-error
+                    *ngIf="form.hasError('required', 'password')"
+                    class="invalid-feedback"
+                  >
+                    Valid Password is Required.
+                  </mat-error>
+                </div>
+              </div>
+              <div class="form-group" class="col-md-6">
+                <label for="phone">Phone</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="phone"
+                  formControlName="phone"
+                />
+              </div>
+            </div>
+            <div class="form-group" *ngIf="insertType == 1">
+              
+              <label for="supervisor">Supervisor</label>
+  
+              <select
+                formControlName="supervisorId"
+                class="form-control"
+                placeholder="Select Supervisor"
+                name="supervisorId"
+              >
+                <ng-container *ngFor="let supervisor of supervisorList">
+                  <option [value]="supervisor.id">
+                    {{ supervisor.fullName }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="form-group" *ngIf="insertType == 1">
+              <label for="employee">Employee</label>
+             
+              <!-- <input type="text" [(ngModel)]="searchTerm" placeholder="Search Employee" class="form-control"> -->
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <!-- <input placeholder="Search..." matInput type="text" (keyup)="onKey($event.target.value)" class="example-input"> -->
+    
+              <!-- <search-box-select [list]="merchandiserEmployeeList" (notify)="onNotifyClicked($event)">
+              </search-box-select> -->
+
+              <search-box [list]="merchandiserEmployeeList" (notify)="onNotifyClicked($event)">
+              </search-box>
+                <ng-container *ngFor="let employee of merchandiserFilteredEmployees">
+                  <!-- <option [value]="employee.employee_id" (click)="selectEmployee(employee)"> -->
+                    <mat-option [value]="employee.employee_id" >
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+
+            <div class="form-group" *ngIf="insertType == 2">
+              <label for="employee">Employee</label>
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <search-box [list]="supervisorEmployeeList" (notify)="onNotifyClickedSupervisor($event)">
+              </search-box>
+
+                <ng-container *ngFor="let employee of supervisorFilteredEmployees">
+                  <mat-option [value]="employee.employee_id">
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+
+            <div class="form-group" *ngIf="insertType == 3">
+              <label for="employee">Employee</label>
+  
+              <mat-select
+                formControlName="employeeId"
+                class="form-control"
+                placeholder="Select Employee"
+                name="employeeId"
+              >
+              <search-box [list]="managerEmployeeList" (notify)="onNotifyClickedManager($event)">
+              </search-box>
+                <ng-container *ngFor="let employee of managerFilteredEmployees">
+                  <mat-option [value]="employee.employee_id">
+                    {{ employee.employee_name }}
+                  </mat-option>
+                </ng-container>
+              </mat-select>
+            </div>
+  
+            <div class="form-group" *ngIf="productsSetList.length > 0">
+              <label for="Products Set">Products Set</label>
+  
+              <select
+                formControlName="productsSetId"
+                class="form-control"
+                placeholder="Select ProductsSet"
+                name="productsSetId"
+                required
+              >
+                <ng-container *ngFor="let productsSetItem of productsSetList">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="productsSetItem.id">
+                    {{ productsSetItem.title }}
+                  </option>
+                </ng-container>
+              </select>
+              <div
+                *ngIf="
+                  form.controls.productsSetId.errors &&
+                  (form.controls.productsSetId.touched ||
+                    form.controls.productsSetId.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'productsSetId')"
+                  class="invalid-feedback"
+                >
+                  Products Set Selection is Mandatory.
+                </mat-error>
+              </div>
+            </div>
+  
+            <div class="form-group" *ngIf="regionList.length > 0">
+              <label for="Region">{{labels.regionLabel}}</label>
+  
+              <select
+                formControlName="region_id"
+                class="form-control"
+                placeholder="Select Region"
+                name="region_id"
+                required
+              >
+                <ng-container *ngFor="let r of regionList">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="r.id">
+                    {{ r.title }}
+                  </option>
+                </ng-container>
+              </select>
+              <div
+                *ngIf="
+                  form.controls.region_id.errors &&
+                  (form.controls.region_id.touched ||
+                    form.controls.region_id.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'region_id')"
+                  class="invalid-feedback"
+                >
+                {{labels.regionLabel}} Selection is Mandatory.
+                </mat-error>
+              </div>
+            </div>
+  
+            <div class="form-group" *ngIf="eva.length > 0">
+              <label for="evaluator">Evaluator</label>
+  
+              <select
+                id="evaluator"
+                formControlName="evaluatorId"
+                class="form-control"
+                placeholder="Select Evaluator"
+                name="evaluatorId"
+              >
+                <ng-container *ngFor="let evaitem of eva">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="evaitem.id">
+                    {{ evaitem.username }}
+                  </option>
+                </ng-container>
+              </select>
+              <!-- <div
+              *ngIf="
+                form.controls.evaluatorId.errors &&
+                (form.controls.evaluatorId.touched ||
+                  form.controls.evaluatorId.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="form.hasError('required', 'evaluatorId')"
+                class="invalid-feedback"
+              >
+                Evaluator Selection is Mandatory.
+              </mat-error>
+             </div> -->
+            </div>
+  
+            <div class="form-group" *ngIf="insertType == 2">
+              <label for="manager">Manager</label>
+  
+              <select
+                id="supervisorId"
+                formControlName="supervisorId"
+                class="form-control"
+                placeholder="Select Manager"
+                name="supervisorId"
+              >
+                <ng-container *ngFor="let supervisor of managerList">
+                  <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                  <option [value]="supervisor.id">
+                    {{ supervisor.fullName }}
+                  </option>
+                </ng-container>
+              </select>
+              <!-- <div
+              *ngIf="
+                form.controls.supervisorId.errors &&
+                (form.controls.supervisorId.touched ||
+                  form.controls.supervisorId.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="form.hasError('required', 'supervisorId')"
+                class="invalid-feedback"
+              >
+                Manager Selection is Mandatory.
+              </mat-error>
+             </div> -->
+            </div>
+  
+            <div class="row">
+              <div class="form-group" class="col-md-6">
+                <label for="email">Email</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email"
+                  formControlName="email"
+                />
+              </div>
+  
+              <div class="form-group" class="col-md-6">
+                <label for="cnic">Cnic</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="cnic"
+                  formControlName="cnic"
+                />
+              </div>
+            </div>
+          </div>
+  
+          <div class="modal-footer">
+            <button
+              (click)="addSurveyor(form.value)"
+              class="mr-1"
+              mat-raised-button
+              color="primary"
+              [disabled]="!form.valid || loadingModalButton"
+            >
+              <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  

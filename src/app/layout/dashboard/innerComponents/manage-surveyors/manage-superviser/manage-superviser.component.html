@@ -1,0 +1,143 @@
+<div class="example-section" style="text-align: center; margin: 5px;"
+>
+<button style="width: auto; float: right;" class="btn btn-primary btn-fixed" mat-raised-button color="primary" title="Click to Add" (click)="addSuperviser()">
+  Add Superviser
+  <mat-icon>add</mat-icon>
+</button>
+  <search-box
+    [list]="surveyorList"
+    (notify)="onNotifyClicked($event)"
+  >
+  </search-box>
+</div>
+
+<mat-card *ngIf="surveyorList.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th (click)="sortIt('m_code')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Code
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("m_code") }}
+                      </i>
+                    </th>
+                    <!-- <th (click)="sortIt('fullName')" style="cursor: pointer">
+                      {{ labels?.surveyorLabel }} Name
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("fullName") }}
+                      </i>
+                    </th> -->
+                    <th style="cursor: pointer">Password</th>
+                    <th (click)="sortIt('employeeName')" style="cursor: pointer">
+                      Employe
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("employeeName") }}
+                      </i>
+                    </th>
+                    <th
+                    (click)="sortIt('supervisorName')"
+                    style="cursor: pointer"
+                  >
+                    Manager Name
+                    <i class="material-icons arrow material-icons-arrow">
+                      {{ getArrowType("supervisorName") }}
+                    </i>
+                  </th>
+                    
+                    <th style="cursor: pointer">Phone</th>
+                    <th style="cursor: pointer">Email</th>
+                    <th style="cursor: pointer">Cnic</th>
+                    <th (click)="sortIt('active')" style="cursor: pointer">
+                      Active
+                      <i class="material-icons arrow material-icons-arrow">
+                        {{ getArrowType("active") }}
+                      </i>
+                    </th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="surveyorList.length > 0">
+                  <!-- <tr
+                    *ngFor="
+                    let item of filteredList | orderBy: sortBy:sortOrder| paginate: {
+                      itemsPerPage: 5,
+                      currentPage: page
+                      
+                    }
+                    "
+                  > -->
+
+                  <!-- <ng-container
+                  
+                > -->
+
+                <!-- <tr *ngFor="
+                let item of filteredList | orderBy: sortBy:sortOrder | paginate: { itemsPerPage: 2, pageSize: 4, currentPage: third, id: 'third', totalItems: surveyorList.length+1  }
+              "> -->
+
+                  <tr
+                  *ngFor="
+                  let item of filteredList | orderBy: sortBy:sortOrder"
+                >
+
+                  <!-- <ng-container *ngIf="item.type == 2"> -->
+                    <td>{{ item?.m_code }}</td>
+                    <!-- <td>{{ item?.fullName }}</td> -->
+                    <td>{{ item?.password }}</td>
+                    <td>{{ item?.employeeName }}</td>
+                    <td>{{ item?.supervisorName }}</td>
+                    
+                    <td>{{ item?.phone }}</td>
+                    <td>{{ item?.email }}</td>
+                    <td>
+                      {{ item?.cnic }}
+                    </td>
+                    <td>
+                      {{ item?.active }}
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-primary btn-fixed"
+                        title="Edit Surveyor"
+                        (click)="showSuperviserInfoModal(item)"
+                      >
+                        <i class="fa fa-edit"> </i>
+                      </button>
+                    </td>
+                  <!-- </ng-container> -->
+                  
+         
+                  </tr>
+                <!-- </ng-container> -->
+                </tbody>
+              </table>
+
+              <!-- <div class="text-center">
+                <pagination-controls
+                  (pageChange)="third = $event" 
+                  id="third"
+                  
+                ></pagination-controls>
+              </div> -->
+
+              <!-- <div class="text-center">
+                <pagination-controls
+                (pageChange)="handlePageChange($event)"
+                 
+                ></pagination-controls>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+

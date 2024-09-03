@@ -1,0 +1,55 @@
+<!-- <ng-container *ngFor="let sec of data.section"> -->
+<div
+  class="row"
+  style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+></div>
+
+<div class="row">
+  <div class="col-md-12 text-center">
+    <h4>
+      <u>{{ data.sectionTitle }}</u>
+    </h4>
+  </div>
+</div>
+
+<!-- <div class="row" style="border-bottom:2px solid black;width: 100%;margin: 5px 0"></div> -->
+<div class="row justify-content-center">
+  <ng-container *ngFor="let img of data?.imageList; let i = index">
+    <div class="col-md-4 text-center">
+      <div style="position: relative">
+        <label class="title" for="title">{{ img.title }}</label>
+        <img
+          *ngIf="!img.isExternalUrl"
+          src="{{ ip }}{{ img.url }}"
+          width="400"
+          height="400"
+          (click)="showChildModal(img)"
+          class="img-thumbnail img-item"
+        />
+        <img
+          *ngIf="img.isExternalUrl"
+          src="{{ img.url }}"
+          width="400"
+          height="400"
+          (click)="showChildModal(img)"
+          class="img-thumbnail img-item"
+        />
+        <div class="imageDetails" *ngIf="data?.imageView != 'Y'">
+          <p *ngIf="img?.visitDateTime">Time Stamp: {{ img?.visitDateTime }}</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- this table is moved to home page -->
+<div class="row justify-content-center">
+  <div class="col-md-11 mt-3">
+    <table class="table table-bordered sm-table">
+      <tr *ngFor="let tab of data.tagsList; let j = index">
+        <th style="width: 50%; background: lightgray">{{ tab.heading }}</th>
+        <td style="width: 50%; word-break: break-all">{{ tab.value }}</td>
+      </tr>
+    </table>
+  </div>
+</div>

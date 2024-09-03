@@ -1,0 +1,414 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      App Stats
+      <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+  </mat-card-content>
+</mat-card>
+<!-- <app-dashboard-data [queryId]="queryId"></app-dashboard-data> -->
+
+<mat-card *ngIf="statsData.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>
+                      Build-Version
+                    </th>
+                    <th>
+                      Uploaded On
+                    </th>
+                    <!-- <th>
+                      Active
+                    </th> -->
+                    <th>
+                      Download
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="statsData.length > 0">
+                  <tr *ngFor=" let item of statsData">
+
+                    <td>{{ item?.title }}</td>
+                    <td>{{ item?.date }}</td>
+                    <!-- <td>{{ item?.active }}</td> -->
+                    <!-- <td>
+                      <button type="button" [disabled]="item?.active!='Y'" mat-raised-button backgroundColor="gray">
+                        <a href="{{ ip2 }}{{ item?.url }}">
+                          <span *ngIf="item.active=='Y'">Download</span>
+                        </a>
+                        <span *ngIf="item.active!='Y'">Download</span>
+                      </button>
+                    </td> -->
+                    <td *ngIf="item.active=='Y'">
+                      
+                        <a href="{{ ip2 }}{{ item?.url }}">
+                          <i class="fa fa-download" aria-hidden="true"></i>
+                        </a>
+                        
+                     
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20">
+  <mat-card-content>
+
+
+
+    <div class="container mt-5">
+      <div class="row justify-content-center text-center" >
+        <!-- <div > -->
+
+        <ng-container *ngFor="let item of statsData | keyvalue; let i = index">
+          <ng-container *ngIf="item.key.includes('Percent')">
+            <!-- Index: {{ i }}, Key: {{ item.key }}, Value: {{ item.value }} -->
+            <app-doughnet-chart-widget class="col-md-3 borderClass d-flex align-items-center justify-content-center"
+            [key]="item?.key"
+            [value]="item?.value"
+            [bgClass]="bgClasses[i]">
+          </app-doughnet-chart-widget>
+          </ng-container>
+          <ng-container *ngIf="!item.key.includes('Percent')"> 
+             <!-- Index: {{ i }}, Key: {{ item.key }}, Value: {{ item.value }} -->
+            <app-icon-widget class="col-md-3 borderClass"
+            [key]="item?.key"
+            [value]="item?.value"
+            [bgClass]="bgClasses[i]"
+            [iconClass]="iconClasses[i]"></app-icon-widget>
+          <!-- </div> -->
+          </ng-container>
+        </ng-container>
+
+        <!-- <div class="col-md-3 borderClass d-flex align-items-center justify-content-center">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-yellow">
+            <div>
+             
+      
+              <h2 >
+               
+                <i class="fa fa-thumbs-o-up" style="float: left;"></i
+                >
+                <span style="margin-left: 15px; float: right;">33</span>
+              </h2>
+              <h2 >
+                <span>Productive</span>
+              </h2>
+            </div>
+        
+          </div>
+        </div>
+        <div class="col-md-3 col-lg-3 borderClass">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-red">
+            <div class="barClass">
+              
+              <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+              <h2 >
+                <span>Productive 40%</span>
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-orange bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-green bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="col-md-3 borderClass d-flex align-items-center justify-content-center">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-blue">
+            <div>
+              
+      
+              <h2 >
+                <i class="fa fa-briefcase" style="float: left;"></i
+                ><span style="margin-left: 15px; float: right;">33</span>
+              </h2>
+              <h2 >
+                <span>Productive</span>
+              </h2>
+            </div>
+        
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-purple">
+            <div class="barClass">
+              
+              <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+              <h2 >
+                <span>Productive 40%</span>
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-pink bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-cyan bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="col-md-3 borderClass d-flex align-items-center justify-content-center">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-brown">
+            <div>
+            
+      
+              <h2 >
+                <i class="fa fa-briefcase" style="float: left;"></i
+                ><span style="margin-left: 15px; float: right;">33</span>
+              </h2>
+              <h2 >
+                <span>Productive</span>
+              </h2>
+            </div>
+        
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-gray">
+            <div class="barClass">
+              
+              <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+              <h2 >
+                <span>Productive 40%</span>
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-teal bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+
+        <div class="col-md-3 borderClass">
+          <div class="bg-c-indigo bb">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row borderClass3 d-flex align-items-start justify-content-center">
+              <div class="col-md-12">Un-Successful
+                <h2 >50 %</h2>  
+              </div>
+              
+             
+            </div>
+          </div>
+          
+        </div>
+
+
+
+
+        <div class="col-md-12 borderClass">
+          <div class="bg-c-yellow">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+     
+                    <canvas baseChart
+                    [colors]="barChartColors"
+                    [data]="barChartDataN"
+                    [labels]="barChartLabels"
+                    [chartType]="barChartType"
+                    [options]="barChartOptions"
+                   
+                    >
+            </canvas>
+                  
+                    
+            </div>
+            
+          </div>
+          
+        </div>
+
+
+
+
+
+        <div class="col-md-3 borderClass d-flex align-items-center justify-content-center">
+          <div class="borderClass2 d-flex align-items-center justify-content-center bg-c-yellow">
+            <div class="barClass">
+              
+              <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+              <h2 >
+                <span>Productive 40%</span>
+              </h2>
+            </div>
+        
+          </div>
+        </div>
+        <div class="col-md-3 borderClass">
+          <div class="borderClass2">
+            <h3>Column 1</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+          </div>
+        </div> -->
+
+
+
+
+      </div>
+    </div>
+    
+  </mat-card-content>
+</mat-card>

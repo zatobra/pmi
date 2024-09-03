@@ -1,0 +1,67 @@
+
+
+
+
+
+
+<agm-map 
+  [latitude]="lat"
+  [longitude]="lng"
+  [zoom]="zoom" (mapReady)="onMapReady($event)">
+  <ng-container *ngFor="let shop of convertedLocationData; let i = index">
+    <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'yellow' + '.png' }}"
+                [visible]="shop.isVisible" 
+               
+              >
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [isOpen]="shop.isVisible"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Start Time:</strong> {{ shop.latitude }}
+                    <br />
+                    <strong>End Time:</strong> {{ shop.longitude }}
+                 
+                    <br />
+                    <strong>index:</strong> {{ i }}
+                 
+                    <br />
+                    <a (click)="goToEvaluation(shop)">
+                      <button backgroundcolor="#2196F3">
+                        Go To Details
+                      </button></a
+                    >
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+  </ng-container>
+</agm-map>
+
+  <div class="controls">
+    <button (click)="play()">Play</button>
+    <button (click)="pause()">Pause</button>
+    <button (click)="reset()">Reset</button>
+    <button (click)="next()">Next</button>
+    <button (click)="prev()">Previous</button>
+    <button (click)="fast()">Fast</button>
+    <span id="speed">Speed: {{ speedMultiplier }}x</span>
+    <button (click)="slow()">Slow</button>
+  </div>
+
+<!-- // working -->
+  <!-- <agm-map 
+  [latitude]="lat"
+  [longitude]="lng"
+  [zoom]="zoom" (mapReady)="onMapReady($event)">
+  <agm-direction [origin]="{lat: convertedLocationData[0].latitude, lng: convertedLocationData[0].longitude}"
+                 [destination]="{lat: convertedLocationData[convertedLocationData.length - 1].latitude, lng: convertedLocationData[convertedLocationData.length - 1].longitude}">
+  </agm-direction>
+</agm-map> -->
+
+
+

@@ -1,0 +1,437 @@
+@import "material";
+@import "main";
+@import "utils";
+@import "~ngx-toastr/toastr.css";
+@import "responsive";
+@import "../.././node_modules/angular-calendar/css/angular-calendar.css";
+@import "~mapbox-gl/dist/mapbox-gl.css";
+//@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+// @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+//@include mat-core();
+
+  @font-face {
+      font-family: 'Fontin';
+      // src: url('../assets/fonts/FontinSans/Fontin_Sans_R.otf') format('opentype');
+      src: url('../assets/fonts/FontinSans/Fontin_Sans_R.otf') format('opentype');
+  }
+
+//   @font-face {
+//     font-family: 'Montserrat2';
+//     src: url('../assets/fonts/FontinSans/Montserrat-Regular.ttf') format('truetype');
+// }
+
+ @font-face {
+      font-family: 'Calibri2';
+      src: url('../assets/fonts/Calibri-Font/Calibri.ttf') format('truetype');
+  }
+
+//   @font-face {
+//   font-family: 'wof';
+//   src: url('../assets/fonts/FontinSans/IurY6Y5j_oScZZow4VOxCZZM.woff2') format('woff2');
+// }
+
+
+.primary-red {
+  background-color: #b70000;
+  color: white;
+}
+
+.cdk-global-overlay-wrapper,
+.cdk-overlay-container,
+.cdk-overlay-connected-position-bounding-box {
+  z-index: 10000 !important;
+}
+
+// .modal-backdrop {
+//   z-index: -1;
+// }
+
+//   .modal {
+//     overflow-y:auto;
+//     margin-right: 1% !important;
+//   }
+
+//   .modal-open {
+//     overflow:inherit;
+//     overflow-y:scroll;
+//     padding-right:0 !important;
+//     margin-right: 1% !important;
+//   }
+
+// .mat3 .mat-select-arrow {
+//     width: 5px;
+//     height: 5px;
+//     border-left: 5px solid transparent;
+//     border-right: 5px solid transparent;
+//     border-top: 5px transparent;
+//     margin: 0 4px;
+//     color: rgb(10, 73, 99);
+//     border-image-source: url('/assets/images/expand-button.png') !important;
+//     border-image-repeat: stretch!important;
+// }
+
+.modal {
+  overflow-y: auto;
+}
+
+.mat-tab-label {
+  //     border-width: thin;
+  //    // border-style: solid;
+  //     border-radius:30px 30px 0px 0px;
+  //     border-color: orange;
+
+  //     // margin-left:10px;
+  //     // margin-right: 10px;
+
+  //  background:rgb(173, 185, 190);
+  //  border-radius:20px 20px 0px 0px;
+  //  color: black;
+  //  font-weight: bold;
+  // // font-family: fantasy;
+  //  font-family: "Lucida Console", "Courier New", monospace;
+
+  border: 1px solid #999;
+  border-bottom-style: none !important;
+  background: #eee;
+  padding: 4px 12px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  top: 1px;
+  font-weight: bold;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  // border-width: 9px;
+  // border-style: solid;
+  // border-color: orange;
+
+  //   cursor: pointer;
+  //   padding:10px 20px;
+  //   margin:0px 2px;
+  //  // background:#000;
+  //   display:inline-block;
+  //   color:#fff;
+  //   box-shadow: 0 0.5rem 0.8rem #00000080;
+
+  background: #fff;
+  border-bottom: 1px solid transparent;
+}
+
+//glt
+// .mat-tab {
+//         border-top: 1px solid #999;
+//         padding: 12px;
+//         border-bottom-style: none!important;
+//       }
+
+// .mat-ink-bar {
+//         // display: none !important;
+
+//     }
+
+.mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background: black;
+  // display: none !important;
+  height: 1px;
+}
+
+.mat-tab-header {
+  border-bottom: none;
+  // padding-bottom: 5px;
+}
+
+// .mat-group {
+//   border: 1px solid red;
+// }
+
+//   .mat-tab-body  {
+//     // border-bottom: none;
+
+//     border: 2px solid blue;
+//     // background: green;
+//    // padding-bottom: 5px;
+// }
+
+// .mat-tab-body-wrapper {
+//   background: black;
+//   border-color: red;
+// }
+
+.img-center {
+  text-align: center;
+}
+
+.filter-option > .mat-pseudo-checkbox {
+  display: none !important;
+}
+
+.filter-sidenav .mat-list-item-content {
+  padding: 0 10px !important;
+  font-size: 0.875rem !important;
+}
+
+.filter-sidenav .mat-select-trigger {
+  font-size: 1rem !important;
+}
+
+img {
+  cursor: pointer !important;
+}
+
+mat-card {
+  border-top: 1px solid #afafaf !important;
+}
+
+.img-container {
+  position: relative;
+  text-align: center;
+  // color: red;
+  color: white;
+  // font-weight: 700;
+}
+
+.top-left {
+  position: absolute;
+  top: 8px;
+  left: 25px;
+}
+
+.top-right-red {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  padding: 3px 5px;
+}
+
+.top-right-green {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: green;
+  padding: 3px 5px;
+}
+// mat-card {
+//     border-top: 1px solid lightgray;
+// }
+td {
+  table-layout: fixed;
+  width: auto;
+  word-break: break-all !important;
+  white-space: nowrap;
+  white-space: pre-wrap;
+}
+
+th {
+  white-space: nowrap;
+  white-space: pre-wrap;
+}
+.tableFixHead {
+  // overflow-y: auto;
+  // height: 100px;
+  max-height: 645px;
+  overflow: scroll;
+}
+.max-width-150 > td {
+  width: 75px;
+  word-break: break-all;
+}
+.title {
+  background: lightgreen;
+  color: black;
+  margin-bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+table {
+  font-size: 12px;
+}
+.background-color {
+  background-color: lightblue;
+}
+.cat {
+  background: lightcyan;
+}
+
+input {
+  outline: none;
+  outline-style: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+.imageDetails {
+  width: 100%;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  color: white;
+}
+
+// https://stackoverflow.com/questions/43747518/angular-material-and-changing-fonts
+
+
+.samsung{
+  // @font-face {
+  //     font-family: 'Calibri';
+  //     src: url('../assets/fonts/Calibri-Font/Calibri.ttf') format('truetype');
+  // }
+  
+  $custom-typography: mat-typography-config(
+     $font-family: 'Calibri2, monospace',
+      $headline: mat-typography-level(32px, 48px, 700),
+      $body-1: mat-typography-level(16px, 24px, 500)
+  );
+  @include angular-material-typography($custom-typography);
+}
+
+
+
+.noSamsung{
+  // @font-face {
+  //     font-family: 'Fontin Sans';
+  //     // src: url('../assets/fonts/FontinSans/Fontin_Sans_R.otf') format('opentype');
+  //     src: url('../assets/fonts/FontinSans/Fontin_Sans_R.otf') format('otf');
+  // }
+
+//   @font-face {
+//     font-family: 'Montserrat2';
+//     src: url('../assets/fonts/FontinSans/Montserrat-Regular.ttf') format('truetype');
+// }
+
+// @font-face {
+//   font-family: 'wof';
+//   src: url('../assets/fonts/FontinSans/IurY6Y5j_oScZZow4VOxCZZM.woff2') format('woff2');
+// }
+  
+  $custom-typography: mat-typography-config(
+      $font-family: 'Fontin, monospace',
+      $headline: mat-typography-level(32px, 48px, 700),
+      $body-1: mat-typography-level(16px, 24px, 500)
+  );
+  @include angular-material-typography($custom-typography);
+}
+
+.main-container,
+.container-mini-side-bar {
+  padding-bottom: 100px; /* Adjust based on the footer height */
+}
+
+
+.no-margin {
+position: absolute;
+overflow: auto;
+}
+
+// .samsung{
+// html,
+// body {
+//   height: 100%;
+//   margin: 0;
+// font-family: "Calibri" !important;
+// }
+// }
+
+// .noSamsung{
+// html,
+// body {
+//   height: 100%;
+//   margin: 0;
+//   font-family: "Fontil Sans" !important;
+// }
+// }
+
+// $app-primary: mat-palette($mat-grey, 900, 900 , 900);
+// $app-accent: mat-palette($mat-amber, A200, A100, A400);
+// $app-warn: mat-palette($mat-light-green, A400);
+
+// $app-primary: mat-palette($mat-grey, 900, 900 , 900);
+// $app-accent: mat-palette($mat-amber, A200, A100, A400);
+// $app-warn: mat-palette($mat-grey, 900, 900 , 900);
+
+// In Angular 10
+// $theme: mat-light-theme((
+//   color: (
+//     primary: $app-primary,
+//     accent: $app-accent,
+//     warn: $app-warn
+//   )
+// ));
+// In Angular 10
+
+// In Angular 9
+// $theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+// In Angular 9
+
+// @include angular-material-theme($theme);
+
+
+
+
+// .ngxImageZoomContainer {
+//   width: 90vw !important;
+//   height: 90vh !important;
+// }
+
+
+
+
+
+
+
+
+
+// .ngxImageZoomContainer{
+ 
+// }
+
+
+
+// for nfl high res images -- was going outside box
+.ngxImageZoomContainer {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%; /* Make the container responsive */
+  height: auto; /* Allow the container to adjust its height based on the width */
+  overflow: scroll;
+  position: relative; /* Ensure positioning context for absolute positioning of child elements */
+  top: 0;
+  left: 0;
+}
+
+.ngxImageZoomThumbnail {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove any default inline styles that might affect layout */
+}
+
+.ngxImageZoomFullContainer {
+  width: 100%; /* Occupy the entire container width */
+  height: 100%; /* Occupy the entire container height */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.ngxImageZoomFull {
+  width: 100%; /* Occupy the entire container width */
+  height: auto; /* Maintain aspect ratio */
+  display: none; /* Hide the full image by default */
+}
+
+footer {
+  flex-shrink: 0;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.p-tieredmenu.p-tieredmenu-overlay {
+  transform: translate(-19%, 12%); /* Adjust these values as needed */
+}
+
+

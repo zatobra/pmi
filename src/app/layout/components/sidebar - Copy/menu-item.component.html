@@ -1,0 +1,38 @@
+<ng-container *ngIf="!item.subMenu">
+  <a
+    mat-list-item
+    [routerLink]="['/dashboard', item.link]"
+    routerLinkActive="link-active"
+    (click)="debugLog()"
+  >
+    <mat-icon class="sidenav-icon">home</mat-icon>
+    {{ item.lable | translate }}
+  </a>
+</ng-container>
+
+<ng-container *ngIf="item.subMenu">
+  <div class="nested-menu">
+    <a
+      mat-list-item
+      (click)="menuTrigger.openMenu()"
+      [matMenuTriggerFor]="submenu"
+    >
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Admin'">person</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Dashboard'">dashboard</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Tableau'">assessment</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Evaluation'">verified_user</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Virtual View'">live_tv</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'HR'">whatshot</mat-icon>
+      <i class="icon" *ngIf="item.header === 'Target Vs Achievement'"></i>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Lucky Draw'">event</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header === 'Approval'">check_circle</mat-icon>
+      <mat-icon class="sidenav-icon" *ngIf="item.header.includes('Reports')">description</mat-icon>
+      {{ item.header | translate }}
+    </a>
+    <mat-menu #submenu="matMenu">
+      <ng-container *ngFor="let item2 of item.menuList">
+        <app-menu-item [item]="item2" [hideSideBar]="hideSideBar"></app-menu-item>
+      </ng-container>
+    </mat-menu>
+  </div>
+</ng-container>

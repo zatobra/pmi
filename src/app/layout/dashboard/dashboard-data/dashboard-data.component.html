@@ -1,0 +1,417 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      <small
+        style="color: lightseagreen !important"
+        class="mtb-5-IMP"
+        *ngIf="loadingReportMessage"
+        >Your file is being prepared for download</small
+      >
+    </mat-card-title>
+    <ng-container>
+      <section class="example-section">
+        <mat-form-field class="example-margin mr-10-IMP" *ngIf="reportId == -1">
+          <mat-select
+            placeholder="Query Type"
+            name="queryList"
+            [(ngModel)]="selectedQuery"
+            (ngModelChange)="setparamsVisibility(-1)"
+          >
+            <ng-container *ngFor="let query of queryList">
+              <mat-option [value]="query">{{ query.title }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+      </section>
+      <section class="example-section">
+        <ng-container *ngFor="let parameter of selectedQuery.parameterList">
+          <ng-container *ngIf="parameter.isVisible">
+            <mat-form-field
+              *ngIf="
+                reportData.clusterList?.length > 0 &&
+                parameter.populatedFrom == 'Cluster'
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="cluster"
+                [(ngModel)]="selectedCluster"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="cluster"
+                  *ngFor="let cluster of reportData.clusterList"
+                  >{{ cluster.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Zone' &&
+                reportData.zoneList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="zone"
+                [(ngModel)]="selectedZone"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <ng-container *ngFor="let zone of reportData.zoneList">
+                  <mat-option [value]="zone">{{ zone.title }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Region' &&
+                reportData.regionList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="region"
+                [(ngModel)]="selectedRegion"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="region"
+                  *ngFor="let region of reportData.regionList"
+                  >{{ region.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Area' &&
+                reportData.areaList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="area"
+                [(ngModel)]="selectedArea"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="area"
+                  *ngFor="let area of reportData.areaList"
+                  >{{ area.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Fold' &&
+                reportData.foldList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="fold"
+                [(ngModel)]="selectedFold"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="fold"
+                  *ngFor="let fold of reportData.foldList"
+                  >{{ fold.route_title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Channel' &&
+                parameter.type == 'Single_Select' &&
+                reportData.channelList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="channel"
+                [(ngModel)]="selectedChannel"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="channel"
+                  *ngFor="let channel of reportData.channelList"
+                  >{{ channel.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Channel' &&
+                parameter.type == 'Multi_Select' &&
+                reportData.channelList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="Channel"
+                name="channel"
+                [(ngModel)]="selectedChannelMulti"
+                multiple
+                #channelSelect="ngModel"
+                [compareWith]="equals"
+              >
+                <mat-option disabled="disabled" class="filter-option">
+                  <button
+                    mat-raised-button
+                    class="mat-primary fill text-sm"
+                    (click)="selectAll(channelSelect, reportData.channelList)"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    class="ml-1 mat-accent fill text-sm"
+                    (click)="deselectAll(channelSelect)"
+                  >
+                    Deselect All
+                  </button>
+                </mat-option>
+
+                <mat-option
+                  [value]="channel"
+                  *ngFor="let channel of reportData.channelList"
+                  >{{ channel.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Category' &&
+                parameter.type == 'Single_Select' &&
+                reportData.categoryList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="channel"
+                [(ngModel)]="selectedCategory"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="category"
+                  *ngFor="let category of reportData.categoryList"
+                  >{{ category.category_title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+          <mat-form-field
+          *ngIf="
+            parameter.populatedFrom == 'Brand' &&
+            reportData.brandList?.length > 0
+          "
+          class="example-margin mr-10-IMP"
+         >
+          <mat-select
+            placeholder="{{ parameter.title }}"
+            name="brand"
+            [(ngModel)]="selectedBrand"
+            (ngModelChange)="setparamsVisibility(parameter.id)"
+          >
+            <mat-option
+              [value]="brand"
+              *ngFor="let brand of reportData.brandList"
+              >{{ brand.title }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Category' &&
+                parameter.type == 'Multi_Select' &&
+                reportData.categoryList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="Category"
+                name="category"
+                [(ngModel)]="selectedCategoryMulti"
+                multiple
+                #categorySelect="ngModel"
+                [compareWith]="equals"
+              >
+                <mat-option disabled="disabled" class="filter-option">
+                  <button
+                    mat-raised-button
+                    class="mat-primary fill text-sm"
+                    (click)="selectAll(categorySelect, reportData.categoryList)"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    class="ml-1 mat-accent fill text-sm"
+                    (click)="deselectAll(categorySelect)"
+                  >
+                    Deselect All
+                  </button>
+                </mat-option>
+
+                <mat-option
+                  [value]="category"
+                  *ngFor="let category of reportData.categoryList"
+                  >{{ category.category_title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <!-- <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Channel' &&
+                parameter.type == 'Single_Select' &&
+                reportData.channelList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="{{ parameter.title }}"
+                name="channel"
+                [(ngModel)]="selectedChannel"
+                (ngModelChange)="setparamsVisibility(parameter.id)"
+              >
+                <mat-option
+                  [value]="channel"
+                  *ngFor="let channel of reportData.channelList"
+                  >{{ channel.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+              *ngIf="
+                parameter.populatedFrom == 'Channel' &&
+                parameter.type == 'Multi_Select' &&
+                reportData.channelList?.length > 0
+              "
+              class="example-margin mr-10-IMP"
+            >
+              <mat-select
+                placeholder="Channel"
+                name="channel"
+                [(ngModel)]="selectedChannelMulti"
+                multiple
+                #channelSelect="ngModel"
+                [compareWith]="equals"
+              >
+                <mat-option disabled="disabled" class="filter-option">
+                  <button
+                    mat-raised-button
+                    class="mat-primary fill text-sm"
+                    (click)="selectAll(channelSelect, reportData.channelList)"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    class="ml-1 mat-accent fill text-sm"
+                    (click)="deselectAll(channelSelect)"
+                  >
+                    Deselect All
+                  </button>
+                </mat-option>
+
+                <mat-option
+                  [value]="channel"
+                  *ngFor="let channel of reportData.channelList"
+                  >{{ channel.title }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field> -->
+
+            <mat-form-field
+              class="example-full-width mr-10-IMP"
+              *ngIf="parameter.populatedFrom == 'start_date'"
+            >
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker0"
+                [(ngModel)]="startDate"
+                placeholder="Choose a start date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker0"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker0></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field
+              class="example-full-width mr-10-IMP"
+              *ngIf="parameter.populatedFrom == 'end_date'"
+            >
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker1"
+                [(ngModel)]="endDate"
+                placeholder="Choose a end date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker1"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+              class="example-full-width mr-10-IMP"
+              *ngIf="parameter.populatedFrom == 'date'"
+            >
+              <input
+                matInput
+                [min]="minDate"
+                [max]="maxDate"
+                [matDatepicker]="picker0"
+                [(ngModel)]="singleDate"
+                placeholder="Choose a date"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker0"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker0></mat-datepicker>
+            </mat-form-field>
+          </ng-container>
+        </ng-container>
+      </section>
+
+      <section class="example-section">
+        <button
+          [disabled]="loadingData || loadingReportMessage"
+          mat-raised-button
+          color="warn"
+          (click)="getDashboardData()"
+        >
+          Download
+        </button>
+      </section>
+    </ng-container>
+  </mat-card-content>
+</mat-card>

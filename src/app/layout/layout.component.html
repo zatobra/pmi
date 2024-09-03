@@ -1,0 +1,33 @@
+
+
+<!-- <app-nav></app-nav> -->
+<div
+  [ngClass]="{
+    samsung: samungPorject,
+    noSamsung: !samungPorject
+  }"
+>
+  <ng-container *ngIf="!userType">
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="userType">
+    <app-topnav (hideSideBar)="hideBarStatus()"></app-topnav>
+    <app-sidebar [hideSideBar]="hideSideBar"></app-sidebar>
+    <div
+      [ngClass]="{
+        'main-container': !hideSideBar,
+        'container-mini-side-bar': hideSideBar
+      }"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
+</div>
+<app-footer *ngIf="pmirm || localhost"></app-footer>
+<!-- <div style="height: 100px;width: 100vw;z-index: 5;position: absolute;">
+
+  
+</div> -->

@@ -1,0 +1,767 @@
+<ngx-spinner [fullScreen]="true" bdColor="rgba(0,0,0,0.8)" color="#fafafa" size="medium" type="ball-scale-multiple">
+  <p style="color: white"> Loading... </p>
+</ngx-spinner>
+
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{title}} <i [ngClass]="{'fa fa-cog fa-spin':loadingData}"> </i>
+      <!-- <a class="title" href="http://tradetracker.com.pk/" target="_blank">
+        <img src="assets/images/tt2logo.png" width="90">
+
+      </a> -->
+    </mat-card-title>
+    <section>
+      <mat-form-field class="mr-1">
+        <mat-select [(ngModel)]="selectedEmployeeType" name='attendance' placeholder="Employee Type">
+          <mat-option *ngFor="let item of employeeType" [value]="item">{{item}}</mat-option>
+
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="example-margin mr-5-IMP">
+        <mat-select
+          placeholder="Status"
+          name="mustHave"
+          [(ngModel)]="selectedMustHave"
+        >
+          <mat-option [value]="mustHave" *ngFor="let mustHave of mustHaveList">{{
+            mustHave
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+    <section>
+      <button (click)="getEmployeeList()" class="mr-1" color="warn" mat-raised-button [disabled]="!selectedMustHave || !selectedEmployeeType">Submit
+      </button>
+      <button (click)="showAddEmployeeModal()" class="mr-1" color="warn" mat-raised-button>
+        <mat-icon>
+          add
+        </mat-icon>
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+
+  <div class="row">
+    <div class="col-md-6">
+
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex justify-content-end">
+        <mat-form-field class="example-margin mr-0-IMP">
+          <mat-select name='download' placeholder="Download File" [(ngModel)]="selectedFileType"
+                      (ngModelChange)="downloadFile(selectedFileType)">
+            <mat-option *ngFor="let file of downloadList" [value]="file">
+              <i aria-hidden="true" class="{{file?.icon}}"></i> {{file?.title}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span>&nbsp;</span>
+      </div>
+    </div>
+
+  </div>
+
+
+  <mat-card-content>
+    <table class="table">
+      <thead>
+        <tr>
+
+          <th (click)="sortIt('employee_id')" scope="col" role="button">#
+            <br>
+            <i class="material-icons">
+              {{getArrowType('employee_id')}}
+            </i>
+          </th>
+          <th (click)="sortIt('employee_name')" scope="col" role="button">Employee Name
+            <br>
+            <i class="material-icons">
+              {{getArrowType('employee_name')}}
+            </i>
+          </th>
+          <th (click)="sortIt('employee_type')" scope="col" role="button">Employee Type
+            <br>
+            <i class="material-icons">
+              {{getArrowType('employee_type')}}
+            </i>
+          </th>
+          <th (click)="sortIt('regionTitle')" scope="col" role="button">Region
+            <br>
+            <i class="material-icons">
+              {{getArrowType('regionTitle')}}
+            </i>
+          </th>
+          <th (click)="sortIt('basic_salary')" scope="col" role="button">Basic Salary
+            <br>
+            <i class="material-icons">
+              {{getArrowType('basic_salary')}}
+            </i>
+          </th>
+
+
+
+          <th (click)="sortIt('basic_salary')" scope="col" role="button">PhoneCard Allowance
+            <br>
+            <i class="material-icons">
+              {{getArrowType('basic_salary')}}
+            </i>
+          </th>
+          <th (click)="sortIt('basic_salary')" scope="col" role="button">Internet Allowance
+            <br>
+            <i class="material-icons">
+              {{getArrowType('basic_salary')}}
+            </i>
+          </th>
+          <th (click)="sortIt('basic_salary')" scope="col" role="button">Conveyance Allowance
+            <br>
+            <i class="material-icons">
+              {{getArrowType('basic_salary')}}
+            </i>
+          </th>
+
+
+
+          <th (click)="sortIt('joining_date')" scope="col" role="button">Joining Date
+            <br>
+            <i class="material-icons">
+              {{getArrowType('joining_date')}}
+            </i>
+          </th>
+          <th (click)="sortIt('inactive_date')" scope="col" role="button">InActive Date
+            <br>
+            <i class="material-icons">
+              {{getArrowType('inactive_date')}}
+            </i>
+          </th>
+          <th (click)="sortIt('status')" scope="col" role="button">Status
+            <br>
+            <i class="material-icons">
+              {{getArrowType('status')}}
+            </i>
+          </th>
+          <th (click)="sortIt('image_url')" scope="col" role="button">Profile Image
+            <br>
+            <i class="material-icons">
+              {{getArrowType('image_url')}}
+            </i>
+          </th>
+          <th>Edit
+            <br>
+            <i class="material-icons arrow">
+
+            </i>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let item of employeeList |  orderBy: sortBy : sortOrder ">
+          <tr>
+
+            <td>{{item?.employee_id}}</td>
+            <td>{{item?.employee_name}}</td>
+            <td>{{item?.employee_type}}</td>
+            <td>{{item?.regionTitle}}</td>
+            <td>{{ item?.basic_salary }}</td>
+
+
+            <td>{{ item?.phone_card }}</td>
+            <td>{{ item?.internet_allowance }}</td>
+            <td>{{ item?.conveyance_allowance }}</td>
+
+
+            <td>{{ item?.joining_date }}</td>
+            <td>{{ item?.inactive_date }}</td>
+            <!-- <td>{{item?.active}}</td> -->
+            <td>
+              <ng-container *ngIf="item?.active == 'Y'" role="button" title="De-Active">
+
+              <button (click)="openDateModal(item?.employee_id)" class="btn btn-link"
+                      type="button">Active</button>
+              </ng-container>
+              <ng-container *ngIf="item?.active == 'N'" role="button" title="Active">
+                      <button (click)="updateEmployeeStatus(item, 'Y')" class="btn btn-link" type="button">In-Active</button>
+              </ng-container>
+            </td>
+            <td style = "vertical-align: middle;  height: 70px;">
+
+              <img
+              mat-card-image
+              class = "small"
+              src="{{ ip }}{{ item?.image_url }}"
+              (click)="setSelectedItem(item); showProfileImageModal()"
+            />
+
+          </td>
+          <td>
+            <button title="Edit"  mat-raised-button color="warn" class="btn btn-primary btn-fixed" (click)="openModal(item)">
+              <i class="fa fa-edit"> </i>
+            </button>
+
+          </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+
+<!-- <div #addEmployee="bs-modal" [config]="{backdrop: 'static',keyboard: false}" aria-labelledby="dialog-child-name" bsModal
+  class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left" id="dialog-child-name">{{title}} <i
+            [ngClass]="{'fa fa-cog fa-spin':loadingData}"> </i></h4>
+        <button (click)="hideAddEmployeeModal()" aria-label="Close" class="close pull-right" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="employeeType">Type</label>
+          <select [(ngModel)]="selectedEmployeeType" class="form-control" id="employeeType">
+            <option *ngFor="let employee of employeeType" [value]="employee">{{employee}}</option>
+          </select>
+        </div>
+        <mat-form-field class="w-100">
+          <input #employeeName [(ngModel)]="employeeNameForAddition" matInput maxlength="50" placeholder="Name">
+          <mat-hint align="end">{{employeeName.value.length}} / 50</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="addEmployeeInSystem()" class="btn btn-primary">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->
+<div
+  bsModal
+  #inactiveDate="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+  [config]="{backdrop: 'static',keyboard: false}"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Add Inactive Date
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideDateModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="startDate"
+          placeholder="Choose a date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+      <div class="modal-footer">
+        <button  mat-raised-button color="warn" (click)="updateInactivedate()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div
+bsModal
+  #inactiveDate="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 id="dialog-child-name" class="modal-title pull-left">
+        Add Inactive Date
+      </h4>
+      <button
+      type="button"
+      class="close pull-right"
+      aria-label="Close"
+      (click)="hideDateModal()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+
+     <label for="example-datetime-local-input">Select Joining Date</label>
+                 <input class="form-control" type="date" formControlName="joining_date">
+           </div>
+          </div>
+          </div>
+          <div class="modal-footer">
+            <button  mat-raised-button color="primary" (click)="updateInactivedate()">Update</button>
+          </div>
+    </div>
+    </div>
+
+</div>
+</div>
+</div> -->
+<div
+  bsModal
+  #addEmployee="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Create Employee
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideAddEmployeeModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form [formGroup]="uploadForm" enctype="multipart/form-data">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label for="type">Select Type</label>
+
+            <select
+              formControlName="type"
+              class="form-control"
+              placeholder="Select Type"
+              name="type"
+              required
+            >
+              <ng-container>
+                <option *ngFor="let employee of employeeType" [value]="employee">{{employee}}</option>
+              </ng-container>
+            </select>
+            <div
+              *ngIf="
+                uploadForm.controls.type.errors &&
+                (uploadForm.controls.type.touched ||
+                  uploadForm.controls.type.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'type')"
+                class="invalid-feedback"
+              >
+                Type Selection is Mandatory.
+              </mat-error>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="name">Empoyee Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              formControlName="name"
+            />
+            <div
+              *ngIf="
+                uploadForm.controls.name.errors &&
+                (uploadForm.controls.name.touched ||
+                  uploadForm.controls.name.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'name')"
+                class="invalid-feedback"
+              >
+                Valid Employee Name is required.
+              </mat-error>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="regionList.length > 0">
+            <label for="Region">{{labels.regionLabel}}</label>
+
+            <select
+              formControlName="region_id"
+              class="form-control"
+              placeholder="Select Region"
+              name="region_id"
+              required
+            >
+              <ng-container *ngFor="let r of regionList">
+                <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                <option [value]="r.id">
+                  {{ r.title }}
+                </option>
+              </ng-container>
+            </select>
+            <div
+              *ngIf="
+              uploadForm.controls.region_id.errors &&
+                (uploadForm.controls.region_id.touched ||
+                uploadForm.controls.region_id.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'region_id')"
+                class="invalid-feedback"
+              >
+              {{labels.regionLabel}} Selection is Mandatory.
+              </mat-error>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="basicSalary">Basic Salary</label>
+            <input
+              type="number"
+              class="form-control"
+              id="basicSalary"
+              formControlName="basicSalary"
+            />
+            <!-- <div
+              *ngIf="
+                uploadForm.controls.salary.errors &&
+                (uploadForm.controls.salary.touched ||
+                  uploadForm.controls.salary.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'salary')"
+                class="invalid-feedback"
+              >
+                Valid Employee Salary is required.
+              </mat-error>
+            </div> -->
+          </div>
+
+          <div class="form-group">
+
+           <!-- <input  [matDatepicker]="picker0" [max]="maxDate" [min]="minDate"
+           formControlName="date" matInput
+           placeholder="Select Joining Date" readonly>
+    <mat-datepicker-toggle [for]="picker0" matSuffix></mat-datepicker-toggle>
+    <mat-datepicker #picker0></mat-datepicker> -->
+    <label for="example-datetime-local-input">Select Joining Date</label>
+                <input class="form-control" type="date" formControlName="joiningDate">
+            <!-- <div
+              *ngIf="
+                uploadForm.controls.joining_date.errors &&
+                (uploadForm.controls.joining_date.touched ||
+                  uploadForm.controls.joining_date.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'joining_date')"
+                class="invalid-feedback"
+              >
+                Valid Joining Date is required.
+              </mat-error>
+            </div> -->
+          </div>
+
+          <div class="form-group">
+            <label for="image">Select Image</label>
+            <input
+              type="file"
+              id="path"
+              name="path"
+              class="form-control-file"
+              formControlName="path"
+              accept="image/*"
+              (change)="onSelectFile($event)"
+            />
+            <!-- <div
+              *ngIf="
+                uploadForm.controls.path.errors &&
+                (uploadForm.controls.path.touched ||
+                  uploadForm.controls.path.dirty)
+              "
+            >
+              <mat-error
+                *ngIf="uploadForm.hasError('required', 'path')"
+                class="invalid-feedback"
+              >
+                Please select an image
+              </mat-error>
+            </div> -->
+          </div>
+
+          
+          <div class="form-group">
+            <label for="phoneCard">PhoneCard Allowance</label>
+            <input
+              type="text"
+              class="form-control"
+              id="phoneCard"
+              formControlName="phoneCard"
+            />
+            
+          </div>
+          <div class="form-group">
+            <label for="internetAllowance">Internet Allowance</label>
+            <input
+              type="text"
+              class="form-control"
+              id="internetAllowance"
+              formControlName="internetAllowance"
+            />
+            
+          </div>
+          <div class="form-group">
+            <label for="conveyanceAllowance">Conveyance Allowance</label>
+            <input
+              type="text"
+              class="form-control"
+              id="conveyanceAllowance"
+              formControlName="conveyanceAllowance"
+            />
+            
+          </div>
+
+
+          <div class="form-group">
+            <label for="name">CNIC</label>
+            <input
+              type="text"
+              class="form-control"
+              id="cnic"
+              formControlName="cnic"
+            />
+            
+          </div>
+          <div class="form-group">
+            <label for="name">Phone</label>
+            <input
+              type="text"
+              class="form-control"
+              id="phone"
+              formControlName="phone"
+            />
+            
+          </div>
+          <div class="form-group">
+            <label for="name">Email</label>
+            <input
+              type="text"
+              class="form-control"
+              id="email"
+              formControlName="email"
+            />
+            
+          </div>
+
+
+          <div class="modal-footer">
+            <button
+              (click)="addEmployeeInSystem(uploadForm.value)"
+              class="mr-1"
+              [disabled]="!uploadForm.valid || loadingData"
+              mat-raised-button
+              color="warn"
+            >
+              <i
+                [ngClass]="{ 'fa fa-spinner fa-spin': loadingData }"
+              ></i>
+              Upload
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  bsModal
+  #profileImage="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          {{ selectedItem.employee_name }}
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideProfileImageModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img src="{{ ip }}{{ selectedItem.image_url }}"  alt="No Image Available" style=" width: 100%; height: 500px; "/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #editEmployee="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="dialog-child-name" [config]="{backdrop: 'static',keyboard: false}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">Update Employee</h4>
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideEmployeeEditModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+          <!-- <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Existing Employee Name" [(ngModel)]="existingName" readonly>
+            </mat-form-field>
+
+          </div> -->
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Update Employee Name" [(ngModel)]="existingName">
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Cnic" [(ngModel)]="updatedEmployeeCnic">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Phone" [(ngModel)]="updatedEmployeePhone">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Email" [(ngModel)]="updatedEmployeeEmail">
+            </mat-form-field>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Basic Salary" [(ngModel)]="updatedBasicSalary">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="PhoneCard Allowance" [(ngModel)]="updatedPhoneCard">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Internet Allowance" [(ngModel)]="updatedInternetAllowance">
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <mat-form-field class="w-100">
+              <input matInput placeholder="Conveyance Allowance " [(ngModel)]="updatedConveyanceAllowance">
+            </mat-form-field>
+          </div>
+        </div>
+
+
+
+        <div class="row">
+          <div class="col-md-12" *ngIf="regionList?.length>0">
+            <mat-form-field class="w-100">
+              <mat-select
+              placeholder={{labels?.regionLabel}}
+              name="region_id"
+              [(ngModel)]="updatedEmployeeRegionId"
+              required
+            >
+              <ng-container *ngFor="let r of regionList">
+                <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+                <mat-option [value]="r.id">
+                  {{ r.title }}
+                </mat-option>
+              </ng-container>
+            </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12" *ngIf="employeeType?.length>0">
+            <mat-form-field class="w-100">
+              <mat-select [(ngModel)]="updatedEmployeeType" name='attendance' placeholder="Employee Type" required>
+                <mat-option *ngFor="let item of employeeType" [value]="item">{{item}}</mat-option>
+      
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+       
+
+
+
+      <div class="modal-footer">
+        <button [disabled]="existingName === undefined || existingName === ''" mat-raised-button color="warn"
+         (click)="updateEmployeeName()">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

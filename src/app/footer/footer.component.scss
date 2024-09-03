@@ -1,0 +1,36 @@
+:host {
+  height: 50px; /* Adjust the height as per your design */
+  width: 100%;
+  position: fixed;  /* Change from absolute to fixed */
+  bottom: 0;
+  left: 0;
+  background-color: #d3d3d3;
+  padding: 0.5rem; /* Adjust padding as needed */
+  text-align: center;
+  z-index: 1000;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Additional styling for footer content */
+}
+
+.ot-sdk-show-settings {
+  /* Initial styling */
+  padding: 20px 20px;
+  font-size: 16px;
+  background-color: white !important; /* Initial background color */
+  color: #f44336 !important;  border: none;
+  cursor: pointer;
+  border: red !important;
+}
+
+.ot-sdk-show-settings:hover {
+  /* Hover effect */
+  background-color: red !important;
+  color: white !important; /* Same color on hover */
+  border: red !important;
+
+}

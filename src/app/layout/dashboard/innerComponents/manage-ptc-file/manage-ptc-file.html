@@ -1,0 +1,213 @@
+<mat-card>
+  <mat-card-title>
+    Manage Compliance
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <mat-card-content>
+    
+
+    <section>
+      <button
+      [disabled]="loadingData "
+        (click)="getData()"
+        mat-raised-button
+        color="warn"
+      >
+        Display
+      </button>
+    </section>
+
+    <div class="" style="display: flex;justify-content: space-between;margin-top: 15px;">
+      <input 
+        (change)="onFileChange($event)"
+        id="input-file-btn"
+        type="file"
+        name="file"
+      />
+         <label for="input-file-btn" class="input-file-text">Choose Compliance </label>
+         <div style="display: inline-block;">
+      <button 
+      style="margin-right: 20px;"
+          type="button"
+          mat-raised-button
+          [disabled]="isSelected"
+          color="warn"
+          (click)="uploadComplianceData()">
+          Upload
+        </button> 
+        <button style="margin-left: auto;"
+        [disabled]="data?.length<=0"
+        type="button"
+        mat-raised-button
+        color="warn"
+        (click)="downloadAsExcelFile()">
+        Download
+      </button> 
+      </div> 
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="data?.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- <search-box
+              [list]="tmpEmailList"
+              (notify)="onNotifyClicked($event)"
+            >
+            </search-box> -->
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="text-primary">
+                  <tr>
+                    <!-- <ng-container *ngFor="let column of showInTableHeaders">
+                      <th>{{ column?.heading }}</th>
+                    </ng-container>
+                    
+                    <th >Action</th> -->
+                      <th *ngFor="let column of columns">{{ column  }}</th>
+                 
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of data; let i = index">
+                    <!-- <td>{{ i + 1 }}</td> -->
+                    <td *ngFor="let column of columns">{{ row[column] }}</td>
+                
+                    <!-- <td>
+                      <button
+                        class="example-margin mr-10-IMP"
+                       
+                        title="Update"
+                        (click)="showUpdateModal(row)"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<div
+  bsModal
+  #childModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+  [config]="{ backdrop: 'static', keyboard: false }"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Update
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModal }"></i>
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="dynamicForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <!-- <div class="form-group">
+            <input type="hidden" formControlName="id" />
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="email">Shop Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                formControlName="email"
+              />
+              <div
+                *ngIf="
+                  form.controls.email.errors &&
+                  (form.controls.email.touched || form.controls.email.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'email')"
+                  class="invalid-feedback"
+                >
+                  Valid Email is Required.
+                </mat-error>
+              </div>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="active">is_posm_maintained</label>
+              <select
+                formControlName="active"
+                class="form-control"
+                placeholder="Select Status"
+                name="active"
+              >
+                <ng-container *ngFor="let status of activeStatus">
+                  <option [value]="status.value">{{ status.value }}</option>
+                </ng-container>
+              </select>
+            
+            </div>
+          </div> -->
+
+          <div class="form-group col-md-12" *ngFor="let column of headersData">
+            <ng-container *ngIf="!column.showInEditModal">
+              <input
+              type="hidden"
+              class="form-control"
+              [formControlName]="column.title"
+            />
+            </ng-container>
+
+            <ng-container *ngIf="column.showInEditModal">
+              <label for="{{column.title}}">{{ column.heading }}</label>
+              <ng-container [ngSwitch]="column.type">
+                <input *ngSwitchCase="'text_field'" class="form-control" type="text" [formControlName]="column.title" [readonly]="!column.edit" />
+                <!-- <ng-conatiner></ng-conatiner> -->
+                <select *ngSwitchCase="'options'" class="form-control" [formControlName]="column.title">
+                  <option *ngFor="let option of column.optionList" [value]="option.value" [disabled]="!column.edit">{{ option.value }}</option>
+                </select>
+                <!-- Add more ngSwitchCase for other column types as needed -->
+              </ng-container>
+            </ng-container>
+
+         
+          </div>
+
+         </div>
+        <div class="modal-footer">
+
+          <button
+          
+            class="mr-1"
+            (click)="updateData(dynamicForm.value)"
+            [disabled]="loadingModal"
+            mat-raised-button
+            color="primary"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

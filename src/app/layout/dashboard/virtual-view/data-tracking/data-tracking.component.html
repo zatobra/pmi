@@ -1,0 +1,388 @@
+<!--<script>angular.module('MyApp', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache']);</script>-->
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+    </mat-card-title>
+
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-5-IMP">
+        <mat-select
+          placeholder="Selected Supervisor"
+          name="Supervisor"
+          [(ngModel)]="selectedSupervisorFilter"
+          (ngModelChange)="getSurveyourData()"
+        >
+          <ng-container *ngFor="let sup of supervisor">
+            <mat-option [value]="sup.id">{{ sup.m_code }} - {{sup.fullName}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        style="margin-left: 1%"
+        class="example-margin mr-5-IMP"
+        *ngIf="surveyor?.length > 0"
+      >
+        <mat-select
+          placeholder="Selected Surveyor"
+          name="Surveyor"
+          [(ngModel)]="selectedSurveyorFilter"
+        >
+          <ng-container *ngFor="let sur of surveyor">
+            <mat-option [value]="sur.id">{{ sur.m_code  }} - {{sur.fullName}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        style="margin-left: 1%"
+        class="example-full-width mr-10-IMP"
+      >
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <button
+        [disabled]="
+          loading ||
+          selectedSupervisorFilter == -1 ||
+          selectedSurveyorFilter == -1
+        "
+        mat-raised-button
+        color="warn"
+        (click)="getShopsTracking()"
+      >
+        View
+      </button>
+      <button
+        style="margin-left: 1%"
+        [disabled]="
+          loading ||
+          selectedSupervisorFilter == -1 ||
+          selectedSurveyorFilter == -1
+        "
+        mat-raised-button
+        color="warn"
+        (click)="resetFilters()"
+      >
+        Reset Filters
+      </button>
+    </section>
+
+    <!--    </section>-->
+  </mat-card-content>
+</mat-card>
+<mat-card *ngIf="trackedShops.length > 0">
+  <section>
+    <div class="row my-2">
+      <div class="col-md-3">
+        <label for="totalDistance"
+          >Total Distance Covered:{{ totalDistanceCovered }} Km.</label
+        >
+      </div>
+      <div class="col-md-4">
+        <button mat-raised-button color="primary" class="mr-2" (click)="play()">
+          Play
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          (click)="pause()"
+        >
+          Pause
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="mr-2"
+          (click)="reset()"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+    <div class="my-2">
+      <!-- <button mat-raised-button color="primary" (click)="next()">Next</button>
+              <button mat-raised-button color="primary" (click)="prev()">Previous</button>
+              <button mat-raised-button color="primary" (click)="fast()">Fast</button>
+              <span id="speed">Speed: {{ speedMultiplier }}x</span>
+              <button mat-raised-button color="primary" (click)="slow()">Slow</button> -->
+    </div>
+  </section>
+  <section class="map" *ngIf="this.capturedShops.length>0">
+    <agm-map
+      [latitude]="lat"
+      [longitude]="lng"
+      [zoom]="6"
+      [fitBounds]="capturedShops.length > 1"
+      [styles]="styles"
+      (mapReady)="onMapReady($event)"
+    >
+      <div
+        *ngIf="selectedSupervisorFilter == -1 && selectedSurveyorFilter == -1 "
+      >
+        <!--  <agm-marker-cluster [imagePath]="'http://ndn1.concavetech.com/dist/assets/map-marker-icons/m'">-->
+        <agm-marker
+          [agmFitBounds]="true"
+          [label]="{
+            color: 'blue',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            text: shop.trackNumber
+          }"
+          *ngFor="let shop of capturedShops; let i = index"
+          latitude="{{ shop.latitude }}"
+          longitude="{{ shop.longitude }}"
+          iconUrl="{{ colorType }}"
+        >
+          &lt;!&ndash; (mouseOver)="showInfo($event)"
+          (mouseOut)="hideInfo($event)"&ndash;&gt;
+
+          <agm-snazzy-info-window [maxWidth]="200">
+            <ng-template>
+              <strong>Shop Number</strong> {{ shop.trackNumber }} <br />
+              <strong>Visit Time:</strong> {{ shop.visitTime }}
+              <br />
+              <strong>Time Difference:</strong> {{ shop.timeDifference }}
+              <br />
+              <strong> Code:</strong> {{ shop.m_code }}
+              <br />
+              <strong>Shop Title:</strong> {{ shop.shop_title }}
+              <br />
+              <strong>Address:</strong> {{ shop.address }}
+              <br />
+              <strong>Remarks:</strong> {{ shop.shop_status }}
+              <br />
+              <strong>Distance from last shop:</strong>
+              {{
+                getDistanceFromLatLonInKm(
+                  capturedShops[i - 1].latitude,
+                  capturedShops[i - 1].longitude,
+                  capturedShops[i].latitude,
+                  capturedShops[i].longitude,
+                  i
+                )
+              }}
+              km
+              <br />
+              <a
+                *ngIf="shop.shop_status !== 'Unvisited'"
+                (click)="goToEvaluation(shop.surveyId, shop.m_code)"
+                ><strong>click for view</strong
+                ><i class="fas fa-share-square"></i
+              ></a>
+            </ng-template>
+          </agm-snazzy-info-window>
+        </agm-marker>
+      </div>
+      <div *ngIf="selectedSupervisorFilter == -1 ">
+        <agm-marker
+          [label]="{
+            color: 'blue',
+            fontSize: '13px',
+            fontWeight: 'bold',
+            text: shop.trackNumber
+          }"
+          *ngFor="let shop of trackedShops; let i = index"
+          latitude="{{ shop.latitude }}"
+          longitude="{{ shop.longitude }}"
+          iconUrl="{{ colorType }}"
+        >
+          <!-- iconUrl="{{colorType+shop.dsr_id.toString().slice(-1)+'.png'}}" -->
+          <agm-snazzy-info-window [maxWidth]="200">
+            <ng-template>
+              <strong>Shop Number</strong> {{ shop.trackNumber }} <br />
+              <strong>Visit Time:</strong> {{ shop.visitTime }}
+              <br />
+              <strong>Time Difference:</strong> {{ shop.timeDifference }}
+              <br />
+              <strong> Code:</strong> {{ shop.m_code }}
+              <br />
+              <strong>Shop Title:</strong> {{ shop.shop_title }}
+              <br />
+              <strong>Address:</strong> {{ shop.address }}
+              <br />
+              <strong>Remarks:</strong> {{ shop.shop_status }}
+              <br />
+              <strong>Distance from last shop:</strong>
+              {{
+                getDistanceFromLatLonInKm(
+                  trackedShops[i - 1].latitude,
+                  trackedShops[i - 1].longitude,
+                  trackedShops[i].latitude,
+                  trackedShops[i].longitude,
+                  i
+                )
+              }}
+              km
+              <br />
+              <a
+                *ngIf="shop.shop_status !== 'Unvisited'"
+                (click)="goToEvaluation(shop.surveyId, shop.m_code)"
+                ><strong>click for view</strong
+                ><i class="fas fa-share-square"></i
+              ></a>
+            </ng-template>
+          </agm-snazzy-info-window>
+        </agm-marker>
+      </div>
+      <div *ngIf="selectedSurveyorFilter != -1 ">
+        <agm-polyline [editable]="true">
+          <agm-marker
+            *ngFor="let shop of capturedShops; let i = index"
+            latitude="{{ shop.latitude }}"
+            iconUrl="{{
+              colorType + shop.shop_flag.toString().slice(-1) + '.png'
+            }}"
+            longitude="{{ shop.longitude }}"
+            [label]="{
+              color: 'red',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              text: shop.trackNumber
+            }"
+          >
+            <!--  iconUrl="{{colorType+shop.dsr_id.toString().slice(-1)+'.png'}}"  -->
+
+            <!-- <span>{{i}}</span> -->
+
+            <agm-snazzy-info-window [maxWidth]="250">
+              <ng-template>
+                <strong>Shop Number</strong> {{ shop.trackNumber }} <br />
+                <strong>Visit Time:</strong> {{ shop.visitTime }}
+                <br />
+                <strong>Time Difference:</strong> {{ shop.timeDifference }}
+                <br />
+                <strong> Code:</strong> {{ shop.m_code }}
+                <br />
+                <strong>Shop Title:</strong> {{ shop.shop_title }}
+                <br />
+                <strong>Address:</strong> {{ shop.address }}
+                <br />
+                <strong>Remarks:</strong> {{ shop.shop_status }}
+                <br />
+                <strong>Distance from last shop:</strong>
+                {{
+                  getDistanceFromLatLonInKm(
+                    capturedShops[i].latitude,
+                    capturedShops[i].longitude,
+                    capturedShops[i + 1].latitude,
+                    capturedShops[i + 1].longitude,
+                    i + 1
+                  )
+                }}
+                km
+                <br />
+                <a
+                  *ngIf="shop.shop_status !== 'Unvisited'"
+                  (click)="goToEvaluation(shop.surveyId, shop.m_code)"
+                  ><strong>click for view</strong
+                  ><i class="fas fa-share-square"></i
+                ></a>
+              </ng-template>
+            </agm-snazzy-info-window>
+          </agm-marker>
+        </agm-polyline>
+      </div>
+      <!-- remove legend-->
+      <agm-direction
+        *ngIf="trackedShops.length > 0"
+        [origin]="origin"
+        [destination]="destination"
+      >
+      </agm-direction>
+    </agm-map>
+  </section>
+  <mat-card *ngIf="prodata.length > 0">
+    <mat-card-content>
+      <table class="table animated slideInLeft table-responsive">
+        <thead>
+          <tr>
+            <th scope="col">
+              <i class="">Planned </i>
+            </th>
+            <th scope="col">
+              <i class="">Captured </i>
+            </th>
+            <th scope="col">
+              <i class="">Abnormal </i>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let pro of prodata">
+            <tr>
+              <td scope="row">{{ pro.planned }}</td>
+              <td scope="row">{{ pro.captured }}</td>
+              <td scope="row">{{ pro.AbnormalShops }}</td>
+            </tr>
+          </ng-container>
+          <!-- <tr>
+            <ng-container *ngFor="let leg of legends">
+              <th scope="col">
+                <i class="">{{ leg.split(",", 2)[1] }}</i>
+              </th>
+            </ng-container>
+          </tr>
+          <tr>
+            <ng-container *ngFor="let leg of legends">
+              <td scope="col">
+                <img
+                  [src]="
+                    colorType + leg.split(',', 2)[0].toString().slice(-1) + '.png'
+                  "
+                />
+              </td>
+            </ng-container>
+          </tr> -->
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
+  <div class="col-md-3">
+    <mat-list role="list">
+      <mat-list-item role="listitem" *ngFor="let leg of legends">
+        <!--<div class="row">{{leg.de_code}} : -->
+        {{ leg.split(",", 2)[1] }} :<img
+          [src]="colorType + leg.split(',', 2)[0].toString().slice(-1) + '.png'"
+        />
+        <!--</div>-->
+      </mat-list-item>
+      <!--<mat-list-item role="listitem">Item 2</mat-list-item>
+          <mat-list-item role="listitem">Item 3</mat-list-item>-->
+    </mat-list>
+  </div>
+</mat-card>
+<div
+  *ngIf="loading"
+  class="text-center"
+  flFlex
+  flexLayout="row "
+  flexLayout.lt-md="column "
+>
+  <div fxFlex class="img-center">
+    <img
+      src="assets/images/loading.gif"
+      alt=" "
+      srcset=""
+      height="300"
+      width="300"
+    />
+  </div>
+</div>

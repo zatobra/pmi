@@ -1,0 +1,15 @@
+div.ngxImageZoomContainer {
+  height: 500px !important;
+}
+::ng-deep .ngxImageZoomContainer > img{
+  height: 730px!important;
+  width: 500px!important;
+ 
+  }
+
+.bgColorRed {
+  background: red;
+}
+.bgColorGreen {
+  background: green;
+}

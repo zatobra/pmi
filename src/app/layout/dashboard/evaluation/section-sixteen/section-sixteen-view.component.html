@@ -1,0 +1,267 @@
+<div class="container-fluid">
+    <div
+      class="row"
+      style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+    ></div>
+  
+    <div class="row justify-content-center">
+      <div class="col-md-12 text-center">
+        <h4>
+          <u>{{ data?.sectionTitle }} </u>
+          <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+        </h4>
+      </div>
+  
+      <ng-container *ngIf="products.length > 0">
+        <div
+          class="tableFixHead"
+          [ngClass]="{
+            'col-md-7': data?.imageList?.length > 0,
+            'col-md-10': data?.imageList?.length == 0
+          }"
+        >
+          <table class="table table-bordered table-hover w-100">
+            <thead style="background: lightgray">
+              <tr>
+                <!-- <th></th> -->
+                <th>Type</th>
+                <th>Manufacture Date</th>
+                <th>Expiry</th>
+                <th>Near Expiry Remark</th>
+                <th>Product Title</th>
+                <th>Fifo Maintain</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+  
+            <tbody>
+              <tr *ngFor="let product of products; let j = index">
+                <ng-container *ngIf="isEditable == false">
+                  <!-- <td></td> -->
+                  <td>{{ product?.Type }}</td>
+                  <td
+                    style="width: 800px !important; word-wrap: break-word"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ product?.manufacture_date }}
+                  </td>
+                  <td
+                    style="width: 800px !important; word-wrap: break-word"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ product?.Expiry }}
+                  </td>
+                  <td
+                  style="width: 800px !important; word-wrap: break-word"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  {{ product?.near_expiry_remark }}
+                </td>
+                  <td
+                    style="width: 800px !important; word-wrap: break-word"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ product?.product_title }}
+                  </td>
+                  <td
+                    style="width: 800px !important; word-wrap: break-word"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ product?.is_fifo_maintain }}
+                  </td>
+                  <td>{{ product?.available }}</td>
+  
+                </ng-container>
+  
+                <ng-container *ngIf="isEditable == true">
+                  <td>
+                    <mat-checkbox
+                      matTooltip="System Error"
+                      color="warn"
+                      name="{{ product?.product_title }}"
+                      id="{{ product?.id }}"
+                      (change)="checkUncheckSingle(checked, product)"
+                      #checked
+                    >
+                    </mat-checkbox>
+                  </td>
+                  <td>{{ product?.product_id }}</td>
+                  <td
+                    style="width: 800px !important; word-wrap: break-word"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ product?.product_title }}
+                  </td>
+                  <td
+                    style="cursor: pointer"
+                    (click)="changeSku(product)"
+                    [ngClass]="{ 'background-color': product?.MSL == 'Yes' }"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    {{ updateString(product?.available_sku) }}
+                  </td>
+                  <ng-container
+                    *ngIf="projectType != 'DALDA' && projectType != 'Tapal'"
+                  >
+                    <td
+                      style="width: 100px !important"
+                      *ngIf="projectType != 'Pepsi'"
+                    >
+                      <input
+                        type="number"
+                        [(ngModel)]="product.available_sku"
+                        style="width: 4em"
+                        readonly
+                      />
+                    </td>
+                    <td style="width: 100px !important">
+                      <input
+                        type="number"
+                        [(ngModel)]="product.face_unit"
+                        maxlength="3"
+                        style="width: 4em"
+                        (keyup)="changeFacing(product)"
+                      />
+                    </td>
+  
+                    <td style="width: 100px !important" *ngIf="projectType == 'Samsung'">
+                      <input
+                        type="number"
+                        [(ngModel)]="product.empty_facing"
+                        maxlength="3"
+                        style="width: 4em"
+                        (keyup)="changeEmptyFacing(product)"
+                      />
+                    </td>
+                  </ng-container>
+                </ng-container>
+              </tr>
+              <!-- <tr>
+                <td></td>
+                <td></td>
+                <th>
+                  Availability / Total ({{
+                    setAvailabilityPercentage(availability, totalProducts)
+                  }}%)
+                </th>
+                <td>{{ availability }} / {{ totalProducts }}</td>
+                <ng-container
+                  *ngIf="projectType != 'DALDA' && projectType != 'Tapal'"
+                >
+                  <td *ngIf="projectType != 'Pepsi'">{{ depth }}</td>
+                  <td>{{ facing }}</td>
+                </ng-container>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </div>
+  
+    <div
+      class="row justify-content-center"
+      *ngIf="(formData | json) != null && formData?.length > 0"
+    >
+      <div class="col-10 mt-4 tableHead">
+        <table class="table table-bordered table-hover w-100">
+          <thead style="background: lightgray">
+            <tr>
+              <th>Question</th>
+              <th>Answer</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let data of formData">
+              <ng-container *ngIf="data.value.questionType != 'image'">
+                <td style="width: 500px !important; word-wrap: break-word">
+                  {{ data.value.question }}
+                </td>
+                <ng-container *ngIf="isEditable == false">
+                  <td style="width: 300px !important">{{ data.value.answer }}</td>
+                </ng-container>
+                <ng-container *ngIf="isEditable == true">
+                  <ng-container
+                    *ngIf="data.value.questionType == 'text_field'; else options"
+                  >
+                    <td style="width: 300px !important">
+                      <input
+                        type="number"
+                        [(ngModel)]="data.value.answer"
+                        maxlength="10"
+                        style="width: 4em"
+                        (change)="updateTextData(data.value)"
+                      />
+                    </td>
+                  </ng-container>
+                  <ng-template #options>
+                    <td>
+                      <select
+                        #newValue
+                        (change)="
+                          updateMultiSelectData(newValue.value, data.value)
+                        "
+                      >
+                        <ng-container
+                          *ngFor="let options of data.value.optionList"
+                        >
+                          <option
+                            *ngIf="data.value.answer == options.title"
+                            [value]="options.id"
+                            selected="selected"
+                          >
+                            {{ options?.title }}
+                          </option>
+                          <option
+                            *ngIf="data.value.answer != options.title"
+                            [value]="options.id"
+                          >
+                            {{ options?.title }}
+                          </option>
+                        </ng-container>
+                      </select>
+                    </td>
+                  </ng-template>
+                </ng-container>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="col-12 mt-4 tableHead" *ngIf="secondaryData.length > 0">
+        <table class="table table-bordered table-hover w-100">
+          <thead style="background: lightgrey">
+            <tr>
+              <!-- <th>Brand Title</th> -->
+              <th>Secondary Category</th>
+              <th>Remarks</th>
+              <th>Secondary Utilization</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let data of secondaryData">
+              <td style="width: 200px !important">{{ data?.categoryTitle }}</td>
+              <td style="width: 600px !important">{{ data?.remarks }}</td>
+              <td style="width: 200px !important" *ngIf="isEditable">
+                <input
+                  type="number"
+                  [(ngModel)]="data.utilization"
+                  maxlength="3"
+                  style="width: 4em"
+                  (blur)="changeUtilization(data)"
+                />
+              </td>
+              <td style="width: 200px !important" *ngIf="!isEditable">
+                {{ data?.utilization }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,92 @@
+<div class="container-fluid" *ngIf="userType == reevaluatorRole || userType == evaluatorRole || userType == '1'">
+  <div
+    class="row"
+    style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+  ></div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u>
+      </h4>
+    </div>
+    <ng-container *ngIf="surveyCompliance?.length > 0">
+      <div class="tableFixHead col-md-12">
+        <table class="table table-bordered table-hover">
+          <!-- <thead style="background: lightgray">
+              <tr>
+                <th>Purity</th>
+                <th>Utilization</th>
+                <th>Facings</th>
+                <th>Strips</th>
+                <th>Stricker</th>
+              </tr>
+            </thead> -->
+          <tbody
+            *ngFor="let data of surveyCompliance; let j = index"
+            class="trS14"
+          >
+         
+            <ng-container *ngFor="let column of allKeys">
+              <tr>
+                <th>{{column}}</th>
+                <td>
+                  {{ data[column] }}
+                </td>
+              </tr>
+
+            </ng-container>
+            <!-- <tr>
+              <th>Purity</th>
+              <td>
+                {{ data?.purity }}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Utilization</th>
+              <td>
+                {{ data?.utilization }}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Facings</th>
+              <td>
+                {{ data?.facings }}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Strips</th>
+              <td>
+                {{ data?.strips }}
+              </td>
+            </tr>
+
+            <tr>
+              <th>Stricker</th>
+              <td>
+                {{ data?.coke_club_sticker }}
+              </td>
+            </tr> -->
+
+            <!-- <td>
+                    {{ data?.utilization }}
+                  </td>
+                  <td>
+                    {{ data?.facings }}
+                  </td>
+                  <td>
+                    {{ data?.strips }}
+                  </td>
+                  <td>
+                    {{ data?.coke_club_sticker }}
+                  </td>
+                </tr> -->
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

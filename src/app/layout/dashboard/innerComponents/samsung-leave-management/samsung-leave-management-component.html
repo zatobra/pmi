@@ -1,0 +1,281 @@
+<mat-card class="mb-20">
+  <mat-card-title>
+    Leave Management
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <section class="example-section">
+    <ng-container *ngIf="clusterList?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.clusterLabel }}"
+          name="cluster"
+          [(ngModel)]="selectedCluster"
+          (ngModelChange)="getZoneByCluster()"
+        >
+          <mat-option [value]="cluster" *ngFor="let cluster of clusterList"
+            >{{ cluster.title }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="zones?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.zoneLabel }}"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="loadSurveyors(); zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones"
+            >{{ zone.title }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field *ngIf="regions.length > 0" class="example-margin mr-10-IMP">
+      <mat-select
+        placeholder="{{ labels.regionLabel }}"
+        name="region"
+        [(ngModel)]="selectedRegion"
+        (ngModelChange)="loadSurveyors()"
+      >
+        <ng-container *ngFor="let region of regions">
+          <mat-option [value]="region">{{ region.title }}</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      *ngIf="surveyors.length > 0"
+      class="example-margin mr-10-IMP"
+    >
+      <mat-select
+        placeholder="Select {{ labels.surveyorLabel }}"
+        name="surveyor"
+        [(ngModel)]="selectedSurveyor"
+        (ngModelChange)="selectedSurveyorChanged()"
+        multiple
+        #surveyorSelect="ngModel"
+        [compareWith]="equals"
+      >
+        <mat-option disabled="disabled" class="filter-option">
+          <button
+            mat-raised-button
+            class="mat-primary fill text-sm"
+            (click)="selectAll(surveyorSelect, surveyors)"
+          >
+            Select All
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            class="ml-1 mat-accent fill text-sm"
+            (click)="deselectAll(surveyorSelect)"
+          >
+            Deselect All
+          </button>
+        </mat-option>
+        <ng-container *ngFor="let surveyor of surveyors">
+          <mat-option
+            [value]="surveyor"
+            *ngIf="surveyor.type == 1 && surveyor.active == 'Y'"
+            >{{ surveyor.m_code }} - {{ surveyor.fullName }}</mat-option
+          >
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+
+ 
+  </section>
+<section class="example-section">
+  <mat-form-field class="example-full-width mr-10-IMP">
+    <input
+      matInput
+      [min]="minDate"
+      [max]="maxDate"
+      [matDatepicker]="picker0"
+      [(ngModel)]="startDate"
+      placeholder="Choose a start date"
+      readonly
+    />
+    <mat-datepicker-toggle
+      matSuffix
+      [for]="picker0"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #picker0></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field class="example-full-width mr-10-IMP">
+    <input
+      matInput
+      [min]="minDate"
+      [max]="maxDate"
+      [matDatepicker]="picker1"
+      [(ngModel)]="endDate"
+      placeholder="Choose a end date"
+      readonly
+    />
+    <mat-datepicker-toggle
+      matSuffix
+      [for]="picker1"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #picker1></mat-datepicker>
+  </mat-form-field>
+</section>
+
+  <section class="example-section">
+    <button
+      [disabled]="loadingData || !selectedZone?.id || !selectedRegion?.id"
+      (click)="getSystemAttendanceData()"
+      mat-raised-button
+      color="warn"
+    >
+      Display
+    </button>
+    <!-- </section>
+
+  <section class="example-section"> -->
+  </section>
+</mat-card>
+
+<mat-card *ngIf="filteredList?.length > 0">
+  <mat-card-content>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead class="text-primary">
+              <!-- <th>id</th> -->
+              <th>Date</th>
+              <th (click)="sortIt('surveyorRegionTitle')" style="cursor: pointer">{{labels.regionLabel}}
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("surveyorRegionTitle") }}
+                </i>
+              </th>
+              <th  (click)="sortIt('m_code')" style="cursor: pointer">Code
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("m_code") }}
+                </i>
+              </th>
+              <th>{{ labels?.surveyorLabel }} Name</th>
+
+              <th (click)="sortIt('remarkTitle')" style="cursor: pointer">Remark
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("remarkTitle") }}
+                </i>
+              </th>
+              <!-- <th>claim_status</th> -->
+              <th>Planned Shops</th>
+              <th (click)="sortIt('attempted_shops')" style="cursor: pointer">Attempted Shops
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("attempted_shops") }}
+                </i>
+              </th>
+              <th>Edit Remark</th>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let data of filteredList | orderBy: sortBy:sortOrder; let i = index">
+                <tr style="cursor: pointer">
+                  <td>{{ data.mps_route_date}}</td>
+                  <td>{{ data.surveyorRegionTitle }}</td>
+                  <td>{{ data.m_code }}</td>
+                  <td>{{ data.surveyorName }}</td>
+
+                  <td>{{ data.remarkTitle }}</td>
+                  <!-- <td>{{ data.claimStatus }}</td> -->
+                  <td>{{ data.planned_shops }}</td>
+                  <td>{{ data.attempted_shops }}</td>
+
+                  <td>
+                    <button
+                      class="example-margin mr-10-IMP"
+                      mat-raised-button
+                      color="primary"
+                      title="Update Remark"
+                      (click)="showRemarksModal(data)"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+
+<div
+  bsModal
+  #remarksModal="bs-modal"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Pick Remark
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideRemarksModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" enctype="multipart/form-data">
+      <div class="modal-body" style="padding: 10px">
+        <div class="form-group" >
+          <label for="id">Planned Shops Id</label>
+          <input type="text" readonly formControlName="id" class="form-control" name="id"/>
+        </div>
+
+        <!-- <div class="form-group">
+          <label for="m_code">Code</label>
+          <input type="text" readonly formControlName="m_code" class="form-control" name="m_code"/>
+        </div>
+        <div class="form-group">
+          <label for="m_name">{{ labels?.surveyorLabel }} Name</label>
+          <input type="text" readonly formControlName="m_name" class="form-control" name="m_name"/>
+        </div>
+        <div class="form-group">
+          <label for="mps_date">Date</label>
+          <input type="text" readonly formControlName="mps_date" class="form-control" name="mps_date"/>
+        </div> -->
+
+        <div class="form-group" *ngIf="systemAttendanceRemarks.length > 0">
+          <label for="remark">Remark</label>
+
+          <select
+            formControlName="remarkId"
+            class="form-control"
+            placeholder="Select Remark"
+            name="remarkId"
+          >
+            <ng-container *ngFor="let r of systemAttendanceRemarks">
+              <!-- <option [value]="evaitem.id" [label]="evaitem.username"> -->
+              <option [value]="r.id">
+                {{ r.description }}
+              </option>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+    </form>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="updateRemark(form.value)"  [disabled]="!form.valid || loadingModalButton">
+          <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+          Update</button>
+      </div>
+    </div>
+  </div>
+</div>

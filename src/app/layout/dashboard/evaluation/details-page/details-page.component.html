@@ -1,0 +1,578 @@
+<div class="container-fluid animated slideInLeft">
+  <div class="container">
+    <div
+      class="example-section mb-20"
+      style="text-align: end"
+      *ngIf="tableData?.length > 0 && userType == zsmRole"
+    >
+      <button
+        class="btn btn-success mr-10-IMP"
+        title="Click to approve selected visits"
+        (click)="evaluateShops(1)"
+        [disabled]="selectedSurveys.length == 0 || loading"
+      >
+        Approve
+        <i
+          [ngClass]="{
+            'fa fa-spinner fa-spin': loading && selectedZsmStatus == 1
+          }"
+        ></i>
+      </button>
+      <button
+        class="btn btn-danger mr-10-IMP"
+        title="Click to disapprove selected visits"
+        (click)="evaluateShops(2)"
+        [disabled]="selectedSurveys.length == 0 || loading"
+      >
+        Disapprove
+        <i
+          [ngClass]="{
+            'fa fa-spinner fa-spin': loading && selectedZsmStatus == 2
+          }"
+        ></i>
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-md-12" *ngIf="tableData.length == 0 && loadingData">
+        <img src="assets/images/basicloader.gif" alt="" srcset="" />
+      </div>
+    </div>
+
+    <mat-button-toggle-group
+      name="toggle"
+      aria-label="toggle"
+      value="table"
+      #group="matButtonToggleGroup"
+    >
+      <mat-button-toggle value="table" matTooltip="Table View"
+        ><mat-icon> table_chart</mat-icon></mat-button-toggle
+      >
+
+      <mat-button-toggle value="card" matTooltip="Card View">
+        <mat-icon>grid_on</mat-icon></mat-button-toggle
+      >
+    </mat-button-toggle-group>
+
+    <div
+      class="main-card mb-3 card"
+      *ngIf="tableData?.length > 0 && group.value == 'table'"
+    >
+      <div class="row justify-content-center card-header">
+        <div
+          class="col-md-6 text-center card-header-title font-size-lg text-capitalize font-weight-normal"
+        >
+          Attempted Shop List
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table">
+            <table
+              class="align-middle text-truncate mb-0 table table-borderless table-hover"
+            >
+              <thead>
+                <tr>
+                  <th class="text-center" *ngIf="isEvaluationEnabled">
+                    <mat-checkbox
+                      color="primary"
+                      (change)="checkUncheckAll($event)"
+                      #isAllChecked
+                    >
+                    </mat-checkbox>
+                  </th>
+                  <th class="text-center">#</th>
+                  <th class="text-center">Fascia</th>
+                  <th class="text-center">Shop Code</th>
+                  <th class="text-center">Shop Name</th>
+                  <th class="text-center">Address</th>
+
+                  <th class="text-center">Channel Name</th>
+                  <th class="text-center" class="text-center" (click)="sortIt('picture_allowed')" style="cursor: pointer">
+                    Picture Allowed
+                    <i class="material-icons arrow material-icons-arrow">
+                      {{ getArrowType("picture_allowed") }}
+                    </i>
+                  </th>
+                  <th class="text-center" (click)="sortIt('chiller_allocated')" style="cursor: pointer" *ngIf="projectType == 'PMI_Merch'">
+                    BWU
+                    <i class="material-icons arrow material-icons-arrow">
+                      {{ getArrowType("chiller_allocated") }}
+                    </i>
+                  </th>
+                  <th class="text-center" *ngIf="zsmRole && zsmRole != '-1'">
+                    Physical Verification By Zsm
+                  </th>
+                  <th class="text-center">Remarks</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  style="cursor: pointer"
+                  *ngFor="let item of tableData | orderBy: sortBy:sortOrder; let i = index"
+                >
+                  <td *ngIf="isEvaluationEnabled">
+                    <mat-checkbox
+                      class="text-center"
+                      color="primary"
+                      [disabled]="item?.evaluation_status != 'Pending'"
+                      name="{{ item?.survey_id }}"
+                      id="{{ item?.survey_id }}"
+                      (change)="checkUncheckSingle(checked, item, i)"
+                      #checked
+                    >
+                    </mat-checkbox>
+                  </td>
+                  <td class="text-center text-muted" style="width: 80px">
+                    {{ i + 1 }}
+                  </td>
+                  <td class="text-center" style="width: 80px">
+                    <img
+                      width="40"
+                      class="rounded-circle"
+                      src="{{ ip }}{{ item.shop_image_url }}"
+                      alt=""
+                      *ngIf="!isExternalUrl"
+                      (click)="showImageModal(item)"
+                    />
+                    <img
+                      src="{{ item.shop_image_url }}"
+                      alt=""
+                      width="40"
+                      class="rounded-circle"
+                      *ngIf="isExternalUrl"
+                    />
+                  </td>
+                  <td class="text-center" (click)="gotoNewPage(item)">
+                    {{ item?.shop_code }}
+                  </td>
+                  <td class="text-center" (click)="gotoNewPage(item)">
+                    {{ item?.shop_title }}
+                  </td>
+                  <td class="text-center" (click)="gotoNewPage(item)">
+                    {{ item?.address }}
+                  </td>
+
+                  <td class="text-center" (click)="gotoNewPage(item)">
+                    {{ item?.channel_title }}
+                  </td>
+
+                  <td
+                    *ngIf="item.picture_allowed"
+                    class="text-center"
+                    (click)="gotoNewPage(item)"
+                  >
+                    {{ item?.picture_allowed }}
+                  </td>
+                  <td
+                    class="text-center"
+                    *ngIf="!item.picture_allowed"
+                    (click)="gotoNewPage(item)"
+                  >
+                    Y
+                  </td>
+
+
+                  <td class="text-center" (click)="gotoNewPage(item)" *ngIf="projectType == 'PMI_Merch'">
+                    {{ item?.chiller_allocated }}
+                  </td>
+
+
+                  <td
+                    class="text-center"
+                    *ngIf="zsmRole && zsmRole != '-1'"
+                    (click)="gotoNewPage(item)"
+                  >
+                    {{ item?.zsm_app_verification }}
+                  </td>
+                  <td
+                    *ngIf="item?.remarks == 'Shop Open'"
+                    class="text-center"
+                    (click)="gotoNewPage(item)"
+                  >
+                    <div class="badge badge-pill badge-success">
+                      {{ item?.remarks }}
+                    </div>
+                  </td>
+
+                  <td
+                    *ngIf="item?.remarks != 'Shop Open'"
+                    class="text-center"
+                    (click)="gotoNewPage(item)"
+                  >
+                    <div class="badge badge-pill badge-danger">
+                      {{ item?.remarks }}
+                    </div>
+                  </td>
+
+                  <td class="text-center" (click)="gotoNewPage(item)">
+                    {{ item?.evaluation_status }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="container-fluid"
+      *ngIf="tableData.length > 0 && group.value == 'card'"
+    >
+      <div class="row"></div>
+      <div class="row js">
+        <ng-container *ngFor="let item of tableData; let i = index">
+          <mat-card class="col-md-3 example-card card2 mt-3">
+            <div class="ribbon">
+              <img
+                mat-card-image
+                class="small"
+                src="{{ ip }}{{ item.shop_image_url }}"
+                width="250"
+                height="300"
+                alt=""
+                (click)="showImageModal(item)"
+                *ngIf="!isExternalUrl"
+              />
+              <img
+                mat-card-image
+                class="small"
+                src="{{ item.shop_image_url }}"
+                width="250"
+                height="300"
+                alt=""
+                (click)="showImageModal(item)"
+                *ngIf="isExternalUrl"
+              />
+            </div>
+
+            <mat-card-content (click)="gotoNewPage(item)">
+              <table class="table" style="cursor: pointer">
+                <tr>
+                  <th>Shop Code</th>
+                  <td>{{ item?.shop_code }}</td>
+                </tr>
+                <tr>
+                  <th>Address</th>
+                  <Address
+                    ><td>{{ item?.address }}</td></Address
+                  >
+                </tr>
+                <tr>
+                  <th>Shop Name</th>
+                  <td>{{ item?.shop_title }}</td>
+                </tr>
+                <tr>
+                  <th>Channel Name</th>
+                  <td>{{ item?.channel_title }}</td>
+                </tr>
+                <tr>
+                  <th>Remarks</th>
+                  <td>{{ item?.remarks }}</td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td>{{ item?.evaluation_status }}</td>
+                </tr>
+                <tr>
+                  <th>Picture Allowed</th>
+                  <td>{{ item?.picture_allowed }}</td>
+                </tr>
+                <tr *ngIf="projectType == 'PMI_Merch'">
+                  <th >BWU</th>
+                  <td >
+                    {{ item?.chiller_allocated }}
+                  </td>
+                </tr>
+              </table>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="main-card mb-3 card">
+  <div class="card-header">
+    <div
+      class="card-header-title font-size-lg text-capitalize font-weight-normal"
+    >
+      Company Agents Status
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table
+      class="align-middle text-truncate mb-0 table table-borderless table-hover"
+    >
+      <thead>
+        <tr>
+          <th class="text-center">#</th>
+          <th class="text-center">Avatar</th>
+          <th class="text-center">Name</th>
+          <th class="text-center">Company</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Due Date</th>
+          <th class="text-center">Target Achievement</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center text-muted" style="width: 80px">#54</td>
+          <td class="text-center" style="width: 80px">
+            <img
+              width="40"
+              class="rounded-circle"
+              src="./assets/images/avatars/1.jpg"
+              alt=""
+            />
+          </td>
+          <td class="text-center"><a [routerLink]="">Juan C. Cargill</a></td>
+          <td class="text-center"><a [routerLink]="">Micro Electronics</a></td>
+          <td class="text-center">
+            <div class="badge badge-pill badge-danger">Canceled</div>
+          </td>
+          <td class="text-center">
+            <span class="pr-2 opacity-6">
+              <i class="fa fa-business-time"></i>
+            </span>
+            12 Dec
+          </td>
+          <td class="text-center" style="width: 200px">
+            <div class="widget-content p-0">
+              <div class="widget-content-outer">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left pr-2">
+                    <div class="widget-numbers fsize-1 text-danger">71%</div>
+                  </div>
+                  <div class="widget-content-right w-100">
+                    <div class="progress-bar-xs progress">
+                      <div
+                        class="progress-bar bg-danger"
+                        role="progressbar"
+                        aria-valuenow="71"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        style="width: 71%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            <div role="group" class="btn-group-sm btn-group">
+              <button class="btn-shadow btn btn-primary">Hire</button>
+              <button class="btn-shadow btn btn-primary">Fire</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center text-muted" style="width: 80px">#55</td>
+          <td class="text-center" style="width: 80px">
+            <img
+              width="40"
+              class="rounded-circle"
+              src="./assets/images/avatars/2.jpg"
+              alt=""
+            />
+          </td>
+          <td class="text-center"><a [routerLink]="">Johnathan Phelan</a></td>
+          <td class="text-center"><a [routerLink]="">Hatchworks</a></td>
+          <td class="text-center">
+            <div class="badge badge-pill badge-info">On Hold</div>
+          </td>
+          <td class="text-center">
+            <span class="pr-2 opacity-6">
+              <i class="fa fa-business-time"></i>
+            </span>
+            12 Dec
+          </td>
+          <td class="text-center" style="width: 200px">
+            <div class="widget-content p-0">
+              <div class="widget-content-outer">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left pr-2">
+                    <div class="widget-numbers fsize-1 text-warning">54%</div>
+                  </div>
+                  <div class="widget-content-right w-100">
+                    <div class="progress-bar-xs progress">
+                      <div
+                        class="progress-bar bg-warning"
+                        role="progressbar"
+                        aria-valuenow="54"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        style="width: 54%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            <div role="group" class="btn-group-sm btn-group">
+              <button class="btn-shadow btn btn-primary">Hire</button>
+              <button class="btn-shadow btn btn-primary">Fire</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center text-muted" style="width: 80px">#56</td>
+          <td class="text-center" style="width: 80px">
+            <img
+              width="40"
+              class="rounded-circle"
+              src="./assets/images/avatars/3.jpg"
+              alt=""
+            />
+          </td>
+          <td class="text-center"><a [routerLink]="">Darrell Lowe</a></td>
+          <td class="text-center"><a [routerLink]="">Riddle Electronics</a></td>
+          <td class="text-center">
+            <div class="badge badge-pill badge-warning">In Progress</div>
+          </td>
+          <td class="text-center">
+            <span class="pr-2 opacity-6">
+              <i class="fa fa-business-time"></i>
+            </span>
+            12 Dec
+          </td>
+          <td class="text-center" style="width: 200px">
+            <div class="widget-content p-0">
+              <div class="widget-content-outer">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left pr-2">
+                    <div class="widget-numbers fsize-1 text-success">97%</div>
+                  </div>
+                  <div class="widget-content-right w-100">
+                    <div class="progress-bar-xs progress">
+                      <div
+                        class="progress-bar bg-success"
+                        role="progressbar"
+                        aria-valuenow="97"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        style="width: 97%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            <div role="group" class="btn-group-sm btn-group">
+              <button class="btn-shadow btn btn-primary">Hire</button>
+              <button class="btn-shadow btn btn-primary">Fire</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center text-muted" style="width: 80px">#56</td>
+          <td class="text-center" style="width: 80px">
+            <img
+              width="40"
+              class="rounded-circle"
+              src="./assets/images/avatars/4.jpg"
+              alt=""
+            />
+          </td>
+          <td class="text-center"><a [routerLink]="">George T. Cottrell</a></td>
+          <td class="text-center"><a [routerLink]="">Pixelcloud</a></td>
+          <td class="text-center">
+            <div class="badge badge-pill badge-success">Completed</div>
+          </td>
+          <td class="text-center">
+            <span class="pr-2 opacity-6">
+              <i class="fa fa-business-time"></i>
+            </span>
+            12 Dec
+          </td>
+          <td class="text-center" style="width: 200px">
+            <div class="widget-content p-0">
+              <div class="widget-content-outer">
+                <div class="widget-content-wrapper">
+                  <div class="widget-content-left pr-2">
+                    <div class="widget-numbers fsize-1 text-info">88%</div>
+                  </div>
+                  <div class="widget-content-right w-100">
+                    <div class="progress-bar-xs progress">
+                      <div
+                        class="progress-bar bg-info"
+                        role="progressbar"
+                        aria-valuenow="88"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        style="width: 88%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            <div role="group" class="btn-group-sm btn-group">
+              <button class="btn-shadow btn btn-primary">Hire</button>
+              <button class="btn-shadow btn btn-primary">Fire</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="d-block p-4 text-center card-footer">
+    <button class="btn-pill btn-shadow btn-wide fsize-1 btn btn-dark btn-lg">
+      <span class="mr-2 opacity-7">
+        <i class="fa fa-cog fa-spin"></i>
+      </span>
+      <span class="mr-1">View Complete Report</span>
+    </button>
+  </div>
+</div> -->
+
+<div
+  bsModal
+  #imageModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          {{ selectedItem.shop_title }}
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideImageModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <img
+          src="{{ ip }}{{ selectedItem.shop_image_url }}"
+          alt=""
+          style="width: 100%; height: 500px"
+          *ngIf="!isExternalUrl"
+        />
+        <img
+          src="{{ selectedItem.shop_image_url }}"
+          alt=""
+          style="width: 100%; height: 500px"
+          *ngIf="isExternalUrl"
+        />
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<div
+  id="sidebar"
+  [ngStyle]="{
+    width: hideSideBar == true ? '50px' : '220px',
+    overflow: hideSideBar == true ? 'hidden' : 'auto'
+  }"
+  class="notprint"
+>
+  <mat-nav-list>
+    <ng-container *ngFor="let item of menuList; let i = index">
+      <ng-container *ngIf="!item.subMenu">
+        <a
+          mat-list-item
+          routerLink="/dashboard/{{ item.menuList[0].link }}"
+          [routerLinkActive]="'link-active'"
+        >
+          <mat-icon class="sidenav-icon">home</mat-icon>
+          {{ item.header | translate }}
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="item.subMenu">
+        <div class="nested-menu">
+          <a
+            mat-list-item
+            (click)="
+              addExpandClass(item.header); getIndex(i); menuTrigger.openMenu()
+            "
+          >
+            <div
+              #menuTrigger="matMenuTrigger"
+              [matMenuTriggerFor]="submenu"
+            ></div>
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Admin'"
+              >person</mat-icon
+            >
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Dashboard'"
+              >dashboard</mat-icon
+            >
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Tableau'"
+              >assessment</mat-icon
+            >
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Evaluation'"
+              >verified_user</mat-icon
+            >
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Virtual View'"
+              >live_tv</mat-icon
+            >
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'HR'"
+              >whatshot</mat-icon
+            >
+
+            <i class="icon" *ngIf="item.header == 'Target Vs Achievement'"></i>
+
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Lucky Draw'"
+              >event</mat-icon
+            >
+
+            <mat-icon class="sidenav-icon" *ngIf="item.header == 'Approval'"
+              >check_circle</mat-icon
+            >
+
+            <mat-icon
+              class="sidenav-icon"
+              *ngIf="item.header.includes('Reports')"
+              >description</mat-icon
+            >
+            {{ item.header | translate }}
+          </a>
+          <mat-menu #submenu="matMenu">
+            <div
+              class="nested submenu"
+              [class.expand]="showMenu == item.header"
+              *ngFor="let item2 of item.menuList"
+            >
+              <ng-container *ngIf="item2.reportId != -1; else elseBlock">
+                <button
+                  mat-menu-item
+                  [routerLinkActive]="'link-active'"
+                  routerLink="/dashboard/{{ item2.link }}/{{ item2.reportId }}"
+                >
+                  <span>{{ item2.lable | translate }}</span>
+                </button>
+              </ng-container>
+              <ng-template #elseBlock>
+                <ng-container *ngIf="item2.link == 'tableau'; else routeUrl">
+                  <button
+                    mat-menu-item
+                    [routerLinkActive]="'link-active'"
+                    routerLink="/{{ item2.link }}"
+                    [queryParams]="{ link: item2.tableauLink }"
+                  >
+                    <span>{{ item2.lable | translate }}</span>
+                  </button>
+                </ng-container>
+                <ng-template #routeUrl>
+                  <button
+                    mat-menu-item
+                    [routerLinkActive]="'link-active'"
+                    routerLink="/dashboard/{{ item2.link }}"
+                  >
+                    <span>{{ item2.lable | translate }}</span>
+                  </button>
+                </ng-template>
+              </ng-template>
+            </div>
+          </mat-menu>
+        </div>
+      </ng-container>
+    </ng-container>
+  </mat-nav-list>
+</div>

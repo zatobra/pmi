@@ -1,0 +1,265 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <!-- <section class="example-section">
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="startDate"
+          (ngModelChange)="getDistributionCheckinData()"
+          placeholder="Choose a Date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section> -->
+
+
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="getDistributionCheckinData()"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- <mat-form-field *ngIf="channels.length>0" class="example-margin mr-10-IMP">
+
+                <mat-select placeholder="Channel" name='channel' [(ngModel)]="selectedChannel" multiple #channelSelect="ngModel" [compareWith]="equals">
+                    <mat-option disabled="disabled" class="filter-option"> <button mat-raised-button class="mat-primary fill text-sm" (click)="selectAll(channelSelect, channels)">
+                        Select All
+                      </button>
+                        <button mat-raised-button color="warn" class="ml-1 mat-accent fill text-sm" (click)="deselectAll(channelSelect)">
+                        Deselect All
+                      </button>
+                    </mat-option>
+
+                    <mat-option [value]="channel" *ngFor="let channel of channels">{{channel.title}}</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          (ngModelChange)="getDistributionCheckinData()"
+          placeholder="Choose a date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <!-- <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          (ngModelChange)="getDistributionCheckinData()"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field> -->
+    </section>
+
+
+
+  </mat-card-content>
+</mat-card>
+
+<!-- <div class="container-fluid" *ngIf="tableData.length > 0">
+    <div class="row"></div>
+    <div class="row js">
+      <ng-container *ngFor="let item of tableData; let i = index">
+        <mat-card class="col-md-3 example-card card2 ml-3 mt-3">
+          <div class="ribbon">
+            <img
+              mat-card-image
+              class="small"
+              src="{{ ip }}{{ item.imageUrl }}"
+              width="250"
+              height="430"
+              alt=""
+              (click)="setSelectedItem(item); showChildModal()"
+            />
+          </div>
+
+          <mat-card-content (click)="goToNewPage(item)">
+            <table class="table" style="cursor: pointer">
+              <tr>
+                <th>Code</th>
+                <td>{{ item?.mCode }}</td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td>{{ item?.fullName }}</td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td>{{ item?.date }}</td>
+              </tr>
+              <tr>
+                <th>Start Time</th>
+                <td>{{ item?.startTime }}</td>
+              </tr>
+              <tr>
+                <th>Remarks</th>
+                <td>{{ item?.remarks }}</td>
+              </tr>
+              <tr>
+                <th>Latitude</th>
+                <td>{{ item?.latitude }}</td>
+              </tr>
+              <tr>
+                <th>Longitude</th>
+                <td>{{ item?.longitude }}</td>
+              </tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </ng-container>
+    </div>
+  </div> -->
+
+
+
+<mat-card>
+  <div class="row">
+    <div class="col-md-8">
+      <mat-card>
+        <mat-card-content>
+          <div id="map" width="100%" height="500"></div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  
+    <div class="col-md-4" style="height: 500px;">
+      <div class="tableFixHead col-md-12 example-container mat-elevation-z8">
+        <table class="table table-bordered table-hover">
+          <thead style="background: lightgray">
+            <tr>
+              <th>
+                Zone Name
+              
+              </th>
+  
+              
+              <th >
+                Total {{labels?.surveyorLabel}}
+               
+              </th>
+              
+            </tr>
+          </thead>
+          <tbody *ngIf="newlist?.length > 0" class="trS14">
+            <tr *ngFor="let obj of newlist">
+              <td class="a-namelink" title="Code">
+             {{ obj.zone }}
+                
+              </td>
+  
+              <td >
+                {{ obj.count }}
+              </td>
+  
+             
+            </tr>
+  
+           
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</mat-card>
+
+
+<!-- <div
+  bsModal
+  #childModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          {{ selectedItem.full_name }}
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideChildModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img
+          class="img-responsive-ht"
+          src="{{ ip }}{{ selectedItem.imageUrl }}"
+          alt=""
+        />
+      </div>
+    </div>
+  </div>
+</div> -->

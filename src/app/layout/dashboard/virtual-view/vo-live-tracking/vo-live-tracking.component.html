@@ -1,0 +1,446 @@
+<!--<script>angular.module('MyApp', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache']);</script>-->
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      <i
+        style="cursor: pointer"
+        *ngIf="!loading && matLgened"
+        class="material-icons refresh-btn"
+        matTooltip="Refresh Stats"
+        (click)="getShopsTracking()"
+      >
+        cached
+      </i>
+    </mat-card-title>
+
+    <!-- <mat-card-title> -->
+
+    <!-- </mat-card-title> -->
+
+    <section class="example-section">
+      <mat-form-field class="example-margin mr-5-IMP">
+        <mat-select
+          placeholder="Selected Supervisor"
+          name="Supervisor"
+          [(ngModel)]="selectedSupervisorFilter"
+          (ngModelChange)="getSurveyourData()"
+        >
+          <ng-container *ngFor="let sup of supervisor">
+            <mat-option [value]="sup.id">{{ sup.m_code }} - {{sup.fullName}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        style="margin-left: 1%"
+        class="example-margin mr-5-IMP"
+        *ngIf="surveyor?.length > 0"
+      >
+        <mat-select
+          placeholder="Selected Surveyor"
+          name="Surveyor"
+          [(ngModel)]="selectedSurveyorFilter"
+        >
+          <ng-container *ngFor="let sur of surveyor">
+            <mat-option [value]="sur.id">{{ sur.m_code  }} - {{sur.fullName}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="zones?.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.zoneLabel }}"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+          (ngModelChange)="regionChange()"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        style="margin-left: 1%"
+        class="example-full-width mr-10-IMP"
+      >
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+    </section>
+    <section class="example-section">
+      <button
+        [disabled]="loading"
+        mat-raised-button
+        color="warn"
+        (click)="getShopsTracking()"
+      >
+        View
+      </button>
+      <button
+        style="margin-left: 1%"
+        [disabled]="loading"
+        mat-raised-button
+        color="warn"
+        (click)="resetFilters()"
+      >
+        Reset Filters
+      </button>
+    </section>
+
+    <!--    </section>-->
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mb-20" *ngIf="matLgened">
+  <mat-card-content>
+    <ng-container>
+      <table class="col-md-12">
+        <tr>
+          <td>
+            <mat-form-field class="example-margin mr-10-IMP">
+              <mat-select
+                placeholder="Last Update"
+                name="Last Update"
+                [(ngModel)]="selectedUpdate"
+                (ngModelChange)="selectedUpdateChange()"
+              >
+                <ng-container *ngFor="let item of lastUpdateBeforeList">
+                  <mat-option [value]="item">{{ item.value }}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td><img [src]="colorType + 'greenish' + '.png'" /> ( <= 30 Min)</td>
+          <td><img [src]="colorType + 'yellows' + '.png'" /> ( <= 120 Min)</td>
+          <td><img [src]="colorType + 'redish' + '.png'" /> ( > 120 Min)</td>
+        </tr>
+        <!-- <tr> -->
+        <!-- <ng-container *ngFor="let leg of legends"> -->
+
+        <!-- </ng-container> -->
+        <!-- </tr> -->
+      </table>
+    </ng-container>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="trackedShops2.length > 0">
+  <div class="row">
+    <div class="col-md-5">
+      <div class="tableFixHead col-md-12 example-container mat-elevation-z8">
+        <table class="table table-bordered table-hover">
+          <thead style="background: lightgray">
+            <tr>
+              <th (click)="sortIt('m_code')" style="cursor: pointer">
+                code
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("m_code") }}
+                </i>
+              </th>
+
+              <!-- <th (click)="sortIt('m_code')" style="cursor: pointer">
+                code
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("m_code") }}
+                </i>
+              </th>
+              <th (click)="sortIt('m_code')" style="cursor: pointer">
+                code
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("m_code") }}
+                </i>
+              </th> -->
+
+              <th (click)="sortIt('full_name')" style="cursor: pointer" *ngIf="projectType != 'Coke_Audit'">
+                Full Name
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("full_name") }}
+                </i>
+              </th>
+              <th (click)="sortIt('visited')" style="cursor: pointer">
+                Visited
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("visited") }}
+                </i>
+              </th>
+              <th (click)="sortIt('attendance_time')" style="cursor: pointer">
+                Attendance Time
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("attendance_time") }}
+                </i>
+              </th>
+              <th (click)="sortIt('first_shop_visit')" style="cursor: pointer">
+                First Shop Visit
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("first_shop_visit") }}
+                </i>
+              </th>
+              <th (click)="sortIt('last_visited_time')" style="cursor: pointer">
+                Last Visited Time
+                <i class="material-icons arrow material-icons-arrow">
+                  {{ getArrowType("last_visited_time") }}
+                </i>
+              </th>
+            </tr>
+          </thead>
+          <tbody *ngIf="trackedShops2.length > 0" class="trS14">
+            <tr *ngFor="let shop of trackedShops2 | orderBy: sortBy:sortOrder">
+              <td class="a-namelink" title="Code">
+                <a
+                  class="a-namelink"
+                  target="_blank"
+                  title="View Visit Details"
+                  (click)="goToEvaluation(shop)"
+                  >{{ shop.m_code }}</a
+                >
+              </td>
+
+              <td *ngIf="projectType != 'Coke_Audit'">
+                {{ shop.full_name }}
+              </td>
+
+              <td>
+                {{ shop.visited }}
+              </td>
+              <td>
+                {{ shop.attendance_time }}
+              </td>
+
+              <td>
+                {{ shop.first_shop_visit }}
+              </td>
+
+              <td>
+                {{ shop.last_visited_time }}
+              </td>
+            </tr>
+
+            <!-- <tr *ngFor="let shop of trackedShops | orderBy: sortBy:sortOrder">
+              <td>
+                {{ shop.m_code }}
+              </td>
+
+              <td>
+                {{ shop.full_name }}
+              </td>
+
+              <td>
+                {{ shop.visited }}
+              </td>
+              <td>
+                {{ shop.visit_start_time }}
+              </td>
+
+              <td>
+                {{ shop.last_visited_time }}
+              </td>
+            </tr> -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-md-7">
+      <section class="example-section">
+        <agm-map
+          [latitude]="latitude"
+          [longitude]="longitude"
+          [fitBounds]="trackedShops2.length > 1"
+          [zoom]=""
+          style="height: 600px"
+        >
+          <!-- <ng-container *ngFor="let shop of trackedShops"> -->
+          <!-- <div *ngIf = "shop.shop_status == 'Captured'"> -->
+          <ng-container *ngFor="let shop of trackedShops2">
+            <div *ngIf="shop.last_update_before <= '30'">
+              <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'greenish' + '.png' }}"
+                [label]="{
+                  color: 'black',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  text: shop.m_code
+                }"
+              >
+                &lt;!&ndash; (mouseOver)="showInfo($event)"
+                (mouseOut)="hideInfo($event)"&ndash;&gt;
+                <!-- &lt;!&ndash; (mouseOver)="showInfo($event)"
+                (mouseOut)="hideInfo($event)"&ndash;&gt; -->
+
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Code:</strong> {{ shop.m_code }}
+                    <br />
+                    <strong>Name:</strong> {{ shop.full_name }}
+                    <br />
+                    <strong>Last Updated:</strong>
+                    {{ shop.last_update_before }} <span>m Ago</span>
+                    <br />
+                    <a (click)="goToEvaluation(shop)">
+                      <button backgroundcolor="#2196F3">Tracker Link</button></a
+                    >
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+            </div>
+            <!-- </ng-container> -->
+
+            <!-- <ng-container *ngFor="let shop of trackedShops"> -->
+            <div
+              *ngIf="
+                shop.last_update_before > '30' &&
+                shop.last_update_before <= '120'
+              "
+            >
+              <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'yellows' + '.png' }}"
+                [label]="{
+                  color: 'black',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  text: shop.m_code
+                }"
+              >
+                <!-- (mouseOver)="showInfo($event)"  (mouseOut)="hideInfo($event)"-->
+                &lt;!&ndash; (mouseOver)="showInfo($event)"
+                (mouseOut)="hideInfo($event)"&ndash;&gt;
+
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Code:</strong> {{ shop.m_code }}
+                    <br />
+                    <strong>Name:</strong> {{ shop.full_name }}
+                    <br />
+                    <strong>Last Updated:</strong>
+                    {{ shop.last_update_before }} <span>m Ago</span>
+                    <br />
+                    <a (click)="goToEvaluation(shop)"
+                      ><button backgroundcolor="#2196F3">
+                        Tracker Link
+                      </button></a
+                    >
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+            </div>
+            <div *ngIf="shop.last_update_before > '120'">
+              <agm-marker
+                [agmFitBounds]="true"
+                latitude="{{ shop.latitude }}"
+                longitude="{{ shop.longitude }}"
+                iconUrl="{{ colorType + 'redish' + '.png' }}"
+                [label]="{
+                  color: 'black',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  text: shop.m_code
+                }"
+              >
+                &lt;!&ndash; (mouseOver)="showInfo($event)"
+                (mouseOut)="hideInfo($event)"&ndash;&gt;
+
+                <agm-snazzy-info-window
+                  [maxWidth]="400"
+                  [closeWhenOthersOpen]="true"
+                >
+                  <ng-template>
+                    <strong>Code:</strong> {{ shop.m_code }}
+                    <br />
+                    <strong>Name:</strong> {{ shop.full_name }}
+                    <br />
+                    <strong>Last Updated:</strong>
+                    {{ shop.last_update_before }} <span>m Ago</span>
+                    <br />
+                    <a (click)="goToEvaluation(shop)"
+                      ><button backgroundcolor="#2196F3">
+                        Tracker Link
+                      </button></a
+                    >
+                  </ng-template>
+                </agm-snazzy-info-window>
+              </agm-marker>
+            </div>
+          </ng-container>
+        </agm-map>
+      </section>
+    </div>
+  </div>
+</mat-card>
+
+<!-- <mat-card *ngIf="matLgened && trackedShops2.length == 0">
+  <div
+  class="row"
+  style="margin: 20px"
+  
+>
+  <div class="col-md-12 text-center">
+    <div class="alert alert-info">
+      <p>No Data Found</p>
+    </div>
+  </div>
+</div>
+</mat-card> -->
+
+<div
+  *ngIf="loading"
+  class="text-center"
+  flFlex
+  flexLayout="row "
+  flexLayout.lt-md="column "
+>
+  <div fxFlex class="img-center">
+    <img
+      src="assets/images/loading.gif"
+      alt=" "
+      srcset=""
+      height="300"
+      width="300"
+    />
+  </div>
+</div>

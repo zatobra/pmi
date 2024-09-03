@@ -1,0 +1,370 @@
+<mat-card>
+  <mat-card-title>
+    Manage Compliance
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <mat-card-content>
+    <section class="example-section">
+
+
+      <ng-container *ngIf="channels?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+          placeholder="Channel Type"
+          name="channel"
+          [(ngModel)]="selectedChannel"
+        >
+          <ng-container *ngFor="let channel of channels">
+            <mat-option [value]="channel">{{ channel.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster();"
+          >
+            <mat-option
+              [value]="cluster"
+              *ngFor="let cluster of clusterList"
+              >{{ cluster.title }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange();"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }} "
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <mat-option [value]="region" *ngFor="let region of regions">{{
+            region.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- <mat-form-field
+        *ngIf="areas.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.areasLabel }}"
+          name="areas"
+          [(ngModel)]="selectedArea"
+          (ngModelChange)="getSupTabsData()"
+        >
+          <mat-option [value]="area" *ngFor="let area of areas">{{
+            area.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+      <ng-container *ngIf="statusList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="Complaint Status"
+            name="zone"
+            [(ngModel)]="selectedStatus"
+          >
+            <mat-option [value]="s" *ngFor="let s of statusList">{{
+              s.value
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+    </section>
+
+    <section>
+      <button
+      [disabled]="loadingData || !selectedRegion?.id"
+        (click)="getData()"
+        mat-raised-button
+        color="warn"
+      >
+        Display
+      </button>
+    </section>
+
+    <div class="" style="display: flex;justify-content: space-between;margin-top: 15px;">
+      <input 
+        (change)="onFileChange($event)"
+        id="input-file-btn"
+        type="file"
+        name="file"
+      />
+         <label for="input-file-btn" class="input-file-text">Choose Compliance </label>
+         <div style="display: inline-block;">
+      <button 
+      style="margin-right: 20px;"
+          type="button"
+          mat-raised-button
+          [disabled]="isSelected"
+          color="warn"
+          (click)="uploadComplianceData()">
+          Upload
+        </button> 
+        <button style="margin-left: auto;"
+        [disabled]="isDownloadDisable"
+        type="button"
+        mat-raised-button
+        color="warn"
+        (click)="downloadAsExcelFile()">
+        Download
+      </button> 
+      </div> 
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="rowsData?.length > 0">
+  <mat-card-content>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <!-- <search-box
+              [list]="tmpEmailList"
+              (notify)="onNotifyClicked($event)"
+            >
+            </search-box> -->
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="text-primary">
+                  <tr>
+                    <ng-container *ngFor="let column of showInTableHeaders">
+                      <th>{{ column?.heading }}</th>
+                    </ng-container>
+                    
+                    <th >Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of rowsData; let i = index">
+                    <!-- <td>{{ i + 1 }}</td> -->
+                    <ng-container *ngFor="let column of showInTableHeaders">
+                      <td>{{ row[column.title] }}</td>
+                     <!-- equivalent to if column.title = id
+                      <td>{{ row.id }}</td> -->
+                    </ng-container>
+                    <!-- <td>{{ data.shop_code }}</td> -->
+                    
+                 
+
+                    <!-- <span  class="hov">
+                      <td (click)="changeStatus(email)" style="background-color: transparent; cursor: pointer;">{{ email.active }}</td>
+                    </span> -->
+
+                    <!-- <td>
+                      {{data?.is_posm_maintained}}
+                    </td> -->
+
+                      <!-- <mat-slide-toggle [aria-label]="isSubscribedToEmailsMessage"  [checked]="email?.active=='Y'"
+                    id="{{ email?.id }}"
+                    (click)="
+                    changeStatus(checked, email);
+                    "
+                    #checked>
+                    </mat-slide-toggle> -->
+
+                      <!-- <label class="switch">
+                        <input
+                          type="checkbox"
+                          [checked]="data?.active == 'Y'"
+                          id="{{ data?.id }}"
+                          (click)="changeStatus($event, data)"
+                          #checked
+                        />
+                        <span class="slider round"></span>
+                      </label> -->
+
+                     
+
+                    <td>
+                      <button
+                        class="example-margin mr-10-IMP"
+                       
+                        title="Update"
+                        (click)="showUpdateModal(row)"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<div
+  bsModal
+  #childModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+  [config]="{ backdrop: 'static', keyboard: false }"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Update
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingModal }"></i>
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="dynamicForm" enctype="multipart/form-data">
+        <div class="modal-body">
+          <!-- <div class="form-group">
+            <input type="hidden" formControlName="id" />
+          </div>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="email">Shop Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                formControlName="email"
+              />
+              <div
+                *ngIf="
+                  form.controls.email.errors &&
+                  (form.controls.email.touched || form.controls.email.dirty)
+                "
+              >
+                <mat-error
+                  *ngIf="form.hasError('required', 'email')"
+                  class="invalid-feedback"
+                >
+                  Valid Email is Required.
+                </mat-error>
+              </div>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label for="active">is_posm_maintained</label>
+              <select
+                formControlName="active"
+                class="form-control"
+                placeholder="Select Status"
+                name="active"
+              >
+                <ng-container *ngFor="let status of activeStatus">
+                  <option [value]="status.value">{{ status.value }}</option>
+                </ng-container>
+              </select>
+            
+            </div>
+          </div> -->
+
+          <div class="form-group col-md-12" *ngFor="let column of headersData">
+            <ng-container *ngIf="!column.showInEditModal">
+              <input
+              type="hidden"
+              class="form-control"
+              [formControlName]="column.title"
+            />
+            </ng-container>
+
+            <ng-container *ngIf="column.showInEditModal">
+              <label for="{{column.title}}">{{ column.heading }}</label>
+              <ng-container [ngSwitch]="column.type">
+                <input *ngSwitchCase="'text_field'" class="form-control" type="text" [formControlName]="column.title" [readonly]="!column.edit" />
+                <!-- <ng-conatiner></ng-conatiner> -->
+                <select *ngSwitchCase="'options'" class="form-control" [formControlName]="column.title">
+                  <option *ngFor="let option of column.optionList" [value]="option.value" [disabled]="!column.edit">{{ option.value }}</option>
+                </select>
+                <!-- Add more ngSwitchCase for other column types as needed -->
+              </ng-container>
+            </ng-container>
+
+         
+          </div>
+
+         </div>
+        <div class="modal-footer">
+
+          <button
+          
+            class="mr-1"
+            (click)="updateData(dynamicForm.value)"
+            [disabled]="loadingModal"
+            mat-raised-button
+            color="primary"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loadingModalButton }"></i>
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

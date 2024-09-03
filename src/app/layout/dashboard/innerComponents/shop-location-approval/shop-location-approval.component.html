@@ -1,0 +1,209 @@
+<mat-card class="mb-20">
+  <mat-card-title>
+    Manage ShopLocationApproval
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title>
+  <section class="example-section">
+    <ng-container *ngIf="clusterList?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.clusterLabel }}"
+          name="cluster"
+          [(ngModel)]="selectedCluster"
+          (ngModelChange)="getZoneByCluster()"
+        >
+          <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+            cluster.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="zones?.length > 0">
+      <mat-form-field class="example-margin mr-10-IMP">
+        <mat-select
+          placeholder="{{ labels.zoneLabel }}"
+          name="zone"
+          [(ngModel)]="selectedZone"
+          (ngModelChange)="zoneChange()"
+        >
+          <mat-option [value]="zone" *ngFor="let zone of zones">{{
+            zone.title
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field
+      *ngIf="regions.length > 0"
+      class="example-margin mr-10-IMP"
+    >
+      <mat-select
+        placeholder="{{ labels.regionLabel }}"
+        name="region"
+        [(ngModel)]="selectedRegion"
+      >
+        <ng-container *ngFor="let region of regions">
+          <mat-option [value]="region">{{ region.title }}</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  <section>
+    <button
+      [disabled]="loadingData || !selectedZone?.id || !selectedRegion?.id"
+      (click)="getShopLocationApprovalData()"
+      mat-raised-button
+      color="warn"
+    >
+      Display
+    </button>
+  </section>
+</mat-card>
+
+<div class="row">
+  <div class="col-md-6">
+<mat-card *ngIf="shopLocationData?.length > 0">
+  <!-- <mat-card-title>
+    Manage ShopLocationApproval
+    <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+  </mat-card-title> -->
+  <mat-card-content>
+    
+        <div class="card">
+          <div class="card-body">
+            <!-- <search-box
+[list]="tmpEmailList"
+(notify)="onNotifyClicked($event)"
+>
+</search-box> -->
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="text-primary">
+                  <th>#</th>
+                  <th>Region</th>
+                  <th>Mer_Name</th>
+                  <th>Mer_Code</th>
+                  <th>Shop Id</th>
+                  <th>Shop Code</th>
+                  <th>Shop Title</th>
+                  <th>Address</th>
+                  <th>Distribution</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                  <th>Approved</th>
+              
+                </thead>
+                <tbody>
+                  <tr *ngFor="let data of shopLocationData; let i = index" (click)="showShopOnMap(data)" style="cursor: pointer" mouseH>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ data.region_title }}</td>
+                    <td>{{ data.full_name }}</td>
+                    <td>{{ data.m_code }}</td>
+                    <td>{{ data.shop_id }}</td>
+                    <td>{{ data.shop_code }}</td>
+                    <td>{{ data.shop_title }}</td>
+                    <td>{{ data.address }}</td>
+                    <td>{{ data.distribution }}</td>
+                    <td>{{ data.latitude }}</td>
+                    <td>{{ data.longitude }}</td>
+                    <td>
+                      <label class="switch">
+                        <input
+                          type="checkbox"
+                          [checked]="email?.active == 'Y'"
+                          id="{{ data?.id }}"
+                          (click)="changeStatus($event, data)"
+                          #checked
+                        />
+                        <span class="slider round"></span>
+                      </label>
+                    </td>
+                 
+                    
+                    
+                    <!-- <span  class="hov">
+                      <td (click)="changeStatus(email)" style="background-color: transparent; cursor: pointer;">{{ email.active }}</td>
+                    </span> -->
+                   
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      
+  </mat-card-content>
+</mat-card>
+</div>
+
+
+
+<div class="col-md-6" *ngIf="shopLocationData.length > 0">
+  <section class="example-section">
+    <agm-map
+      [latitude]="latitude"
+      [longitude]="longitude"
+      [fitBounds]="shopLocationData.length > 0"
+      [zoom]="6"
+      style="height: 600px"
+    >
+      <!-- <ng-container *ngFor="let shop of trackedShops"> -->
+      <!-- <div *ngIf = "shop.shop_status == 'Captured'"> -->
+      <ng-container *ngFor="let shop of oneShopData">
+        <div *ngIf="shop?.latitude">
+          <agm-marker
+            [agmFitBounds]="true"
+            latitude="{{ shop?.latitude }}"
+            longitude="{{ shop?.longitude }}"
+          
+          >
+
+          <!-- [label]="{
+            color: 'black',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            text: shop.full_name
+          }" -->
+
+            <agm-snazzy-info-window
+              [maxWidth]="400"
+              [closeWhenOthersOpen]="true"
+              *ngIf="shop?.shopPin"
+            >
+              <ng-template >
+                <strong >Shop Pin</strong> 
+                <br />
+                 <strong>Shop Code:</strong> {{ shop.shop_code }}
+                <br />
+           
+                 <!-- <a (click)="goToEvaluation(shop)">
+                  <button backgroundcolor="#2196F3">Tracker Link</button></a
+                >  -->
+              </ng-template>
+            </agm-snazzy-info-window>
+
+            <agm-snazzy-info-window
+            [maxWidth]="400"
+            [closeWhenOthersOpen]="true"
+            *ngIf="!shop?.shopPin"
+          >
+            <ng-template >
+              <strong >{{ labels?.surveyorLabel }} Pin</strong>
+              <br />
+               <strong>{{ labels?.surveyorLabel }} Code:</strong> {{ shop.m_code }}
+              <br />
+         
+               <!-- <a (click)="goToEvaluation(shop)">
+                <button backgroundcolor="#2196F3">Tracker Link</button></a
+              >  -->
+            </ng-template>
+          </agm-snazzy-info-window>
+
+          </agm-marker>
+        </div>
+        </ng-container>
+        </agm-map>
+       </section>
+       </div>
+      </div>

@@ -1,0 +1,19 @@
+.nested-menu {
+  position: relative;
+}
+
+.mat-menu-panel {
+  min-width: 200px; /* Adjust width as needed */
+}
+
+.nested.submenu {
+  position: absolute;
+  top: 0;
+  left: 100%; /* Position to the right of the parent menu */
+  z-index: 1000; /* Ensure it appears on top */
+  display: none; /* Hide by default */
+}
+
+.nested.submenu.expand {
+  display: block; /* Show when expanded */
+}

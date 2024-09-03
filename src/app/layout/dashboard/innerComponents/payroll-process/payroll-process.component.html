@@ -1,0 +1,57 @@
+<div>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>
+            PayRoll Process
+             <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+           </mat-card-title>
+        
+    
+        <div class="month-filter-container">
+          <mat-form-field class="example-margin mr-10-IMP" style="width: 150px;">
+            <mat-select placeholder="Select Month" name="selectedMonth" [(ngModel)]="selectedMonthDate" >
+                <mat-option *ngFor="let month of monthlist; let i = index" [value]="month?.salary_month">
+                    {{ month?.MONTH_NAME }}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+          
+        </div>
+
+        <button [disabled]="loadingData || !selectedMonthDate" (click)="saveData()" style="height: 33px; width: 90px;">
+          <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+          Save
+        </button>
+
+        <!-- <mat-form-field class="example-margin mr-10-IMP" style="width: 150px;">
+            <mat-select placeholder="Select Month" name="selectedMonth" [(ngModel)]="selectedMonthName">
+              <mat-option *ngFor="let month of monthlist; let i = index" [value]="{ month: month, id: monthIds[i] }">
+                  {{ month }}
+                </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+       
+    <!-- <div class="fuel-price-container"> -->
+      <!-- <form [formGroup]="fuelPriceForm">
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="fuelprice1">Fuel Price. 1</label>
+            <input type="number" id="fuelprice1" formControlName="fuelprice1" class="form-control">
+          </div>
+    
+          <div class="form-group col-md-4">
+            <label for="fuelprice2">Fuel Price. 2</label>
+            <input type="number" id="fuelprice2" formControlName="fuelprice2" class="form-control">
+          </div>
+        </div>
+      </form> -->
+<!-- 
+        <button [disabled]="loadingData" (click)="saveData()" style="height: 33px; width: 90px;" 
+        [disabled]="loadingData">
+            <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+            Save
+          </button>
+          
+    </div> -->
+    
+      

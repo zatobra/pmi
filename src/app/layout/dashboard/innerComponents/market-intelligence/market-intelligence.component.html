@@ -1,0 +1,317 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      <!-- <p *ngIf="!loading && tableData == 0">No data available</p> -->
+    </mat-card-title>
+    <section class="example-section">
+      <ng-container *ngIf="clusterList?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.clusterLabel }}"
+            name="cluster"
+            [(ngModel)]="selectedCluster"
+            (ngModelChange)="getZoneByCluster()"
+          >
+            <mat-option [value]="cluster" *ngFor="let cluster of clusterList">{{
+              cluster.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="zones?.length > 0">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="{{ labels.zoneLabel }}"
+            name="zone"
+            [(ngModel)]="selectedZone"
+            (ngModelChange)="zoneChange()"
+          >
+            <mat-option [value]="zone" *ngFor="let zone of zones">{{
+              zone.title
+            }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field
+        *ngIf="regions.length > 0"
+        class="example-margin mr-10-IMP"
+      >
+        <mat-select
+          placeholder="{{ labels.regionLabel }}"
+          name="region"
+          [(ngModel)]="selectedRegion"
+        >
+          <ng-container *ngFor="let region of regions">
+            <mat-option [value]="region">{{ region.title }}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker0"
+          [(ngModel)]="startDate"
+   
+          placeholder="Choose a start date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker0"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker0></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width mr-10-IMP">
+        <input
+          matInput
+          [min]="minDate"
+          [max]="maxDate"
+          [matDatepicker]="picker1"
+          [(ngModel)]="endDate"
+        
+          placeholder="Choose a end date"
+          readonly
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <section class="example-section">
+      <button
+        [disabled]="loading || !selectedZone.id"
+        mat-raised-button
+        color="primary"
+        (click)="getData()"
+      >
+        Display
+      </button>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+
+<div
+  bsModal
+  #childModal="bs-modal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          {{ selectedItem.promotionTitle || imagetitle }}
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideChildModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img
+        *ngIf="!selectedItem?.isExternalUrl"
+          src="{{ip}}{{ selectedItem?.shopImageUrl }}"
+          alt=""
+          style="width: 100%; height: 500px"
+        />
+        <img
+        *ngIf="selectedItem?.isExternalUrl"
+          src="{{ selectedItem?.shopImageUrl }}"
+          alt=""
+          style="width: 100%; height: 500px"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      {{ title | uppercase }}
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      <p *ngIf="!loading && tableData == 0">No data available</p>
+    </mat-card-title>
+  </mat-card-content>
+</mat-card> -->
+
+<!-- <div class="container-fluid" *ngIf="!loading && tableData == 0">
+  <p >No data available</p>
+</div> -->
+
+<div class="container-fluid" *ngIf="tableData != null && tableData?.length>0 && !loading">
+  <div class="row"></div>
+  <div class="row js">
+    <ng-container *ngFor="let item of tableData; let i = index">
+      <mat-card class="col-md-3 example-card card2 ml-3 mt-3">
+        <div class="ribbon">
+          <img
+          *ngIf="!item?.isExternalUrl"
+            mat-card-image
+            class="small"
+            src="{{ip}}{{ item?.value.shopImageUrl }}"
+            width="250"
+            height="300"
+            alt=""
+            (click)="setSelectedItem(item.value); showChildModal()"
+          />
+          <img
+          *ngIf="item?.isExternalUrl"
+            mat-card-image
+            class="small"
+            src="{{ item?.value.shopImageUrl }}"
+            width="250"
+            height="300"
+            alt=""
+            (click)="setSelectedItem(item.value); showChildModal()"
+          />
+        </div>
+
+        <!-- <mat-card-content (click)="gotoNewPage(item.value)"> -->
+          <mat-card-content (click)="showChildModalQuestions(item.value.id)">
+          <table class="table" style="cursor: pointer">
+            <tr *ngIf="item?.value.zoneTitle">
+              <th>Zone</th>
+              <td>{{ item?.value.zoneTitle }}</td>
+            </tr>
+            <tr *ngIf="item?.value.regionTitle">
+              <th>Region</th>
+              <td>{{ item?.value.regionTitle }}</td>
+            </tr>
+            <tr *ngIf="item?.value.categoryTitle">
+              <th>Category</th>
+              <td>{{ item?.value.categoryTitle }}</td>
+            </tr>
+            <tr *ngIf="item?.value.brandName">
+              <th>Brand</th>
+              <td>{{ item?.value.brandName }}</td>
+            </tr>
+            <tr *ngIf="item?.value.promotionTitle">
+              <th>Promotion Type</th>
+              <td>{{ item?.value.promotionTitle }}</td>
+            </tr>
+            <tr *ngIf="item?.value.visitDate">
+              <th>Visit Date</th>
+              <td>{{ item?.value.visitDate }}</td>
+            </tr>
+
+            <tr *ngIf="item?.value.shopCode">
+              <th>Shop Code</th>
+              <td>{{ item?.value.shopCode }}</td>
+            </tr>
+            <tr *ngIf="item?.value.shopTitle">
+              <th>Shop Title</th>
+              <td>{{ item?.value.shopTitle }}</td>
+            </tr>
+            <tr *ngIf="item?.value.shopAddress">
+              <th>Shop Address</th>
+              <td>{{ item?.value.shopAddress }}</td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </div>
+</div>
+
+
+
+<div
+  bsModal
+  #childModalQuestion="bs-modal"
+  class="modal fade"
+  [config]="{ backdrop: 'static', keyboard: false }"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="dialog-child-name"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">
+          Detail
+        </h4>
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="hideChildModalQuestions()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-center">
+        <div class="container-fluid" >
+          <!-- <div class="row"></div> -->
+          <div class="row js" *ngIf="loading">
+            <div class="col-md-8" style="padding: 0px; margin: 20% 40%" >
+              <img src="assets/images/basicloader.gif" alt="" srcset="" />
+            </div>
+          </div>
+          <div class="row js" *ngIf="detailData != null && detailData?.length>0 && !loading">
+            <ng-container >
+              <mat-card class="mb-20">
+        
+        
+                <!-- <mat-card-content (click)="gotoNewPage(item.value)"> -->
+                  <mat-card-content>
+                  <table class="table" style="cursor: pointer">
+                    <ng-container *ngFor="let item of detailData; let i = index">
+                      <div class="ribbon"  *ngIf="item?.image_url">
+                        <img
+                        *ngIf="!item?.isExternalUrl"
+                          mat-card-image
+                          class="small"
+                          src="{{ip}}{{ item?.image_url }}"
+                          width="250"
+                          height="300"
+                          alt=""
+                          (click)="setSelectedItem(item.value); showChildModal()"
+                        />
+                        <img
+                        *ngIf="item?.isExternalUrl"
+                          mat-card-image
+                          class="small"
+                          src="{{ item?.value.image_url }}"
+                          width="250"
+                          height="300"
+                          alt=""
+                          (click)="setSelectedItem(item.value); showChildModal()"
+                        />
+                      </div>
+
+                   
+                    
+                    <tr  *ngIf="!item?.image_url">
+                      <th>{{item?.Question}}</th>
+                      <td>{{ item?.Answer }}</td>
+                    </tr>
+                  </ng-container>
+                   
+                  </table>
+                </mat-card-content>
+              </mat-card>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

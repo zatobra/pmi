@@ -1,0 +1,420 @@
+<div class="container-fluid">
+  <div
+    class="row"
+    style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+  ></div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u>
+        <span id="planobtn">
+          <i
+            class="fas fa-image"
+            title="View Planogram Images"
+            (click)="navigateWithArray()"
+          ></i>
+        </span>
+        <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+
+    <ng-container *ngIf="data?.imageList.length > 0">
+      <div
+        *ngIf="selectedImage?.url"
+        [ngClass]="{
+          'col-md-5': products?.length > 0,
+          'col-md-4': products?.length == 0
+        }"
+      >
+        <div class="row">
+          <div class="col-12" style="max-height: 500px !important">
+            <label class="title" for="title">{{ selectedImage?.title }}</label>
+            <div style="position: relative">
+              <img
+                src="{{ip}}{{ selectedImage?.url }}"
+                class="img-thumbnail"
+                style="height: 450px; width: 100%"
+                (click)="showChildModal(selectedImage)" 
+                *ngIf="!selectedImage.isExternalUrl"
+              />
+              <img
+              src="{{ selectedImage?.url }}"
+              class="img-thumbnail"
+              style="height: 450px; width: 100%"
+              (click)="showChildModal(selectedImage)" 
+              *ngIf="selectedImage.isExternalUrl"
+            />
+              <div class="imageDetails">
+                <p *ngIf="selectedImage?.visitDateTime">
+                  Time Stamp: {{ selectedImage?.visitDateTime }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="row justify-content-center"
+              style="word-break: break-word !important"
+            >
+              <div>
+                <div
+                  *ngIf="selectedImage?.shopRemarks"
+                  for="cat"
+                  class="cat"
+                  style="word-break: break-word"
+                >
+                  <strong>Remarks: </strong>{{ selectedImage?.shopRemarks }}
+                </div>
+                <div
+                  *ngIf="selectedImage?.timeStamp"
+                  for="cat"
+                  class="cat"
+                  style="word-break: break-word"
+                >
+                  <strong>Time Spent: </strong>{{ selectedImage?.timeStamp }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 ml-3 mt-2">
+            <div class="row">
+              <ng-container *ngFor="let img of data?.imageList; let i = index">
+                <ng-container *ngIf="img?.url != '' && img.isSosImage == 'N'">
+                  <div
+                    class="col-2 mb-1 card mt-5 mr-2"
+                    (click)="setSelectedImage(img)"
+                    style="padding: 0% !important; cursor: pointer"
+                    [ngClass]="{ bgColor: img?.url == selectedImage.url }"
+                  >
+                    <img
+                      src="{{ip}}{{ img?.url }} "
+                      width="100"
+                      class="img-thumbnail side-image"
+                      style="height: 80px !important; width: 120px !important" 
+                      *ngIf="!img.isExternalUrl"
+                    />
+                    <img
+                    src="{{ img?.url }} "
+                    width="100"
+                    class="img-thumbnail side-image"
+                    style="height: 80px !important; width: 120px !important" 
+                    *ngIf="img.isExternalUrl"
+                  />
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="products.length > 0">
+      <div
+        class="tableFixHead"
+        [ngClass]="{
+          'col-md-7': data?.imageList?.length > 0 && selectedImage?.url,
+          'col-md-10':
+            data?.imageList?.length == 0 ||
+            (data?.imageList?.length > 0 && !selectedImage?.url)
+        }"
+      >
+        <table class="table table-bordered table-hover w-100">
+          <thead style="background: lightgray">
+            <tr>
+              <th>Product Title</th>
+              <th>Availability</th>
+              <th>Des.Depth</th>
+              <th>Depth</th>
+              <ng-container *ngIf="isMtChannel">
+                <th>Facing</th>
+              </ng-container>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let product of products; let j = index">
+              <td style="width: 700px !important ; word-wrap: break-word">
+                {{ product?.product_title }}
+              </td>
+              <ng-container *ngIf="isEditable == false">
+                <td
+                  style="width: 200px !important"
+                  [ngClass]="{ 'background-color': product?.MSL == 'Yes' }"
+                >
+                  {{ updateString(product?.available_sku) }}
+                </td>
+                <td style="width: 100px !important">
+                  {{ product?.desired_facing }}
+                </td>
+                <td style="width: 100px !important">
+                  {{ product?.available_sku }}
+                </td>
+                <ng-container *ngIf="isMtChannel">
+                  <td style="width: 100px !important">
+                    {{ product?.face_unit }}
+                  </td>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="isEditable == true">
+                <td
+                  style="cursor: pointer"
+                  (click)="changeSku(product)"
+                  [ngClass]="{ 'background-color': product?.MSL == 'Yes' }"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  {{ updateString(product?.available_sku) }}
+                </td>
+                <td style="width: 100px !important">
+                  <input
+                    type="number"
+                    [(ngModel)]="product.desired_facing"
+                    style="width: 4em"
+                    readonly
+                  />
+                </td>
+                <td
+                  style="width: 100px !important"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  <input
+                    type="number"
+                    [(ngModel)]="product.available_sku"
+                    maxlength="3"
+                    style="width: 4em"
+                    (change)="changeStock(product)"
+                  />
+                </td>
+                <ng-container *ngIf="isMtChannel">
+                  <td
+                    style="width: 100px !important"
+                    [ngStyle]="{ 'background-color': product.color }"
+                  >
+                    <input
+                      type="number"
+                      [(ngModel)]="product.face_unit"
+                      maxlength="3"
+                      style="width: 4em"
+                      (change)="changeFacing(product)"
+                    />
+                  </td>
+                </ng-container>
+              </ng-container>
+            </tr>
+            <tr>
+              <th>
+                Availability / Total (Hurdle Rate:
+                {{ data?.categoryHurdleRate }})
+              </th>
+              <td
+                [ngClass]="{
+                  bgColorRed: data?.categoryHurdleRate > availability,
+                  bgColorGreen: data?.categoryHurdleRate <= availability
+                }"
+              >
+                {{ availability }} / {{ products.length }}
+              </td>
+              <td>{{ totalDesiredDepth }}</td>
+              <td>{{ totalDepth }}</td>
+              <ng-container *ngIf="isMtChannel">
+                <td>{{ facing }}</td>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="row justify-content-center" *ngIf="isNonSosDataAvailable">
+    <div class="col-10 mt-4 tableHead">
+      <table class="table table-bordered table-hover w-100">
+        <thead style="background: lightgray">
+          <tr>
+            <th>Question</th>
+            <th>Answer</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let data of questionData">
+            <ng-container
+              *ngIf="
+                data.value.isSos == 'N' && data.value.questionType != 'image'
+              "
+            >
+              <td style="width: 500px !important">{{ data.value.question }}</td>
+              <ng-container *ngIf="isEditable == false">
+                <td style="width: 300px !important">{{ data.value.answer }}</td>
+              </ng-container>
+              <ng-container *ngIf="isEditable == true">
+                <ng-container
+                  *ngIf="data.value.questionType == 'text_field'; else options"
+                >
+                  <td style="width: 300px !important">
+                    <input
+                      type="number"
+                      [(ngModel)]="data.value.answer"
+                      maxlength="10"
+                      style="width: 4em"
+                      (change)="updateTextData(data.value)"
+                    />
+                  </td>
+                </ng-container>
+                <ng-template #options>
+                  <td>
+                    <select
+                      #newValue
+                      (change)="
+                        updateMultiSelectData(newValue.value, data.value)
+                      "
+                    >
+                      <ng-container
+                        *ngFor="let options of data.value.optionList"
+                      >
+                        <option
+                          *ngIf="data.value.answer == options.title"
+                          [value]="options.id"
+                          selected="selected"
+                        >
+                          {{ options?.title }}
+                        </option>
+                        <option
+                          *ngIf="data.value.answer != options.title"
+                          [value]="options.id"
+                        >
+                          {{ options?.title }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </td>
+                </ng-template>
+              </ng-container>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<ng-container *ngIf="isSosDataAvailable">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h4><u>Share Of Shelf</u></h4>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <ng-container *ngFor="let img of data?.imageList; let i = index">
+      <ng-container *ngIf="img.isSosImage == 'Y'">
+        <div class="col-md-4 text-center">
+          <label class="title" for="title">{{ img.title }}</label>
+          <img
+          src="{{ img.url }}"
+          width="400"
+          height="400"
+          (click)="showChildModal(img)"
+          class="img-thumbnail img-item" 
+          *ngIf="img.isExternalUrl"
+        />
+          <img
+            src="{{ip}}{{ img.url }}"
+            width="400"
+            height="400"
+            (click)="showChildModal(img)"
+            class="img-thumbnail img-item" 
+            *ngIf="!img.isExternalUrl"
+          />
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-10 mt-4 tableHead">
+      <table class="table table-bordered table-hover w-100">
+        <thead style="background: lightgray">
+          <tr>
+            <th>Question</th>
+            <th>Answer</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let qcData of questionData">
+            <ng-container
+              *ngIf="
+                qcData.value.isSos != 'N' &&
+                qcData.value.questionType != 'image'
+              "
+            >
+              <td style="width: 500px !important">
+                {{ qcData.value.question }}
+              </td>
+              <ng-container *ngIf="isEditable == false">
+                <td style="width: 300px !important">
+                  {{ qcData.value.answer }}
+                </td>
+              </ng-container>
+              <ng-container *ngIf="isEditable == true">
+                <ng-container
+                  *ngIf="
+                    qcData.value.questionType == 'text_field';
+                    else options
+                  "
+                >
+                  <td style="width: 300px !important">
+                    <input
+                      type="number"
+                      [(ngModel)]="qcData.value.answer"
+                      maxlength="10"
+                      style="width: 4em"
+                      (change)="updateTextData(qcData.value)"
+                    />
+                  </td>
+                </ng-container>
+                <ng-template #options>
+                  <td>
+                    <select
+                      #newValue
+                      (change)="
+                        updateMultiSelectData(newValue.value, qcData.value)
+                      "
+                    >
+                      <ng-container
+                        *ngFor="let options of qcData.value.optionList"
+                      >
+                        <option
+                          *ngIf="qcData.answer == options.title"
+                          [value]="options.id"
+                          selected="selected"
+                        >
+                          {{ options?.title }}
+                        </option>
+                        <option
+                          *ngIf="qcData.answer != options.title"
+                          [value]="options.id"
+                        >
+                          {{ options?.title }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </td>
+                </ng-template>
+              </ng-container>
+            </ng-container>
+          </tr>
+          <tr>
+            <td>Utilization</td>
+            <td>{{ setUtilization() }}%</td>
+          </tr>
+          <tr>
+            <td>Desired SOS</td>
+            <td>{{ data?.categoryDesiredSos }}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-container>

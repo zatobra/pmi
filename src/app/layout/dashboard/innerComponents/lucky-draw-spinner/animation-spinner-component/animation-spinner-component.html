@@ -1,0 +1,90 @@
+<mat-card class="mb-20">
+  <mat-card-content>
+    <!-- <div class="row" style="clear: both">
+      <mat-card-title style="float: left; margin-left: 15px">
+        Upload Routes (Current Week: {{ currentWeek }})
+        <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+      </mat-card-title>
+      <mat-card-title style="float: right; position: absolute; right: 15px">
+        <button mat-raised-button (click)="downloadRouteSample()" color="warn">
+          Download Sample
+        </button>
+      </mat-card-title>
+    </div> -->
+    <mat-card-title>
+      Select File to Run Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form
+        [formGroup]="form"
+        enctype="multipart/form-data"
+      >
+
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="LuckyDraw File"
+            name="fileId"
+            formControlName="fileId"
+          >
+            <ng-container *ngFor="let file of filesList">
+              <mat-option [value]="file.id">{{
+                file.file_name
+              }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+    
+        <!-- <section class="example-section">
+          <button type="submit" mat-raised-button color="warn" (click)="uploadClick()">Upload</button>
+          <button type="submit" mat-raised-button color="warn" (click)="scanClick()" style="margin-left: 30px;">Scan</button>
+        </section> -->
+      </form>
+    </section>
+  </mat-card-content>
+</mat-card>
+
+<div class="row" *ngIf="hasSpinner">
+  <div class="col text-center">
+    <!-- <h1 [countUp]="endVal" [options]="options" (complete)="doSomethingOnComplete()" ></h1> -->
+    <i class="fa fa-spinner fa-spin" style="font-size: 144px"></i>
+  </div>
+</div>
+
+<div class="row" *ngIf="hasMessage && spinnerMessage">
+  <div class="col text-center">
+      <div class="container">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">
+              <!-- Congratulation to <span *ngIf="staffName">{{ staffName }}</span> -->
+              Congratulation to <span *ngIf="spinnerMessage">{{ spinnerMessage?.name }}
+                <span>id: {{spinnerMessage?.id}}</span>
+              </span>
+            </h5>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col text-center">
+    <img src="{{ main_logo }}" class="img-fluid" height="500"/>
+  </div>
+</div>
+
+<div class="text-center">
+  <button
+    (click)="startSpinner()"
+    type="button"
+    [disabled]="!form.controls.fileId.valid"
+    mat-raised-button
+    block
+    color="primary"
+    class="w-50"
+  >
+    START
+  </button>
+</div>

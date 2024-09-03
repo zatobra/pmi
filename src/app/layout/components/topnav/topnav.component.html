@@ -1,0 +1,136 @@
+<mat-toolbar class="fix-nav notprint">
+  <button
+    type="button"
+    mat-icon-button
+    class="visible-md"
+    (click)="toggleSidebar()"
+  >
+    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+  </button>
+  <div class="nav-brand mt10">
+    <button id="navbtn" mat-icon-button>
+      <mat-icon (click)="hideBar.emit()">reorder</mat-icon>
+    </button>
+    <ng-container *ngIf="projectType == 'Pepsi'">
+      <img src="assets/images/MKTG.png" height="50" />
+      <img src="assets/images/PepsiNewLogo.png" height="50" style="margin-left: 10px;"/>
+    </ng-container>
+
+    <ng-container *ngIf="projectType == 'Samsung'">
+      <img src="assets/images/samsungLogo.png" height="30" />
+    </ng-container>
+
+    <ng-container *ngIf="projectType == 'Fauji_Merch'">
+      <img src="assets/images/faujiMerchLogo.png" height="30" />
+    </ng-container>
+
+    <ng-container *ngIf="luckyDrawAdminRole == 'Y'">
+      <img src="assets/images/nationalFoodsLogoNew.png" height="50" width="100" />
+    </ng-container>
+
+    <ng-container *ngIf="projectType != 'Pepsi' && projectType != 'Samsung' && projectType != 'Fauji_Merch' && luckyDrawAdminRole != 'Y'">
+      <img src="{{ main_logo }}" height="50" />
+    </ng-container>
+    <span
+      >
+      <strong
+        style="color: #3f51b5"
+        *ngIf="projectType != 'Samsung' && projectType != 'Tapal' && projectType != 'Pepsi' && projectType != 'PMI_Merch' && luckyDrawAdminRole != 'Y'
+        && projectType != 'Resource Management'"
+        >
+        {{ projectType }}
+        </strong>
+        <strong
+        style="color: #3f51b5"
+        *ngIf="projectType == 'PMI_Merch'"
+        >
+        {{ emailProjectType }}
+        </strong>
+
+        <strong
+        style="color: #3f51b5"
+        *ngIf="projectType == 'Resource Management'"
+        >
+        {{ webPortalName }}
+        </strong>
+
+      </span
+    >
+  </div>
+  <form class="hidden-sm" style="margin-left: 20px; margin-top: 5px">
+    <!-- <mat-icon>account_circle </mat-icon> -->
+    <!-- <mat-icon color="warn">{{userName | uppercase}}</mat-icon> -->
+
+    <!-- <mat-form-field>
+
+            <input matInput [placeholder]="'Search' | translate">
+        </mat-form-field> -->
+  </form>
+  <span class="nav-spacer"></span>
+  <!-- <a href="https://github.com/start-javascript/sb-admin-material/archive/master.zip" class="hidden-sm" mat-raised-button style="margin-right: 10px">
+        <mat-icon>cloud_download</mat-icon> {{ 'Download Now' | translate }}
+    </a> -->
+  <!-- <button class="hidden-sm" mat-icon-button [matMenuTriggerFor]="language">
+        <mat-icon>language</mat-icon>
+    </button> -->
+  <!-- <mat-menu #language="matMenu">
+        <button mat-menu-item (click)="changeLang('en')">
+            <span>{{ 'English' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="changeLang('fr')">
+            <span>{{ 'French' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="changeLang('ur')">
+            <span>{{ 'Urdu' | translate }}s</span>
+        </button>
+    </mat-menu> -->
+  <!--  -->
+  <ng-container *ngIf="luckyDrawAdminRole != 'Y'">
+    <span style="color: #3f51b5" *ngIf="projectType != 'Samsung'">{{
+      userName
+    }}</span>
+    <span style="color: black" *ngIf="projectType == 'Samsung'">{{
+      userName
+    }}</span>
+  </ng-container>
+  
+
+  <button
+    *ngIf="userName && showButton"
+    class="hidden-sm"
+    color="primary"
+    mat-icon-button
+    [matMenuTriggerFor]="profile"
+    [ngStyle]="{
+      color: projectType == 'Samsung' ? 'black' : 'blue'
+    }"
+  >
+    <!-- background: projectType == 'Samsung' ? 'green' : 'yellow' -->
+    <mat-icon>account_circle</mat-icon><br />
+  </button>
+  <mat-menu #profile="matMenu">
+    <!-- <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>{{ userName }}</span>
+        </button> -->
+    <!-- <button mat-menu-item>
+            <mat-icon>inbox</mat-icon>
+            <span>{{ 'Inbox' | translate }}</span>
+        </button> -->
+    <button *ngIf="!pmirm"
+      mat-menu-item
+      [routerLink]="['/dashboard/update_password']"
+      routerLinkActive="router-link-active"
+    >
+      <mat-icon>lock</mat-icon>
+      <span>Update Password</span>
+    </button>
+    <button *ngIf="showButton" (click)="onLoggedout()" mat-menu-item>
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+  <!-- <button *ngIf="showButton" mat-icon-button (click)="onLoggedout()">
+        <mat-icon>exit_to_app</mat-icon>
+    </button> -->
+</mat-toolbar>

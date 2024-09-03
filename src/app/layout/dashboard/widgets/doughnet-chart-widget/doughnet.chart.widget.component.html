@@ -1,0 +1,37 @@
+
+        <!-- <div class="col-md-3 borderClass"> -->
+          <div class="bb" style="width: 100%;" [ngClass]="bgClass">
+            <div class="borderClass3 d-flex align-items-end justify-content-center">
+          
+                      <canvas
+                        baseChart
+                        [height]="height"
+                        width="80"
+                        [colors]="colors2"
+                        [data]="doughnutChartData2"
+                        [labels]="doughnutChartLabels2"
+                        [chartType]="doughnutChartType"
+                        [options]="doghnutChartOptions"
+                      >
+                      </canvas>
+                   
+                    
+            </div>
+            <div class="row text-center">
+              <div class="col-md-12 text-center">{{key | uppercase}}
+             
+                <div class="col-md-12 text-center">
+                  {{value}}%
+                </div>
+              </div>
+              
+             
+            </div>
+          </div>
+          
+
+
+        <!-- </div> -->
+
+
+        

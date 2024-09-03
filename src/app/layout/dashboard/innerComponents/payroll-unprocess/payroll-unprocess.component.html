@@ -1,0 +1,29 @@
+<div>
+    <mat-card>
+      <mat-card-content>
+        <mat-card-title>
+            PayRoll UnProcess
+             <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+           </mat-card-title>
+        
+    
+        <div class="month-filter-container">
+          <mat-form-field class="example-margin mr-10-IMP" style="width: 150px;">
+            <mat-select placeholder="Select Month" name="selectedMonth" [(ngModel)]="selectedMonthDate">
+                <mat-option *ngFor="let month of monthlist; let i = index" [value]="month?.salary_month">
+                  {{ month?.MONTH_NAME }}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+          
+        </div>
+       
+  
+
+        <button [disabled]="loadingData || !selectedMonthDate" (click)="saveData()" style="height: 33px; width: 90px;">
+            <i [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+            Remove
+          </button>
+
+    
+      

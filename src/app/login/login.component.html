@@ -1,0 +1,138 @@
+<!-- <div [ngClass]="{
+    'login-page2': samsungProject,
+    'login-page': !samsungProject
+  }"> -->
+<div class="login-page">
+  <div class="content">
+    <!-- <h1 class="app-name">Sb Admin Material</h1> -->
+    <form #f="ngForm" class="login-form" fxFlex>
+      <div class="text-center">
+        <h2 class="app-name">
+          <ng-container *ngIf="faujiMerchProjectUrl">
+            <img src="{{ main_logo_faujimerch }}" height="100" alt="" />
+          </ng-container>
+          <ng-container *ngIf="!faujiMerchProjectUrl">
+            <img src="{{ login_logo }}" height="100" alt="" />
+          </ng-container>
+        </h2>
+      </div>
+      <div *ngIf="(!pmirm || pmirmAdminLogin )" fxFlex fxlayout="row" fxlayout.lt-md="column">
+        <div fxFlexFill>
+          <mat-form-field class="w-100">
+            <input
+              matInput
+              name="userName"
+              placeholder="User Name"
+              [(ngModel)]="loginForm.userName"
+              #userName="ngModel"
+              required
+            />
+            <mat-error *ngIf="userName.invalid"
+              >User name is required.</mat-error
+            >
+          </mat-form-field>
+        </div>
+      </div>
+      <div *ngIf="(!pmirm || pmirmAdminLogin )" fxFlex fxLayout="row" fxLayout.lt-md="column">
+        <div fxFlexFill>
+          <mat-form-field class="w-100">
+            <input
+              matInput
+              type="password"
+              placeholder="Password"
+              name="password"
+              [(ngModel)]="loginForm.password"
+              #password="ngModel"
+              required
+            />
+            <mat-error *ngIf="password.invalid"
+              >Password is required.</mat-error
+            >
+          </mat-form-field>
+        </div>
+      </div>
+      <div *ngIf="!pmirm" hidden fxFlex fxLayout="row" fxLayout.lt-md="column">
+        <div fxFlexFill>
+          <mat-form-field class="w-100">
+            <input
+              matInput
+              type="text"
+              name="angularRequest"
+              [(ngModel)]="loginForm.angularRequest"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+
+
+      <div *ngIf="(pmirm && pmirmAdminLogin) || !pmirm"
+      fxFlex
+      fxLayout="row"
+      fxLayout.lt-md="column"
+      style="margin: 20px 0 30px 0"
+    >
+
+      <!-- <div *ngIf="!pmirm"
+        fxFlex
+        fxLayout="row"
+        fxLayout.lt-md="column"
+        style="margin: 20px 0 30px 0"
+      > -->
+        <div fxFlexFill>
+          <button
+            [disabled]="f.invalid || loading"
+            mat-raised-button
+            color="primary"
+            class="w-100"
+            (click)="onLogin(f.value)"
+          >
+            <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+            Login
+          </button>
+        </div>
+      </div>
+      <div
+        style="display: flex; justify-content: center; margin: 20px 0"
+        *ngIf="pmirm"
+      >
+        <!-- OR -->
+      </div>
+      <div
+        fxFlex
+        fxLayout="row"
+        fxLayout.lt-md="column"
+        style="margin: 20px 0 30px 0"
+        *ngIf="pmirm || localhost"
+      >
+        <div fxFlexFill>
+          <button
+            [disabled]="loading"
+            mat-raised-button
+            color="primary"
+            class="w-100"
+            (click)="samlLogin()"
+          >
+            <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+            Login with SSO
+          </button>
+        </div>
+      </div>
+      <div *ngIf="pmirm || localhost">
+        <!-- <mat-checkbox
+          name="checkbox1"
+          [(ngModel)]="agreeToTerms"
+          (change)="onCheckboxChange($event)"
+          [checked]="!f.invalid"
+        >
+        </mat-checkbox> -->
+
+        <span
+          (click)="onCheckboxChangeNew()"
+          style="margin-left: 5px; cursor: pointer; color: blue"
+        >
+          PMI Employee Privacy Statement
+        </span>
+      </div>
+    </form>
+  </div>
+</div>

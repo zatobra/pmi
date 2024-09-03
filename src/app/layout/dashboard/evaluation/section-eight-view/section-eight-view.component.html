@@ -1,0 +1,375 @@
+<div class="container-fluid">
+  <div
+    class="row"
+    style="border-bottom: 2px solid black; width: 100%; margin: 5px 0"
+  ></div>
+  <div class="row justify-content-center">
+    <div class="col-md-12 text-center">
+      <h4>
+        <u>{{ data?.sectionTitle }} </u>
+        <span id="planobtn">
+          <i
+            class="fas fa-image"
+            title="View Planogram Images"
+            (click)="navigateWithArray()"
+          ></i> </span
+        ><i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loading }"></i>
+      </h4>
+    </div>
+
+    <ng-container *ngIf="data?.imageList.length > 0">
+      <div
+        [ngClass]="{
+          'col-md-5': products?.length > 0,
+          'col-md-4': products?.length == 0
+        }"
+      >
+        <div class="row">
+          <div class="col-12" style="max-height: 500px !important">
+            <label class="title" for="title">{{ selectedImage?.title }}</label>
+            <div style="position: relative">
+              <img
+                *ngIf="!selectedImage?.isExternalUrl"
+                src="{{ ip }}{{ selectedImage?.url }}"
+                class="img-thumbnail"
+                style="height: 450px; width: 100%"
+                (click)="showChildModal(selectedImage)"
+              />
+              <img
+                *ngIf="selectedImage?.isExternalUrl"
+                src="{{ selectedImage?.url }}"
+                class="img-thumbnail"
+                style="height: 450px; width: 100%"
+                (click)="showChildModal(selectedImage)"
+              />
+              <div class="imageDetails" *ngIf="data?.imageView != 'Y'">
+                <p *ngIf="selectedImage?.visitDateTime">
+                  Time Stamp: {{ selectedImage?.visitDateTime }}
+                </p>
+              </div>
+            </div>
+            <div
+              class="row justify-content-center"
+              style="word-break: break-word !important"
+            >
+              <div>
+                <div
+                  *ngIf="selectedImage?.shopRemarks"
+                  for="cat"
+                  class="cat"
+                  style="word-break: break-word"
+                >
+                  <strong>Remarks: </strong>{{ selectedImage?.shopRemarks }}
+                </div>
+                <div
+                  *ngIf="selectedImage?.timeStamp"
+                  for="cat"
+                  class="cat"
+                  style="word-break: break-word"
+                >
+                  <strong>Time Spent: </strong>{{ selectedImage?.timeStamp }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 ml-3 mt-2">
+            <div class="row">
+              <ng-container *ngFor="let img of data?.imageList; let i = index">
+                <ng-container *ngIf="img?.url != ''; else elseImageBlock">
+                  <div
+                    class="col-2 mb-1 card mt-5 mr-2"
+                    (click)="setSelectedImage(img)"
+                    style="padding: 0% !important; cursor: pointer"
+                    [ngClass]="{ bgColor: img?.url == selectedImage.url }"
+                  >
+                    <img
+                      *ngIf="!img?.isExternalUrl"
+                      src="{{ ip }}{{ img?.url }} "
+                      width="100"
+                      class="img-thumbnail side-image"
+                      style="height: 80px !important; width: 120px !important"
+                    />
+                    <img
+                      *ngIf="img?.isExternalUrl"
+                      src="{{ img?.url }} "
+                      width="100"
+                      class="img-thumbnail side-image"
+                      style="height: 80px !important; width: 120px !important"
+                    />
+                  </div>
+                </ng-container>
+                <ng-template #elseImageBlock>
+                  <div
+                    class="col-2 mb-1 card mt-5 mr-2"
+                    style="padding: 0% !important"
+                  >
+                    <img
+                      src="{{ ip }}/images/TradeTraker Final.jpg "
+                      width="100"
+                      class="img-thumbnail side-image"
+                      style="height: 80px !important; width: 120px !important"
+                    />
+                  </div>
+                </ng-template>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="products.length > 0">
+      <div
+        class="tableFixHead"
+        [ngClass]="{
+          'col-md-7': data?.imageList?.length > 0,
+          'col-md-10': data?.imageList?.length == 0
+        }"
+      >
+        <table class="table table-bordered table-hover w-100">
+          <thead style="background: lightgray">
+            <tr>
+              <!-- <th>Brand Title</th> -->
+              <th></th>
+              <th>Product Id</th>
+              <th>Product Title</th>
+              <th *ngIf="this.projectType!='Pepsi'">A.Depth</th>
+              <th>Facing</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let product of products; let j = index">
+              <!-- <td>{{product?.category_title}}</td> -->
+              <ng-container *ngIf="isEditable == false">
+              <td></td>
+           
+              <td>{{ product?.product_id }}</td>
+              <td style="width: 900px !important; word-wrap: break-word">
+                {{ product?.product_title }}
+              </td>
+            
+              <!-- <td style="width:100px !important">
+                            {{product?.desiredDepth}}</td> -->
+
+                <td style="width: 100px !important" *ngIf="this.projectType!='Pepsi'">
+                  {{ product.stock }}
+                </td>
+                <td style="width: 100px !important">
+                  {{ product.face_unit }}
+                </td>
+              </ng-container>
+
+              <ng-container *ngIf="isEditable == true">
+                <td>
+                  <mat-checkbox
+                    matTooltip="System Error"
+                    color="warn"
+                    name="{{ product?.product_title }}"
+                    id="{{ product?.id }}"
+                    (change)="checkUncheckSingle(checked, product)"
+                    #checked
+                  >
+                  </mat-checkbox>
+                </td>
+                <td>{{ product?.product_id }}</td>
+                <td
+                  style="width: 800px !important; word-wrap: break-word"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  {{ product?.product_title }}
+                </td>
+                <td
+                *ngIf="this.projectType!='Pepsi'"
+                  style="width: 100px !important"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  <input
+                    type="number"
+                    [(ngModel)]="product.stock"
+                    maxlength="3"
+                    style="width: 4em"
+                    (change)="changeStock(product)"
+                  />
+                </td>
+                <!-- (change)="changeAvailability(product)" -->
+                <td
+                  style="width: 100px !important"
+                  [ngStyle]="{ 'background-color': product.color }"
+                >
+                  <input
+                    type="number"
+                    [(ngModel)]="product.face_unit"
+                    maxlength="3"
+                    style="width: 4em"
+                    (change)="changeFacing(product)"
+                  />
+                </td>
+              </ng-container>
+            </tr>
+
+            <tr>
+              <td></td>
+              <td></td>
+              <!-- <th>Total ({{total}}%)</th> -->
+              <!-- <td>Total ({{ total }})%</td> -->
+              <td></td>
+              <!-- - Score Recommended = {{ recommendedScore }} -->
+              <td *ngIf="this.projectType!='Pepsi'" >{{ stock }}</td>
+              <td>{{ facing }}</td>
+            </tr>
+
+            <!-- <td (click)="product.available_sku = (!product.available_sku)">{{toggleValue(product?.available_sku)}}</td> -->
+            <!-- <td></td> -->
+          </tbody>
+        </table>
+        <!-- </form> -->
+      </div>
+    </ng-container>
+  </div>
+
+  <div
+    bsModal
+    #childModal="bs-modal"
+    [config]="{ ignoreBackdropClick: true, keyboard: false, backdrop: false }"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="dialog-child-name"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-child-name" class="modal-title pull-left">
+            Edit Chiller Attribute
+          </h4>
+          <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="hideChildModal()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ng-container *ngIf="flag == 1">
+            <mat-form-field class="example-margin example-full-width mr-10-IMP">
+              <mat-label>Available Depth</mat-label>
+              <input
+                matInput
+                [(ngModel)]="selectedProduct.unit_available"
+                placeholder="{{ selectedProduct.unit_available }}"
+              />
+            </mat-form-field>
+          </ng-container>
+
+          <ng-container *ngIf="flag == 2">
+            <mat-form-field class="example-margin example-full-width mr-10-IMP">
+              <mat-label>Facing</mat-label>
+              <input
+                matInput
+                [(ngModel)]="selectedProduct.face_unit"
+                placeholder="{{ selectedProduct.face_unit }}"
+              />
+            </mat-form-field>
+          </ng-container>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-primary"
+            [disabled]="loading"
+            (click)="toggleValue(selectedProduct, flag)"
+          >
+            <i [ngClass]="{ 'fa fa-spinner fa-spin': loading }"></i>
+            Update
+          </button>
+          <button class="btn btn-warning" (click)="hideChildModal()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center" *ngIf="isEditable">
+    <ng-container class="mt-5 justify-content-center" *ngIf="data?.tagsList">
+      <div class="col-md-11 mt-5">
+        <table class="table table-bordered">
+          <tr *ngFor="let tab of data.tagsList; let j = index">
+            <th style="width: 50%; background: lightgray">
+              {{ tab.heading }}
+            </th>
+            <ng-container *ngIf="tab.isEditable; else notEditable">
+              <td *ngIf="tab.optionList == null">
+                <input
+                  type="number"
+                  [(ngModel)]="tab.value"
+                  maxlength="3"
+                  style="width: 4em"
+                  (change)="updateTextData(tab)"
+                />
+              </td>
+              <td *ngIf="tab.optionList != null">
+                <select
+                  #newValue
+                  (change)="updateMultiSelectData(newValue.value, tab)"
+                >
+                  <ng-container *ngFor="let options of tab.optionList">
+                    <option
+                      *ngIf="tab.value == options.title"
+                      [value]="options.id"
+                      selected="selected"
+                    >
+                      {{ options?.title }}
+                    </option>
+                    <option
+                      *ngIf="tab.value != options.title"
+                      [value]="options.id"
+                    >
+                      {{ options?.title }}
+                    </option>
+                  </ng-container>
+                </select>
+              </td>
+            </ng-container>
+            <ng-template #notEditable>
+              <td style="width: 50%; word-break: break-word">
+                {{ tab.value }}
+              </td>
+            </ng-template>
+          </tr>
+          <tr
+            [ngClass]="{
+              bgColorRed: scores > 100,
+              bgColorGreen: scores <= 100
+            }"
+          >
+            <!-- <th>Total ({{total}}%)</th> -->
+            <!-- <td>Total ({{ total }})%</td> -->
+            <ng-container *ngIf="projectType == 'Coke_Audit'">
+              <th style="width: 50%; background: lightgray">Total</th>
+              <!-- - Score Recommended = {{ recommendedScore }} -->
+              <td>{{ scores }}</td>
+            </ng-container>
+            <!-- <td>{{ facing }}</td> -->
+          </tr>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div class="row justify-content-center" *ngIf="!isEditable">
+  <ng-container class="justify-content-center" *ngIf="data?.tagsList">
+    <div class="col-md-11 mt-3">
+      <table class="table table-bordered">
+        <tr *ngFor="let tab of data.tagsList; let j = index">
+          <th style="width: 50%; background: lightgray">{{ tab.heading }}</th>
+          <td style="width: 50%; word-break: break-all">{{ tab.value }}</td>
+        </tr>
+      </table>
+    </div>
+  </ng-container>
+</div>

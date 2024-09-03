@@ -1,0 +1,436 @@
+<!-- <mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      Select Targeted Audience File to Run Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="LuckyDraw File"
+            name="fileId"
+            formControlName="fileId"
+          >
+            <ng-container *ngFor="let file of filesList">
+              <mat-option [value]="file.id">{{ file.file_name }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+       
+      </form>
+    </section>
+    <br />
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="loadingData"
+    ></mat-progress-bar>
+    <section class="example-section">
+      <mat-radio-group
+        [(ngModel)]="prizeId"
+        name="radioButtons"
+        (change)="onRadioButtonChange($event)"
+        class="example-margin mr-10-IMP"
+      >
+      <div class="table-responsive">
+        <table class="table">
+          <tbody class="image-container">
+        <ng-container *ngFor="let prize of prizesList">
+          <div >
+          <tr >
+            <td>
+            
+          <mat-radio-button
+            value="{{ prize.id }}"
+            class="example-margin mr-10-IMP"
+            >{{ prize.category }}</mat-radio-button
+          >
+        </td>
+     <td> {{ prize.prize }}</td>
+     <td> <img src="{{ prize?.url }} " alt="" height="200px" width="200px"> </td>
+        </tr>
+      </div>
+
+
+        </ng-container>
+      </tbody>
+        </table>
+      </div>
+          
+      </mat-radio-group>
+    </section>
+    <div class="text-center">
+      <button
+      style="background-color: black; color: white; width: 100px; height: 100px; border-radius: 50%; cursor: pointer;"
+        (click)="startSpinner()"
+        type="button"
+        [disabled]="!form.controls.fileId.valid || !prizeId || !buttonEnable"
+        mat-raised-button
+        block
+        color="primary"
+        
+      >
+      <i [ngClass]="{ 'fa fa-spinner fa-spin': !buttonEnable }" *ngIf="!buttonEnable"></i>
+      <span *ngIf="buttonEnable">Ok</span>
+        
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card> -->
+
+
+
+
+<!-- <mat-card class="mb-20">
+  <mat-card-content>
+    <mat-card-title>
+      Select Targeted Audience File to Run Lucky Draw
+      <i color="warn" [ngClass]="{ 'fa fa-cog fa-spin': loadingData }"></i>
+    </mat-card-title>
+    <section class="example-section">
+      <form [formGroup]="form" enctype="multipart/form-data">
+        <mat-form-field class="example-margin mr-10-IMP">
+          <mat-select
+            placeholder="LuckyDraw File"
+            name="fileId"
+            formControlName="fileId"
+          >
+            <ng-container *ngFor="let file of filesList">
+              <mat-option [value]="file.id">{{ file.file_name }}</mat-option>
+            </ng-container>
+          </mat-select>
+        </mat-form-field>
+
+       
+      </form>
+    </section>
+  
+    <br />
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="loadingData"
+    ></mat-progress-bar>
+
+    <section class="example-section">
+      <mat-radio-group
+        [(ngModel)]="prizeId"
+        name="radioButtons"
+        (change)="onRadioButtonChange($event)"
+        class="example-margin mr-10-IMP"
+      >
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr style="text-align: center;">
+              <th>Category</th>
+              <th>Prize</th>
+              <th>Total Winner</th>
+              <th>Prize Image</th>
+            </tr>
+          </thead>
+          <tbody >
+       
+          <tr *ngFor="let prize of prizesListWithWinnersCount">
+            <td>
+            
+          <mat-radio-button
+            value="{{ prize.id }}"
+            class="example-margin mr-10-IMP"
+            >{{ prize.category }}</mat-radio-button
+          >
+        </td>
+     <td> {{ prize.prize }}</td>
+     <td> {{ prize.total }}</td>
+     <td> <img src="{{ prize?.url }} " alt="" height="200px" width="200px"> </td>
+        </tr>
+      
+      </tbody>
+        </table>
+      </div>
+          
+      </mat-radio-group>
+    </section>
+    <div class="text-center">
+      <button
+      class="button"
+      
+       [class.disabled]="!form.controls.fileId.valid || !prizeId "
+        (click)="startSpinner()"
+        type="button"
+        [disabled]="!form.controls.fileId.valid || !prizeId "
+        mat-raised-button
+        block
+        color="primary"
+        
+      >
+      
+      <span >OK</span>
+        
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card> -->
+
+
+
+
+<!-- <div class="row" *ngIf="hasSpinner">
+  <div class="col text-center"> -->
+    <!-- <h1 [countUp]="endVal" [options]="options" (complete)="doSomethingOnComplete()" ></h1> -->
+    <!-- <i class="fa fa-spinner fa-spin" style="font-size: 144px"></i>
+  </div>
+</div> -->
+
+
+
+<div *ngIf="!showWinners">
+
+<div class="parentDiv" [ngStyle]="{'height': buttonEnable? '40vh': '90vh'}">
+
+
+
+<div style="">
+
+<div class="row" *ngIf="hasMessage && spinnerWinnersList?.length>0">
+  <!-- <div class="col text-center">
+    <div class="container">
+      <div class="card text-center"> -->
+        <div class="sal">
+          <!-- <h5 class="card-title"> -->
+          <!-- Congratulation to <span *ngIf="staffName">{{ staffName }}</span> -->
+          {{params.prizeCategory}} Category Lucky Draw <br>
+          <!-- Congratulation to <br /> -->
+          <!-- <span *ngIf="spinnerWinnersList"> -->
+          <!-- {{ spinnerWinnersList?.name }} -->
+          <!-- <span>id: {{spinnerWinnersList?.id}}</span> -->
+          <div class="counter" #counter>
+            <i *ngFor="let value of dataFinalValues" [attr.data-final]="value"
+              >X</i
+            >
+          </div>
+          <!-- </span> -->
+          <!-- </h5> -->
+        </div>
+      <!-- </div>
+    </div>
+  </div> -->
+</div>
+
+<div class="row" *ngIf="!hasMessage && spinnerWinnersList?.length<1">
+  <!-- <div class="col text-center">
+    <div class="container">
+      <div class="card text-center"> -->
+        <div class="sal">
+        <!-- <span style="font-weight: bold;"> -->
+          {{params.prizeCategory}} Category Lucky Draw
+        <!-- </span>    -->
+        <br>
+          <!-- Congratulation to <br /> -->
+          <div class="counter" #counter2>
+            <i *ngFor="let value of dataFinalValues2" [attr.data-final]="value"
+              >{{value}}</i
+            >
+          </div>
+        </div>
+      <!-- </div>
+    </div>
+  </div> -->
+</div>
+
+
+
+</div>
+
+
+
+</div>
+<!-- 
+<div  *ngIf="buttonEnable && spinnerWinnersList" class="parentDiv2">
+  
+  <div class="row">winner is farhanrao</div>
+  <div class="row">winner is farhanrao</div>
+  <div class="row">winner is farhanrao</div>
+</div> -->
+
+<div *ngIf="buttonEnable && spinnerWinnersList?.length>0" class="parentDiv2">
+ 
+    <!-- <div>Outlet Name : {{ spinnerWinnersList?.outlet_name }}</div>
+    <div>Region       : {{ spinnerWinnersList?.region_name }}</div>
+    <div>Town        : {{ spinnerWinnersList?.city_name }}</div>
+    <div>Category    : {{ spinnerWinnersList?.category }}</div>
+    <div>Prize       : {{ spinnerWinnersList?.prize }}</div> -->
+    <div>
+    <button
+    class="button2"
+      (click)="showWinnersList()"
+      type="button"
+      mat-raised-button
+      block
+      color="primary"
+      
+    >
+    <!-- <i [ngClass]="{ 'fa fa-spinner fa-spin': !buttonEnable }" *ngIf="!buttonEnable"></i> -->
+    <span >Show Winners</span>
+      
+    </button>
+  </div>
+    
+ 
+</div>
+
+<!-- <div class="row"> -->
+<!-- <div class="col text-center">
+  <img src="{{ main_logo }}" class="img-fluid" height="500" />
+</div> -->
+
+<!-- <div class="counter" #counter>
+<i data-final="0">f</i>
+<i data-final="1">a</i>
+<i data-final="8">r</i>
+<i data-final="2">h</i>
+<i data-final="5">a</i>
+<i data-final="">nnn</i>
+<i data-final="">n</i>
+<i data-final="">k</i>
+<i data-final="">j</i>
+</div> -->
+
+<!-- <mat-card class="mb-20 sal text-center">
+  <mat-card-content>
+    <mat-card-title>
+      <div class="counter" #counter>
+        <i *ngFor="let value of dataFinalValues" [attr.data-final]="value">x</i>
+      </div>
+    </mat-card-title>
+
+
+
+
+</mat-card-content>
+</mat-card> -->
+
+<!-- </div> -->
+
+<div class="row" style="justify-content: center; margin-top: 20px; margin-bottom: 20px;" *ngIf="buttonEnable && showStartButton">
+ 
+  
+  <mat-form-field class="example-full-width">
+    <mat-label>Enter Total Winners</mat-label>
+    <input type="number" matInput [(ngModel)]="totalWinners">
+  
+  </mat-form-field>
+
+</div>
+
+<div class="text-center" style="margin-top: 10px;" *ngIf="buttonEnable && showStartButton">
+  <button
+  class="button"
+    (click)="startSpinner()"
+    type="button"
+    [disabled]="!params || !buttonEnable"
+    mat-raised-button
+    block
+    color="primary"
+    
+  >
+  <i [ngClass]="{ 'fa fa-spinner fa-spin': !buttonEnable }" *ngIf="!buttonEnable"></i>
+  <span *ngIf="buttonEnable">Start</span>
+    
+  </button>
+</div>
+</div>
+
+
+
+
+
+
+
+<!-- <mat-card *ngIf=" showWinners" class="containerDiv" id="containerDiv">
+  <mat-card-content>
+    <mat-card-title>
+      Winners
+    </mat-card-title> -->
+    <!-- <div #ele style="background-color: blue;"> -->
+    <div class="row" *ngIf=" showWinners" id="targetDiv" #ele >
+      <div class="col-md-12">
+        <!-- <div class="card">
+          <div class="card-body"> -->
+            <div class="table-responsive" >
+              <table class="table" >
+                <thead>
+                  <tr>
+                    <th>
+                      #
+                    </th>
+                    <th>
+                      Outlet Code
+                    </th>
+                    <th>
+                      Outlet Name
+                    </th>
+                    <th>
+                      Region
+                    </th>
+                    <!-- <th>
+                      City
+                    </th> -->
+                    <th>
+                      Category
+                    </th>
+                    <th>
+                      Prize
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="spinnerWinnersList?.length>0">
+                  <tr *ngFor="let item of filteredTable; let i = index">
+                    <th scope="col">{{ i + 1 }}</th>
+                    <td>{{ item?.outlet_code }}</td>
+                    <td>{{ item?.outlet_name }}</td>
+                    <td>{{ item?.region_name }}</td>
+                    <!-- <td>{{ item?.city_name || 'N/A' }}</td> -->
+                    <td>{{ item?.category }}</td>
+                    <td>{{ item?.prize }}</td>
+
+                  </tr>
+                </tbody>
+
+
+               
+
+
+              </table>
+              <div style="display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-top: 20px;
+              ">
+                <button
+                class="nextButton"
+                  (click)="addDataInList()"
+                  type="button"
+                  mat-raised-button
+                  block
+                  color="primary"
+                  
+                >
+                <span >Next Winner</span>
+                  
+                </button>
+              </div>
+              <!-- <button (click)="onNextClick()">Next</button> -->
+            </div>
+          <!-- </div>
+        </div> -->
+      </div>
+    </div>
+
+  <!-- </div> -->
+
+ 
+
+  <!-- </mat-card-content>
+</mat-card> -->

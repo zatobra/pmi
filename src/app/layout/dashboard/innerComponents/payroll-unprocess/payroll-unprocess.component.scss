@@ -1,0 +1,73 @@
+// pay-roll-process.component.scss
+
+.example-margin {
+    margin-right: 10px;
+  }
+  
+  .mr-10-IMP {
+    // Add your custom styles for mr-10-IMP class
+  }
+  
+  .mat-form-field {
+    width: 100%;
+  }
+  
+  button {
+    margin-top: 15px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease; // Smooth transition
+  
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  
+    label {
+      margin-bottom: 8px;
+      color: #333; // Set your preferred label color
+      font-weight: bold;
+    }
+  
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease; // Smooth transition
+  
+      &:focus {
+        outline: none;
+        border-color: #007bff;
+      }
+    }
+  }
+  
+  // Styling for the first container
+  .title-container {
+    h1 {
+      color: #0067d5; // Set your preferred title color
+      margin-bottom: 10px;
+    }
+  }
+  
+  // Styling for the second container
+  .month-filter-container {
+    // Add any specific styles for the month filter container
+  }
+  
+  // Additional styling for the fuel price container
+  .fuel-price-container {
+    background-color: rgb(255, 255, 255); // Set your preferred background color
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  
